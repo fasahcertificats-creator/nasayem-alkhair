@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { APP_METADATA } from "@/constants/app.constants";
 
+import { AppShell } from "./AppShell";
 import { AppProviders } from "./providers";
 import "./globals.css";
 
@@ -23,9 +24,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang={APP_METADATA.defaultLocale} suppressHydrationWarning>
+    <html dir="rtl" lang={APP_METADATA.defaultLocale} suppressHydrationWarning>
       <body>
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          <AppShell>{children}</AppShell>
+        </AppProviders>
       </body>
     </html>
   );

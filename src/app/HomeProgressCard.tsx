@@ -42,13 +42,13 @@ function HomeProgressCardComponent() {
     <AppCard className={`${spacing.inset.lg} ${spacing.stack.md}`}>
       <div className={`flex flex-wrap items-center justify-between ${spacing.inline.md}`}>
         <div className={spacing.stack.xs}>
-          <AppBadge>Progress</AppBadge>
+          <AppBadge>التقدم</AppBadge>
           <h2 className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
-            {isHydrated ? `${progressPercentage}% complete` : "Loading progress"}
+            {isHydrated ? `اكتمل ${progressPercentage}%` : "جاري قراءة التقدم"}
           </h2>
         </div>
         <AppButton asChild tone="gold">
-          <Link href="/progress">View Progress</Link>
+          <Link href="/progress">عرض التقدم</Link>
         </AppButton>
       </div>
       <div className={`h-2 overflow-hidden rounded-full ${colors.emerald.surfaceSoft}`}>
@@ -59,8 +59,8 @@ function HomeProgressCardComponent() {
       </div>
       <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
         {isHydrated
-          ? `${completedSteps} of ${totalSteps} steps complete. Current streak: ${currentStreak} days.`
-          : "Reading offline progress."}
+          ? `${completedSteps} من ${totalSteps} خطوات مكتملة. الاستمرار الحالي: ${currentStreak} أيام.`
+          : "يتم تحميل التقدم المحفوظ على الجهاز."}
       </p>
     </AppCard>
   );

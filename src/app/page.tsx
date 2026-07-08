@@ -1,104 +1,154 @@
 import Link from "next/link";
+import { BookOpenText, Clock3, Footprints, Map, Sparkles } from "lucide-react";
 
-import { AppBadge, AppButton, AppCard, AppSection, spacing, typography } from "@/design-system";
+import { AppBadge, AppButton, AppCard, spacing, typography } from "@/design-system";
 
 import { HomeProgressCard } from "./HomeProgressCard";
 
 const quickAccessItems = [
   {
-    title: "Umrah Guide",
-    description: "Follow each step with calm, structured guidance.",
-    href: "/umrah"
+    title: "دليل العمرة",
+    description: "خطوات منظمة قبل الرحلة وأثناءها.",
+    href: "/umrah",
+    icon: Map
   },
   {
-    title: "Azkar",
-    description: "Morning, evening, and travel remembrances.",
-    href: "/azkar"
+    title: "الأذكار",
+    description: "ورد يومي قريب وسهل المتابعة.",
+    href: "/azkar",
+    icon: BookOpenText
   },
   {
-    title: "Progress",
-    description: "Track your journey through the core steps.",
-    href: "/progress"
+    title: "المواقيت",
+    description: "تذكير مبدئي بالصلاة القادمة.",
+    href: "/#prayer-card",
+    icon: Clock3
   },
   {
-    title: "Settings",
-    description: "Preferences and app options for later phases.",
-    href: "/"
+    title: "التقدم",
+    description: "تابع رحلتك خطوة بخطوة.",
+    href: "/progress",
+    icon: Footprints
   }
 ] as const;
 
 export default function HomePage() {
   return (
-    <main>
-      <AppSection spacing="lg">
-        <div className={`grid items-center ${spacing.inline.lg} lg:grid-cols-[1.2fr_0.8fr]`}>
-          <div className={spacing.stack.lg}>
-            <AppBadge tone="gold">Nasayem Alkhair</AppBadge>
-            <div className={spacing.stack.md}>
-              <h1 className={`${typography.hierarchy.display} ${typography.tone.primary}`}>
-                A calm companion for your Umrah journey
+    <main className={`${spacing.inset.sm} ${spacing.stack.md}`} dir="rtl">
+      <section className={spacing.stack.md} aria-labelledby="home-greeting">
+        <AppCard className={`${spacing.inset.md} ${spacing.stack.md}`}>
+          <div className={spacing.stack.sm}>
+            <AppBadge tone="gold">الرئيسية</AppBadge>
+            <div className={spacing.stack.xs}>
+              <h1
+                className={`${typography.hierarchy.heading} ${typography.tone.primary}`}
+                id="home-greeting"
+              >
+                السلام عليكم
               </h1>
               <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-                Move through each stage with clarity, remembrance, and a peaceful sense of progress.
+                نسائم الخير رفيق هادئ يعينك على الذكر، والاستعداد للعمرة، ومتابعة رحلتك بروح
+                مطمئنة.
               </p>
-            </div>
-            <div className={`flex flex-wrap ${spacing.inline.sm}`}>
-              <AppButton asChild>
-                <Link href="/umrah">Open Umrah Guide</Link>
-              </AppButton>
-              <AppButton asChild tone="outline">
-                <Link href="/azkar">Read Azkar</Link>
-              </AppButton>
             </div>
           </div>
+          <AppButton asChild tone="gold">
+            <Link href="/umrah">ابدأ من دليل العمرة</Link>
+          </AppButton>
+        </AppCard>
+      </section>
 
-          <AppCard className={`${spacing.inset.lg} ${spacing.stack.md}`}>
-            <AppBadge>Today</AppBadge>
-            <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
-              Begin with intention, continue with ease.
-            </p>
-            <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-              A steady journey is built one mindful step at a time.
-            </p>
-          </AppCard>
+      <section className={spacing.stack.sm} aria-labelledby="prayer-heading" id="prayer-card">
+        <div className="flex items-center justify-between">
+          <h2
+            className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
+            id="prayer-heading"
+          >
+            الصلاة القادمة
+          </h2>
+          <AppBadge tone="ivory">مبدئي</AppBadge>
         </div>
-      </AppSection>
-
-      <AppSection
-        description="A short reminder for focus before continuing."
-        heading="Daily Reminder"
-        spacing="sm"
-      >
-        <AppCard className={`${spacing.inset.lg} ${spacing.stack.sm}`}>
-          <AppBadge tone="gold">Reminder</AppBadge>
-          <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
-            Actions are guided by intentions.
-          </p>
+        <AppCard className={`${spacing.inset.md} ${spacing.stack.md}`}>
+          <div className={`flex items-center justify-between ${spacing.inline.md}`}>
+            <div className={spacing.stack.xs}>
+              <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
+                الصلاة التالية
+              </p>
+              <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
+                العصر
+              </p>
+            </div>
+            <div className="text-left">
+              <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>الوقت</p>
+              <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
+                --:--
+              </p>
+            </div>
+          </div>
           <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            Renew your intention before every stage and keep the journey gentle.
+            الموقع الحالي: مكة المكرمة، المملكة العربية السعودية
           </p>
         </AppCard>
-      </AppSection>
+      </section>
 
-      <AppSection heading="Journey Progress" spacing="sm">
-        <HomeProgressCard />
-      </AppSection>
+      <section className={spacing.stack.sm} aria-labelledby="daily-heading">
+        <h2
+          className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
+          id="daily-heading"
+        >
+          تذكير اليوم
+        </h2>
+        <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
+          <div className={`flex items-center ${spacing.inline.sm}`}>
+            <Sparkles aria-hidden="true" className="size-5 text-primary" />
+            <AppBadge tone="gold">ذكر</AppBadge>
+          </div>
+          <p className={`${typography.hierarchy.body} ${typography.tone.primary}`}>
+            اجعل نيتك حاضرة، وخذ من يومك لحظة هادئة للذكر والدعاء.
+          </p>
+        </AppCard>
+      </section>
 
-      <AppSection heading="Quick Access" spacing="md">
-        <div className={`grid ${spacing.inline.md} md:grid-cols-2 lg:grid-cols-4`}>
-          {quickAccessItems.map((item) => (
-            <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`} key={item.title}>
-              <AppBadge tone="gold">{item.title}</AppBadge>
-              <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-                {item.description}
-              </p>
-              <AppButton asChild tone="ghost">
-                <Link href={item.href}>Open</Link>
-              </AppButton>
-            </AppCard>
-          ))}
+      <section className={spacing.stack.sm} aria-labelledby="quick-actions-heading">
+        <h2
+          className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
+          id="quick-actions-heading"
+        >
+          وصول سريع
+        </h2>
+        <div className={`grid grid-cols-2 ${spacing.inline.sm}`}>
+          {quickAccessItems.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <AppCard className={`${spacing.inset.sm} ${spacing.stack.sm}`} key={item.title}>
+                <Icon aria-hidden="true" className="size-5 text-primary" />
+                <div className={spacing.stack.xs}>
+                  <p className={`${typography.hierarchy.body} ${typography.tone.primary}`}>
+                    {item.title}
+                  </p>
+                  <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
+                    {item.description}
+                  </p>
+                </div>
+                <AppButton asChild tone="ghost">
+                  <Link href={item.href}>فتح</Link>
+                </AppButton>
+              </AppCard>
+            );
+          })}
         </div>
-      </AppSection>
+      </section>
+
+      <section className={spacing.stack.sm} aria-labelledby="progress-heading">
+        <h2
+          className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
+          id="progress-heading"
+        >
+          تقدم الرحلة
+        </h2>
+        <HomeProgressCard />
+      </section>
     </main>
   );
 }
