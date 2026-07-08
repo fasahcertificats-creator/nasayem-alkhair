@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ROUTES } from "@/constants/routes.constants";
 import { AppBadge, AppButton, AppCard, AppSection, spacing, typography } from "@/design-system";
 
 export default function NotFoundPage() {
@@ -15,7 +16,7 @@ export default function NotFoundPage() {
             This path is not available. Return home to continue your journey.
           </p>
           <AppButton asChild>
-            <Link href="/">Go Home</Link>
+            <Link href={ROUTES.home}>Go Home</Link>
           </AppButton>
         </AppCard>
       </AppSection>

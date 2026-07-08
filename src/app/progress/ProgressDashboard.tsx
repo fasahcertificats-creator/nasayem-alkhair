@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { memo, useEffect, useMemo, useState } from "react";
 
+import { ROUTES } from "@/constants/routes.constants";
 import { AppBadge, AppButton, AppCard, colors, spacing, typography } from "@/design-system";
 import { loadAppProgressState, type ProgressEntry } from "@/lib/app-state";
 
@@ -144,7 +145,7 @@ function ProgressDashboardComponent() {
         </div>
 
         <AppButton asChild tone="outline">
-          <Link href="/umrah">Continue Guide</Link>
+          <Link href={ROUTES.umrah}>Continue Guide</Link>
         </AppButton>
       </AppCard>
     </div>

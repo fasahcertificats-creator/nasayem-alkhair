@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 
+import { ROUTES } from "@/constants/routes.constants";
 import { AppBadge, AppButton, AppCard, AppSection, spacing, typography } from "@/design-system";
 
 interface GlobalErrorPageProps {
@@ -31,7 +32,7 @@ export default function GlobalErrorPage({ error, reset }: GlobalErrorPageProps) 
           <div className={`flex flex-wrap ${spacing.inline.sm}`}>
             <AppButton onClick={reset}>Retry</AppButton>
             <AppButton asChild tone="outline">
-              <Link href="/">Go Home</Link>
+              <Link href={ROUTES.home}>Go Home</Link>
             </AppButton>
           </div>
         </AppCard>

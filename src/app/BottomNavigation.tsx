@@ -6,11 +6,12 @@ import type { Route } from "next";
 import { BookOpenText, Clock3, Home, Map, MoreHorizontal } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
+import { ROUTES } from "@/constants/routes.constants";
 import { AppButton, spacing, typography } from "@/design-system";
 import { cn } from "@/lib/utils";
 
 type NavigationItem = {
-  href: Route | `${Route}#${string}`;
+  href: Route;
   label: string;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
   match: (pathname: string) => boolean;
@@ -18,34 +19,34 @@ type NavigationItem = {
 
 const navigationItems: NavigationItem[] = [
   {
-    href: "/",
+    href: ROUTES.home,
     label: "الرئيسية",
     icon: Home,
-    match: (pathname) => pathname === "/"
+    match: (pathname) => pathname === ROUTES.home
   },
   {
-    href: "/azkar",
+    href: ROUTES.azkar,
     label: "الأذكار",
     icon: BookOpenText,
-    match: (pathname) => pathname.startsWith("/azkar")
+    match: (pathname) => pathname.startsWith(ROUTES.azkar)
   },
   {
-    href: "/umrah",
+    href: ROUTES.umrah,
     label: "دليل العمرة",
     icon: Map,
-    match: (pathname) => pathname.startsWith("/umrah")
+    match: (pathname) => pathname.startsWith(ROUTES.umrah)
   },
   {
-    href: "/#prayer-card",
+    href: ROUTES.miqat,
     label: "المواقيت",
     icon: Clock3,
-    match: (pathname) => pathname.startsWith("/prayer-times")
+    match: (pathname) => pathname.startsWith(ROUTES.miqat)
   },
   {
-    href: "/progress",
+    href: ROUTES.more,
     label: "المزيد",
     icon: MoreHorizontal,
-    match: (pathname) => pathname.startsWith("/progress")
+    match: (pathname) => pathname.startsWith(ROUTES.more)
   }
 ];
 
