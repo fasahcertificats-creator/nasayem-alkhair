@@ -1,0 +1,29 @@
+[
+  {
+    "id": "dev-umrah-001",
+    "title": "Ihram",
+    "stage": "preparation",
+    "order": 1,
+    "text": "Enter the state of ihram before crossing the miqat, with the intention to perform Umrah.",
+    "source": "Development fallback content",
+    "authenticity": "For local development verification"
+  },
+  {
+    "id": "dev-umrah-002",
+    "title": "Tawaf",
+    "stage": "kaaba",
+    "order": 2,
+    "text": "Perform seven circuits around the Kaaba, beginning from the Black Stone.",
+    "source": "Development fallback content",
+    "authenticity": "For local development verification"
+  },
+  {
+    "id": "dev-umrah-003",
+    "title": "Sa'i",
+    "stage": "safa-marwah",
+    "order": 3,
+    "text": "Walk seven times between Safa and Marwah.",
+    "source": "Development fallback content",
+    "authenticity": "For local development verification"
+  }
+]
