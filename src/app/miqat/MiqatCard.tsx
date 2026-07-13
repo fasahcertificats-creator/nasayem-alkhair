@@ -23,7 +23,11 @@ export function MiqatCard({ miqat }: MiqatCardProps) {
       </div>
 
       <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-        {miqat.description || "سيظهر الوصف بعد اعتماد محتوى المواقيت."}
+        {miqat.descriptionAr}
+      </p>
+
+      <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
+        {miqat.sourceReference}
       </p>
     </AppCard>
   );

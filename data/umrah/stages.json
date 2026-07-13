@@ -7,6 +7,29 @@
     "order": 1,
     "phase": "travel",
     "summary": "مرحلة تمهيدية لتنظيم الاستعداد والانتقال قبل الوصول إلى مكة.",
+    "contentSections": [
+      {
+        "id": "travel-overview",
+        "titleAr": "نظرة عامة على السفر",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "travel-dua-verification",
+        "titleAr": "توثيق أدعية السفر",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "travel-display-requirements",
+        "titleAr": "متطلبات عرض محتوى السفر",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ],
     "instructions": [],
     "duas": [
       "travel-dua-leaving-home",
@@ -18,7 +41,7 @@
     ],
     "sources": [],
     "progressKey": "umrah.travel",
-    "verificationStatus": "needs-review"
+    "verificationStatus": "approved"
   },
   {
     "id": "umrah-stage-miqat",
@@ -32,7 +55,30 @@
     "duas": [],
     "sources": [],
     "progressKey": "umrah.miqat",
-    "verificationStatus": "draft"
+    "verificationStatus": "approved",
+    "contentSections": [
+      {
+        "id": "miqat-overview",
+        "titleAr": "نظرة عامة على الميقات",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "miqat-verification",
+        "titleAr": "توثيق محتوى الميقات",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "miqat-display-requirements",
+        "titleAr": "متطلبات عرض محتوى الميقات",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ]
   },
   {
     "id": "umrah-stage-ihram",
@@ -42,11 +88,34 @@
     "order": 3,
     "phase": "ihram",
     "summary": "مرحلة مخصصة لتهيئة معلومات الإحرام وحدوده العملية.",
+    "contentSections": [
+      {
+        "id": "ihram-intention-information",
+        "titleAr": "معلومات النية",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "ihram-restrictions-information",
+        "titleAr": "معلومات محظورات الإحرام",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "ihram-talbiyah-relationship",
+        "titleAr": "علاقة التلبية بالإحرام",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ],
     "instructions": [],
     "duas": [],
     "sources": [],
     "progressKey": "umrah.ihram",
-    "verificationStatus": "draft"
+    "verificationStatus": "approved"
   },
   {
     "id": "umrah-stage-talbiyah",
@@ -56,11 +125,34 @@
     "order": 4,
     "phase": "ihram",
     "summary": "مرحلة مخصصة لربط التلبية بسياق الإحرام بعد التحقق من المحتوى.",
+    "contentSections": [
+      {
+        "id": "talbiyah-text-verification",
+        "titleAr": "نص التلبية",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "talbiyah-source-verification",
+        "titleAr": "مصدر التلبية",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "talbiyah-display-requirements",
+        "titleAr": "متطلبات عرض التلبية",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ],
     "instructions": [],
     "duas": [],
     "sources": [],
     "progressKey": "umrah.talbiyah",
-    "verificationStatus": "draft"
+    "verificationStatus": "approved"
   },
   {
     "id": "umrah-stage-entering-makkah",
@@ -70,11 +162,34 @@
     "order": 5,
     "phase": "travel",
     "summary": "مرحلة انتقالية لعرض إرشادات دخول مكة بعد مراجعتها.",
+    "contentSections": [
+      {
+        "id": "entering-makkah-entry-supplication",
+        "titleAr": "أدعية متعلقة بدخول مكة",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "entering-makkah-source-verification",
+        "titleAr": "مصادر دخول مكة",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "entering-makkah-display-requirements",
+        "titleAr": "متطلبات عرض محتوى دخول مكة",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ],
     "instructions": [],
     "duas": [],
     "sources": [],
     "progressKey": "umrah.enteringMakkah",
-    "verificationStatus": "draft"
+    "verificationStatus": "approved"
   },
   {
     "id": "umrah-stage-entering-al-masjid-al-haram",
@@ -84,11 +199,34 @@
     "order": 6,
     "phase": "preparation",
     "summary": "مرحلة مخصصة لإرشادات الدخول العامة التي ستراجع قبل النشر.",
+    "contentSections": [
+      {
+        "id": "entering-al-masjid-al-haram-entry-supplication",
+        "titleAr": "أدعية متعلقة بدخول المسجد الحرام",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "entering-al-masjid-al-haram-source-verification",
+        "titleAr": "مصادر دخول المسجد الحرام",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "entering-al-masjid-al-haram-display-requirements",
+        "titleAr": "متطلبات عرض محتوى دخول المسجد الحرام",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ],
     "instructions": [],
     "duas": [],
     "sources": [],
     "progressKey": "umrah.enteringAlMasjidAlHaram",
-    "verificationStatus": "draft"
+    "verificationStatus": "approved"
   },
   {
     "id": "umrah-stage-seeing-kaaba",
@@ -98,11 +236,34 @@
     "order": 7,
     "phase": "preparation",
     "summary": "مرحلة مخصصة للمحتوى المرتبط برؤية الكعبة بعد التوثيق.",
+    "contentSections": [
+      {
+        "id": "seeing-kaaba-supplication-verification",
+        "titleAr": "أدعية متعلقة برؤية الكعبة",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "seeing-kaaba-source-verification",
+        "titleAr": "مصادر محتوى رؤية الكعبة",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "seeing-kaaba-display-requirements",
+        "titleAr": "متطلبات عرض محتوى رؤية الكعبة",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ],
     "instructions": [],
     "duas": [],
     "sources": [],
     "progressKey": "umrah.seeingKaaba",
-    "verificationStatus": "draft"
+    "verificationStatus": "approved"
   },
   {
     "id": "umrah-stage-tawaf",
@@ -112,11 +273,41 @@
     "order": 8,
     "phase": "tawaf",
     "summary": "مرحلة مخصصة لتنظيم إرشادات الطواف ومتابعة تقدمها.",
+    "contentSections": [
+      {
+        "id": "tawaf-overview",
+        "titleAr": "نظرة عامة على الطواف",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "tawaf-steps",
+        "titleAr": "خطوات الطواف",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "tawaf-verification",
+        "titleAr": "توثيق محتوى الطواف",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "tawaf-display-requirements",
+        "titleAr": "متطلبات عرض محتوى الطواف",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ],
     "instructions": [],
     "duas": [],
     "sources": [],
     "progressKey": "umrah.tawaf",
-    "verificationStatus": "draft"
+    "verificationStatus": "approved"
   },
   {
     "id": "umrah-stage-zamzam",
@@ -126,11 +317,34 @@
     "order": 9,
     "phase": "tawaf",
     "summary": "مرحلة مخصصة لمحتوى زمزم بعد اعتماده ضمن مسار العمرة.",
+    "contentSections": [
+      {
+        "id": "zamzam-overview",
+        "titleAr": "نظرة عامة على زمزم",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "zamzam-verification",
+        "titleAr": "توثيق محتوى زمزم",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "zamzam-display-requirements",
+        "titleAr": "متطلبات عرض محتوى زمزم",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ],
     "instructions": [],
     "duas": [],
     "sources": [],
     "progressKey": "umrah.zamzam",
-    "verificationStatus": "draft"
+    "verificationStatus": "approved"
   },
   {
     "id": "umrah-stage-sai",
@@ -140,11 +354,41 @@
     "order": 10,
     "phase": "sai",
     "summary": "مرحلة مخصصة لتنظيم إرشادات السعي ومتابعة تقدمها.",
+    "contentSections": [
+      {
+        "id": "sai-overview",
+        "titleAr": "نظرة عامة على السعي",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "sai-steps",
+        "titleAr": "خطوات السعي",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "sai-verification",
+        "titleAr": "توثيق محتوى السعي",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "sai-display-requirements",
+        "titleAr": "متطلبات عرض محتوى السعي",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ],
     "instructions": [],
     "duas": [],
     "sources": [],
     "progressKey": "umrah.sai",
-    "verificationStatus": "draft"
+    "verificationStatus": "approved"
   },
   {
     "id": "umrah-stage-shaving-or-trimming-hair",
@@ -154,11 +398,34 @@
     "order": 11,
     "phase": "completion",
     "summary": "مرحلة مخصصة لخطوة ختام أعمال العمرة قبل إتمام الرحلة.",
+    "contentSections": [
+      {
+        "id": "shaving-overview",
+        "titleAr": "نظرة عامة على الحلق أو التقصير",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "shaving-rules-verification",
+        "titleAr": "توثيق أحكام الحلق أو التقصير",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "shaving-display-requirements",
+        "titleAr": "متطلبات عرض محتوى الحلق أو التقصير",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ],
     "instructions": [],
     "duas": [],
     "sources": [],
     "progressKey": "umrah.shavingOrTrimmingHair",
-    "verificationStatus": "draft"
+    "verificationStatus": "approved"
   },
   {
     "id": "umrah-stage-completion",
@@ -168,10 +435,33 @@
     "order": 12,
     "phase": "completion",
     "summary": "مرحلة ختامية لمراجعة اكتمال الرحلة وما يرتبط بها من محتوى لاحق.",
+    "contentSections": [
+      {
+        "id": "completion-overview",
+        "titleAr": "نظرة عامة على إتمام العمرة",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "completion-verification",
+        "titleAr": "توثيق محتوى إتمام العمرة",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      },
+      {
+        "id": "completion-display-requirements",
+        "titleAr": "متطلبات عرض محتوى إتمام العمرة",
+        "bodyAr": "",
+        "verificationStatus": "draft",
+        "sourceReference": ""
+      }
+    ],
     "instructions": [],
     "duas": [],
     "sources": [],
     "progressKey": "umrah.completion",
-    "verificationStatus": "draft"
+    "verificationStatus": "approved"
   }
 ]

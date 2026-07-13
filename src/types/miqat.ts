@@ -1,10 +1,16 @@
 import type { EntityId } from "./common";
+import type { ContentVerificationStatus } from "./dua";
 
 export interface Miqat {
   id: EntityId;
   nameAr: string;
   nameEn: string;
-  description: string;
   region: string;
-  rules: string[];
+  descriptionAr: string;
+  rulesAr: string;
+  relatedStageId: EntityId;
+  verificationStatus: ContentVerificationStatus;
+  sourceReference: string;
+  description?: string;
+  rules?: string[];
 }

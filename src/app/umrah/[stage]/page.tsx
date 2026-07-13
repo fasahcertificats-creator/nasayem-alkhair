@@ -24,9 +24,7 @@ export default async function UmrahStagePage({ params }: StagePageProps) {
     notFound();
   }
 
-  const approvedDuas = getDuasByStageId(stage.slug).filter(
-    (dua) => dua.verificationStatus === "approved"
-  );
+  const approvedDuas = getDuasByStageId(stage.slug);
 
   return <StageDetailContent approvedDuas={approvedDuas} stage={stage} />;
 }

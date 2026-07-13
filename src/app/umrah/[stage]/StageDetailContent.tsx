@@ -20,6 +20,42 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
   const [progress, setProgress] = useState<ProgressEntry[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
 
+  const approvedDuaSources = useMemo(() => {
+    if (stage.slug !== "travel") {
+      return [];
+    }
+
+    return Array.from(
+      new Set(
+        approvedDuas
+          .map((dua) =>
+            [
+              dua.sourceReference,
+              dua.sourceCollection,
+              dua.sourceNumber,
+              dua.sourceType,
+              dua.authenticity
+            ]
+              .filter(Boolean)
+              .join(" · ")
+          )
+          .filter(Boolean)
+      )
+    );
+  }, [approvedDuas, stage.slug]);
+
+  const displayedSources = stage.sources.length > 0 ? stage.sources : approvedDuaSources;
+  const canDisplayContentSections =
+    stage.slug === "tawaf" ||
+    stage.slug === "shaving-or-trimming-hair" ||
+    stage.slug === "completion-of-umrah";
+  const hasContentSectionSlots = canDisplayContentSections && (stage.contentSections?.length ?? 0) > 0;
+  const displayedSections = canDisplayContentSections
+    ? (stage.contentSections ?? []).filter(
+        (section) => section.verificationStatus === "approved" && section.bodyAr.trim().length > 0
+      )
+    : [];
+
   useEffect(() => {
     let isMounted = true;
 
@@ -113,6 +149,41 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
         </AppCard>
       </section>
 
+      {hasContentSectionSlots ? (
+        <section className={spacing.stack.sm} aria-labelledby="stage-sections-heading">
+          <h2
+            className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
+            id="stage-sections-heading"
+          >
+            أقسام المرحلة
+          </h2>
+          {displayedSections.length > 0 ? (
+            <div className={spacing.stack.sm}>
+              {displayedSections.map((section) => (
+                <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`} key={section.id}>
+                  <div className="flex items-center justify-between">
+                    <h3 className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
+                      {section.titleAr}
+                    </h3>
+                    <AppBadge tone="gold">معتمد</AppBadge>
+                  </div>
+                  <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
+                    {section.bodyAr}
+                  </p>
+                </AppCard>
+              ))}
+            </div>
+          ) : (
+            <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
+              <AppBadge tone="ivory">قيد التوثيق</AppBadge>
+              <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
+                سيتم إضافة محتوى هذا القسم بعد مراجعته.
+              </p>
+            </AppCard>
+          )}
+        </section>
+      ) : null}
+
       <section className={spacing.stack.sm} aria-labelledby="duas-heading">
         <h2
           className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
@@ -130,7 +201,7 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
           <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
             <AppBadge tone="ivory">قيد التوثيق</AppBadge>
             <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-              لا توجد أدعية معتمدة للعرض حالياً.
+              سيتم إضافة المحتوى الموثق لهذه المرحلة قريبًا
             </p>
           </AppCard>
         )}
@@ -144,9 +215,9 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
           المصادر
         </h2>
         <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-          {stage.sources.length > 0 ? (
+          {displayedSources.length > 0 ? (
             <ul className={spacing.stack.xs}>
-              {stage.sources.map((source) => (
+              {displayedSources.map((source) => (
                 <li className={`${typography.hierarchy.body} ${typography.tone.muted}`} key={source}>
                   {source}
                 </li>

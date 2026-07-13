@@ -14,19 +14,19 @@ export type ContentVerificationStatus = "draft" | "needs-review" | "approved" | 
 
 export interface Dua {
   id: EntityId;
-  titleAr: string;
-  titleEn: string;
-  arabicText: string;
-  translation: string;
-  transliteration?: string;
-  context: string;
-  source?: string;
-  sourceType?: DuaSourceType;
-  sourceReference?: string;
-  sourceCollection?: string;
-  sourceNumber?: string;
-  authenticity: DuaAuthenticity;
-  verificationStatus?: ContentVerificationStatus;
   stageId: EntityId;
+  titleAr: string;
+  arabicText: string;
+  contextAr: string;
+  sourceType: DuaSourceType;
+  sourceReference: string;
+  sourceCollection: string;
+  sourceNumber: string;
+  authenticity: DuaAuthenticity;
+  verificationStatus: ContentVerificationStatus;
   order: number;
+  titleEn?: string;
+  translation?: string;
+  transliteration?: string;
+  source?: string;
 }

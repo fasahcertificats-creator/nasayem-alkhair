@@ -19,9 +19,9 @@ export function DuaBlock({ dua }: DuaBlockProps) {
       <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
         {dua.arabicText}
       </p>
-      <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>{dua.translation}</p>
+      <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>{dua.contextAr}</p>
       <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
-        {dua.sourceReference ?? dua.source}
+        {dua.sourceReference}
       </p>
     </AppCard>
   );

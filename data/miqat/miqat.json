@@ -1,1 +1,57 @@
-[]
+[
+  {
+    "id": "miqat-dhul-hulayfah",
+    "nameAr": "ذو الحليفة",
+    "nameEn": "Dhul Hulayfah",
+    "region": "",
+    "descriptionAr": "",
+    "rulesAr": "",
+    "relatedStageId": "umrah-stage-miqat",
+    "verificationStatus": "draft",
+    "sourceReference": ""
+  },
+  {
+    "id": "miqat-al-juhfah",
+    "nameAr": "الجحفة",
+    "nameEn": "Al-Juhfah",
+    "region": "",
+    "descriptionAr": "",
+    "rulesAr": "",
+    "relatedStageId": "umrah-stage-miqat",
+    "verificationStatus": "draft",
+    "sourceReference": ""
+  },
+  {
+    "id": "miqat-qarn-al-manazil",
+    "nameAr": "قرن المنازل",
+    "nameEn": "Qarn Al-Manazil",
+    "region": "",
+    "descriptionAr": "",
+    "rulesAr": "",
+    "relatedStageId": "umrah-stage-miqat",
+    "verificationStatus": "draft",
+    "sourceReference": ""
+  },
+  {
+    "id": "miqat-yalamlam",
+    "nameAr": "يلملم",
+    "nameEn": "Yalamlam",
+    "region": "",
+    "descriptionAr": "",
+    "rulesAr": "",
+    "relatedStageId": "umrah-stage-miqat",
+    "verificationStatus": "draft",
+    "sourceReference": ""
+  },
+  {
+    "id": "miqat-dhat-irq",
+    "nameAr": "ذات عرق",
+    "nameEn": "Dhat Irq",
+    "region": "",
+    "descriptionAr": "",
+    "rulesAr": "",
+    "relatedStageId": "umrah-stage-miqat",
+    "verificationStatus": "draft",
+    "sourceReference": ""
+  }
+]

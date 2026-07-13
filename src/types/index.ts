@@ -17,4 +17,4 @@ export type { Miqat } from "./miqat";
 export type { CompletedAzkarEntry, ProductProgress } from "./product-progress";
 export type { ThemeMode } from "./theme";
 export type { UmrahContent } from "./umrah";
-export type { UmrahStage, UmrahStagePhase } from "./umrah-stage";
+export type { UmrahStage, UmrahStageContentSection, UmrahStagePhase } from "./umrah-stage";

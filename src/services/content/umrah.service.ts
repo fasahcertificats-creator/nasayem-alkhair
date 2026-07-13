@@ -7,6 +7,7 @@ import type {
   DuaAuthenticity,
   DuaSourceType,
   UmrahStage,
+  UmrahStageContentSection,
   UmrahStagePhase
 } from "@/types";
 
@@ -46,6 +47,21 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === "string");
 }
 
+function isUmrahStageContentSection(value: unknown): value is UmrahStageContentSection {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === "string" &&
+    typeof value.titleAr === "string" &&
+    typeof value.bodyAr === "string" &&
+    typeof value.verificationStatus === "string" &&
+    verificationStatusValues.has(value.verificationStatus as ContentVerificationStatus) &&
+    typeof value.sourceReference === "string"
+  );
+}
+
 function isDua(value: unknown): value is Dua {
   if (!isRecord(value)) {
     return false;
@@ -54,28 +70,25 @@ function isDua(value: unknown): value is Dua {
   const hasRequiredFields =
     typeof value.id === "string" &&
     typeof value.titleAr === "string" &&
-    typeof value.titleEn === "string" &&
     typeof value.arabicText === "string" &&
-    typeof value.translation === "string" &&
-    typeof value.context === "string" &&
+    typeof value.contextAr === "string" &&
     typeof value.stageId === "string" &&
     typeof value.order === "number" &&
+    typeof value.sourceType === "string" &&
+    duaSourceTypes.has(value.sourceType as DuaSourceType) &&
+    typeof value.sourceReference === "string" &&
+    typeof value.sourceCollection === "string" &&
+    typeof value.sourceNumber === "string" &&
     typeof value.authenticity === "string" &&
-    duaAuthenticityValues.has(value.authenticity as DuaAuthenticity);
+    duaAuthenticityValues.has(value.authenticity as DuaAuthenticity) &&
+    typeof value.verificationStatus === "string" &&
+    verificationStatusValues.has(value.verificationStatus as ContentVerificationStatus);
 
   const hasValidOptionalFields =
+    (value.titleEn === undefined || typeof value.titleEn === "string") &&
+    (value.translation === undefined || typeof value.translation === "string") &&
     (value.transliteration === undefined || typeof value.transliteration === "string") &&
-    (value.source === undefined || typeof value.source === "string") &&
-    (value.sourceReference === undefined || typeof value.sourceReference === "string") &&
-    (value.sourceCollection === undefined || typeof value.sourceCollection === "string") &&
-    (value.sourceNumber === undefined || typeof value.sourceNumber === "string") &&
-    (value.verificationStatus === undefined ||
-      value.verificationStatus === "draft" ||
-      value.verificationStatus === "needs-review" ||
-      value.verificationStatus === "approved" ||
-      value.verificationStatus === "rejected") &&
-    (value.sourceType === undefined ||
-      (typeof value.sourceType === "string" && duaSourceTypes.has(value.sourceType as DuaSourceType)));
+    (value.source === undefined || typeof value.source === "string");
 
   return hasRequiredFields && hasValidOptionalFields;
 }
@@ -94,6 +107,9 @@ function isUmrahStage(value: unknown): value is UmrahStage {
     typeof value.phase === "string" &&
     umrahStagePhases.has(value.phase as UmrahStagePhase) &&
     typeof value.summary === "string" &&
+    (value.contentSections === undefined ||
+      (Array.isArray(value.contentSections) &&
+        value.contentSections.every(isUmrahStageContentSection))) &&
     isStringArray(value.instructions) &&
     isStringArray(value.duas) &&
     isStringArray(value.sources) &&
@@ -111,6 +127,12 @@ function parseCollection<T>(data: unknown, guard: (value: unknown) => value is T
   return data.filter(guard);
 }
 
+function getAllDuasByStageId(stageId: string): Dua[] {
+  return parseCollection(duasData, isDua)
+    .filter((dua) => dua.stageId === stageId)
+    .sort((first, second) => first.order - second.order);
+}
+
 export function getUmrahStages(): UmrahStage[] {
   return parseCollection(stagesData, isUmrahStage).sort((first, second) => first.order - second.order);
 }
@@ -120,7 +142,5 @@ export function getUmrahStageById(id: string): UmrahStage | undefined {
 }
 
 export function getDuasByStageId(stageId: string): Dua[] {
-  return parseCollection(duasData, isDua)
-    .filter((dua) => dua.stageId === stageId)
-    .sort((first, second) => first.order - second.order);
+  return getAllDuasByStageId(stageId).filter((dua) => dua.verificationStatus === "approved");
 }
