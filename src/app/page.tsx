@@ -1,42 +1,10 @@
 import Link from "next/link";
-import { BookOpenText, Clock3, Footprints, Map, MoonStar } from "lucide-react";
+import { BookOpenText, MoonStar } from "lucide-react";
 
 import { ROUTES } from "@/constants/routes.constants";
 import { AppBadge, AppButton, AppCard, spacing, typography } from "@/design-system";
-import { getUmrahStages } from "@/services/content";
-
-import { HomeProgressCard } from "./HomeProgressCard";
-
-const quickAccessItems = [
-  {
-    title: "دليل العمرة",
-    description: "خطوات الرحلة بهدوء وترتيب.",
-    href: ROUTES.umrah,
-    icon: Map
-  },
-  {
-    title: "الأذكار",
-    description: "مساحة يومية للذكر الموثق.",
-    href: ROUTES.azkar,
-    icon: BookOpenText
-  },
-  {
-    title: "المواقيت",
-    description: "قسم مهيأ لمواقيت الصلاة.",
-    href: ROUTES.miqat,
-    icon: Clock3
-  },
-  {
-    title: "التقدم",
-    description: "متابعة الرحلة اليومية.",
-    href: ROUTES.progress,
-    icon: Footprints
-  }
-] as const;
 
 export default function HomePage() {
-  const umrahStages = getUmrahStages();
-
   return (
     <main
       className={`${spacing.inset.sm} ${spacing.stack.md} ${typography.fontFamily.arabic} ${typography.direction.arabic}`}
@@ -45,17 +13,12 @@ export default function HomePage() {
       <section aria-labelledby="home-greeting" className={spacing.stack.sm}>
         <div className={spacing.stack.xs}>
           <AppBadge tone="gold">نسائم الخير</AppBadge>
-          <div className={spacing.stack.xs}>
-            <h1
-              className={`${typography.hierarchy.heading} ${typography.tone.primary}`}
-              id="home-greeting"
-            >
-              السلام عليكم
-            </h1>
-            <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-              رفيق هادئ للذكر والعمرة، يجمع ما تحتاجه في مساحة قليلة وواضحة.
-            </p>
-          </div>
+          <h1
+            className={`${typography.hierarchy.heading} ${typography.tone.primary}`}
+            id="home-greeting"
+          >
+            السلام عليكم
+          </h1>
         </div>
       </section>
 
@@ -72,10 +35,13 @@ export default function HomePage() {
         <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
           <div className={`flex items-center ${spacing.inline.sm}`}>
             <MoonStar aria-hidden="true" className={`${typography.tone.primary} size-5`} />
-            <AppBadge tone="gold">صلة يومية</AppBadge>
+            <AppBadge tone="gold">تذكير اليوم</AppBadge>
           </div>
+          <p className={`${typography.hierarchy.body} ${typography.tone.primary}`}>
+            تذكير اليوم
+          </p>
           <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            مساحة مهيأة لآية أو ذكر موثق، تظهر هنا بعد اكتمال مراجعة المحتوى.
+            سيُضاف هنا ورد يومي موثق من القرآن والسنة
           </p>
         </AppCard>
       </section>
@@ -115,37 +81,27 @@ export default function HomePage() {
         </AppCard>
       </section>
 
-      <HomeProgressCard stages={umrahStages} />
-
-      <section className={spacing.stack.sm} aria-labelledby="quick-actions-heading">
+      <section className={spacing.stack.sm} aria-labelledby="azkar-heading">
         <h2
           className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
-          id="quick-actions-heading"
+          id="azkar-heading"
         >
-          وصول سريع
+          الأذكار
         </h2>
-        <div className={`grid grid-cols-2 ${spacing.inline.sm}`}>
-          {quickAccessItems.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <AppCard className={`${spacing.inset.sm} ${spacing.stack.sm}`} key={item.title}>
-                <Icon aria-hidden="true" className={`${typography.tone.primary} size-5`} />
-                <div className={spacing.stack.xs}>
-                  <p className={`${typography.hierarchy.body} ${typography.tone.primary}`}>
-                    {item.title}
-                  </p>
-                  <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
-                    {item.description}
-                  </p>
-                </div>
-                <AppButton asChild tone="ghost">
-                  <Link href={item.href}>فتح</Link>
-                </AppButton>
-              </AppCard>
-            );
-          })}
-        </div>
+        <AppCard className={`${spacing.inset.sm} ${spacing.stack.sm}`}>
+          <BookOpenText aria-hidden="true" className={`${typography.tone.primary} size-5`} />
+          <div className={spacing.stack.xs}>
+            <p className={`${typography.hierarchy.body} ${typography.tone.primary}`}>
+              أذكار اليوم
+            </p>
+            <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
+              انتقل إلى صفحة الأذكار اليومية.
+            </p>
+          </div>
+          <AppButton asChild tone="ghost">
+            <Link href={ROUTES.azkar}>فتح الأذكار</Link>
+          </AppButton>
+        </AppCard>
       </section>
     </main>
   );
