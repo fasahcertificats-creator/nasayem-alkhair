@@ -13,6 +13,16 @@ export type {
   UserScopedFirestoreDocument
 } from "./firestore";
 export type { AppLocale, LocalizedValue } from "./i18n";
+export type {
+  KnowledgeAuthenticity,
+  KnowledgeCategory,
+  KnowledgeRecord,
+  KnowledgeRecordType,
+  KnowledgeRelation,
+  KnowledgeRelationEntityType,
+  KnowledgeSource,
+  KnowledgeSourceType
+} from "./knowledge";
 export type { Miqat } from "./miqat";
 export type { CompletedAzkarEntry, ProductProgress } from "./product-progress";
 export type { ThemeMode } from "./theme";

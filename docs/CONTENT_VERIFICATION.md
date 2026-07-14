@@ -1,5 +1,7 @@
 # Content Verification
 
+`docs/CONTENT_CONSTITUTION.md` is the controlling policy document for Nasayem Alkhair religious content. This verification guide implements that constitution through operational review and publishing rules.
+
 Nasayem Alkhair content must be verified before it is published in production. Structural records may exist with empty content fields while verification is pending, but no dua, hadith text, Quran reference, translation, transliteration, or source claim should be treated as approved until it passes review.
 
 ## Arabic-First Publishing Rules

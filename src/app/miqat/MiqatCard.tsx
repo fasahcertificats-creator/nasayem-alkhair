@@ -26,6 +26,15 @@ export function MiqatCard({ miqat }: MiqatCardProps) {
         {miqat.descriptionAr}
       </p>
 
+      <div className={spacing.stack.xs}>
+        <h3 className={`${typography.hierarchy.caption} ${typography.tone.primary}`}>
+          الحكم المختصر
+        </h3>
+        <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
+          {miqat.rulesAr}
+        </p>
+      </div>
+
       <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
         {miqat.sourceReference}
       </p>

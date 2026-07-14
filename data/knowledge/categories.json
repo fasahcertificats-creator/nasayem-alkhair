@@ -1,0 +1,23 @@
+[
+  {
+    "id": "knowledge-category-travel",
+    "slug": "travel",
+    "titleAr": "السفر",
+    "descriptionAr": "محتوى موثق متعلق بالسفر.",
+    "icon": "route"
+  },
+  {
+    "id": "knowledge-category-dua",
+    "slug": "dua",
+    "titleAr": "الدعاء",
+    "descriptionAr": "أدعية موثقة حسب المصدر والسياق.",
+    "icon": "hand-heart"
+  },
+  {
+    "id": "knowledge-category-hadith",
+    "slug": "hadith",
+    "titleAr": "الحديث",
+    "descriptionAr": "محتوى مرتبط بمصادر الحديث ودرجاتها.",
+    "icon": "book-open"
+  }
+]

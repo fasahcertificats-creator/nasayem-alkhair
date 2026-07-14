@@ -16,6 +16,47 @@ interface StageDetailContentProps {
   stage: UmrahStage;
 }
 
+function StageSectionBody({ body }: { body: string }) {
+  const lines = body
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length > 1 && lines.every((line) => line.startsWith("- "))) {
+    return (
+      <ul className={`${spacing.stack.xs} list-disc pr-5`}>
+        {lines.map((line) => (
+          <li className={`${typography.hierarchy.body} ${typography.tone.muted}`} key={line}>
+            {line.slice(2)}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  if (lines.length > 1 && lines.every((line) => /^\d+\.\s/.test(line))) {
+    return (
+      <ol className={`${spacing.stack.xs} list-decimal pr-5`}>
+        {lines.map((line) => (
+          <li className={`${typography.hierarchy.body} ${typography.tone.muted}`} key={line}>
+            {line.replace(/^\d+\.\s/, "")}
+          </li>
+        ))}
+      </ol>
+    );
+  }
+
+  return (
+    <div className={spacing.stack.xs}>
+      {lines.map((line) => (
+        <p className={`${typography.hierarchy.body} ${typography.tone.muted}`} key={line}>
+          {line}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContentProps) {
   const [progress, setProgress] = useState<ProgressEntry[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -45,8 +86,20 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
   }, [approvedDuas, stage.slug]);
 
   const displayedSources = stage.sources.length > 0 ? stage.sources : approvedDuaSources;
+  const shouldDisplayDuasSection =
+    !["ihram", "entering-makkah", "seeing-kaaba", "zamzam", "completion-of-umrah"].includes(
+      stage.slug
+    ) ||
+    approvedDuas.length > 0;
   const canDisplayContentSections =
+    stage.slug === "ihram" ||
+    stage.slug === "talbiyah" ||
+    stage.slug === "entering-makkah" ||
+    stage.slug === "entering-al-masjid-al-haram" ||
+    stage.slug === "seeing-kaaba" ||
     stage.slug === "tawaf" ||
+    stage.slug === "zamzam" ||
+    stage.slug === "sai" ||
     stage.slug === "shaving-or-trimming-hair" ||
     stage.slug === "completion-of-umrah";
   const hasContentSectionSlots = canDisplayContentSections && (stage.contentSections?.length ?? 0) > 0;
@@ -147,7 +200,41 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
             </p>
           )}
         </AppCard>
+        {stage.slug === "miqat" ? (
+          <AppButton asChild tone="gold">
+            <Link href={ROUTES.miqat}>عرض صفحة المواقيت المعتمدة</Link>
+          </AppButton>
+        ) : null}
+        {stage.slug === "zamzam" ? (
+          <AppButton asChild tone="gold">
+            <Link href={ROUTES.umrahStage("sai")}>الانتقال إلى السعي</Link>
+          </AppButton>
+        ) : null}
       </section>
+
+      {stage.slug === "sai" ? (
+        <AppButton asChild tone="gold">
+          <Link href={ROUTES.umrahStage("shaving-or-trimming-hair")}>الانتقال إلى الحلق أو التقصير</Link>
+        </AppButton>
+      ) : null}
+      {stage.slug === "shaving-or-trimming-hair" ? (
+        <AppButton asChild tone="gold">
+          <Link href={ROUTES.umrahStage("completion-of-umrah")}>الانتقال إلى إتمام العمرة</Link>
+        </AppButton>
+      ) : null}
+      {stage.slug === "completion-of-umrah" ? (
+        <div className="flex flex-wrap gap-2">
+          <AppButton asChild tone="gold">
+            <Link href={ROUTES.umrah}>العودة إلى دليل العمرة</Link>
+          </AppButton>
+          <AppButton asChild tone="outline">
+            <Link href={ROUTES.progress}>عرض التقدم</Link>
+          </AppButton>
+          <AppButton asChild tone="ghost">
+            <Link href={ROUTES.home}>العودة إلى الرئيسية</Link>
+          </AppButton>
+        </div>
+      ) : null}
 
       {hasContentSectionSlots ? (
         <section className={spacing.stack.sm} aria-labelledby="stage-sections-heading">
@@ -167,9 +254,12 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
                     </h3>
                     <AppBadge tone="gold">معتمد</AppBadge>
                   </div>
-                  <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-                    {section.bodyAr}
-                  </p>
+                  <StageSectionBody body={section.bodyAr} />
+                  {section.sourceReference.trim().length > 0 ? (
+                    <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
+                      المصدر: {section.sourceReference}
+                    </p>
+                  ) : null}
                 </AppCard>
               ))}
             </div>
@@ -184,28 +274,30 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
         </section>
       ) : null}
 
-      <section className={spacing.stack.sm} aria-labelledby="duas-heading">
-        <h2
-          className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
-          id="duas-heading"
-        >
-          الأدعية المرتبطة
-        </h2>
-        {approvedDuas.length > 0 ? (
-          <div className={spacing.stack.sm}>
-            {approvedDuas.map((dua) => (
-              <DuaBlock dua={dua} key={dua.id} />
-            ))}
-          </div>
-        ) : (
-          <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-            <AppBadge tone="ivory">قيد التوثيق</AppBadge>
-            <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-              سيتم إضافة المحتوى الموثق لهذه المرحلة قريبًا
-            </p>
-          </AppCard>
-        )}
-      </section>
+      {shouldDisplayDuasSection ? (
+        <section className={spacing.stack.sm} aria-labelledby="duas-heading">
+          <h2
+            className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
+            id="duas-heading"
+          >
+            الأدعية المرتبطة
+          </h2>
+          {approvedDuas.length > 0 ? (
+            <div className={spacing.stack.sm}>
+              {approvedDuas.map((dua) => (
+                <DuaBlock dua={dua} key={dua.id} />
+              ))}
+            </div>
+          ) : (
+            <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
+              <AppBadge tone="ivory">قيد التوثيق</AppBadge>
+              <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
+                سيتم إضافة المحتوى الموثق لهذه المرحلة قريبًا
+              </p>
+            </AppCard>
+          )}
+        </section>
+      ) : null}
 
       <section className={spacing.stack.sm} aria-labelledby="sources-heading">
         <h2

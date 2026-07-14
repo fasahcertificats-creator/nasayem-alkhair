@@ -3,55 +3,55 @@
     "id": "miqat-dhul-hulayfah",
     "nameAr": "ذو الحليفة",
     "nameEn": "Dhul Hulayfah",
-    "region": "",
-    "descriptionAr": "",
-    "rulesAr": "",
+    "region": "أهل المدينة ومن أتى عليها",
+    "descriptionAr": "ميقات أهل المدينة، وهو الموضع الذي حدده النبي صلى الله عليه وسلم لمن جاء من جهتهم يريد الحج أو العمرة.",
+    "rulesAr": "من كان ميقاته ذو الحليفة أو مر به مريدا الحج أو العمرة أحرم منه قبل تجاوزه، ومن كان دون المواقيت فإحرامه من حيث أنشأ.",
     "relatedStageId": "umrah-stage-miqat",
-    "verificationStatus": "draft",
-    "sourceReference": ""
+    "verificationStatus": "approved",
+    "sourceReference": "صحيح البخاري 1524، صحيح مسلم 1181a"
   },
   {
     "id": "miqat-al-juhfah",
     "nameAr": "الجحفة",
     "nameEn": "Al-Juhfah",
-    "region": "",
-    "descriptionAr": "",
-    "rulesAr": "",
+    "region": "أهل الشام ومن أتى عليها",
+    "descriptionAr": "ميقات أهل الشام، ويدخل فيه من جاء من هذه الجهة قاصدا النسك ومر بهذا الميقات.",
+    "rulesAr": "من كان ميقاته الجحفة أو مر بها مريدا الحج أو العمرة أحرم منها قبل تجاوزها، ومن كان دون المواقيت فإحرامه من حيث أنشأ.",
     "relatedStageId": "umrah-stage-miqat",
-    "verificationStatus": "draft",
-    "sourceReference": ""
+    "verificationStatus": "approved",
+    "sourceReference": "صحيح البخاري 1524، صحيح مسلم 1181a"
   },
   {
     "id": "miqat-qarn-al-manazil",
     "nameAr": "قرن المنازل",
     "nameEn": "Qarn Al-Manazil",
-    "region": "",
-    "descriptionAr": "",
-    "rulesAr": "",
+    "region": "أهل نجد ومن أتى عليه",
+    "descriptionAr": "ميقات أهل نجد، وهو الميقات المذكور لمن جاء من جهتهم إلى مكة يريد الحج أو العمرة.",
+    "rulesAr": "من كان ميقاته قرن المنازل أو مر به مريدا الحج أو العمرة أحرم منه قبل تجاوزه، ومن كان دون المواقيت فإحرامه من حيث أنشأ.",
     "relatedStageId": "umrah-stage-miqat",
-    "verificationStatus": "draft",
-    "sourceReference": ""
+    "verificationStatus": "approved",
+    "sourceReference": "صحيح البخاري 1524، صحيح مسلم 1181a"
   },
   {
     "id": "miqat-yalamlam",
     "nameAr": "يلملم",
     "nameEn": "Yalamlam",
-    "region": "",
-    "descriptionAr": "",
-    "rulesAr": "",
+    "region": "أهل اليمن ومن أتى عليه",
+    "descriptionAr": "ميقات أهل اليمن، وهو الموضع الذي وقت لهم عند القدوم إلى مكة للنسك.",
+    "rulesAr": "من كان ميقاته يلملم أو مر به مريدا الحج أو العمرة أحرم منه قبل تجاوزه، ومن كان دون المواقيت فإحرامه من حيث أنشأ.",
     "relatedStageId": "umrah-stage-miqat",
-    "verificationStatus": "draft",
-    "sourceReference": ""
+    "verificationStatus": "approved",
+    "sourceReference": "صحيح البخاري 1524، صحيح مسلم 1181a"
   },
   {
     "id": "miqat-dhat-irq",
     "nameAr": "ذات عرق",
     "nameEn": "Dhat Irq",
-    "region": "",
-    "descriptionAr": "",
-    "rulesAr": "",
+    "region": "أهل العراق ومن أتى عليها",
+    "descriptionAr": "ميقات أهل العراق، ثبت تعيينه لهم في حديث عائشة رضي الله عنها.",
+    "rulesAr": "من كان ميقاته ذات عرق أو مر بها مريدا الحج أو العمرة أحرم منها قبل تجاوزها.",
     "relatedStageId": "umrah-stage-miqat",
-    "verificationStatus": "draft",
-    "sourceReference": ""
+    "verificationStatus": "approved",
+    "sourceReference": "سنن أبي داود 1739، حكم الألباني: صحيح"
   }
 ]

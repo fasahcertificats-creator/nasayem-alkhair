@@ -1,0 +1,30 @@
+[
+  {
+    "knowledgeId": "travel-dua-travel",
+    "entityType": "umrah-stage",
+    "entityId": "travel",
+    "priority": 1,
+    "displayOrder": 1
+  },
+  {
+    "knowledgeId": "travel-dua-returning-from-travel",
+    "entityType": "umrah-stage",
+    "entityId": "travel",
+    "priority": 1,
+    "displayOrder": 2
+  },
+  {
+    "knowledgeId": "travel-dua-travel",
+    "entityType": "azkar-category",
+    "entityId": "travel",
+    "priority": 2,
+    "displayOrder": 1
+  },
+  {
+    "knowledgeId": "travel-dua-returning-from-travel",
+    "entityType": "azkar-category",
+    "entityId": "travel",
+    "priority": 2,
+    "displayOrder": 2
+  }
+]
