@@ -6,11 +6,11 @@ export const spacing = {
   },
   container: "mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8",
   stack: {
-    xs: "space-y-2",
-    sm: "space-y-3",
-    md: "space-y-4",
-    lg: "space-y-6",
-    xl: "space-y-8"
+    xs: "space-y-2.5",
+    sm: "space-y-4",
+    md: "space-y-5",
+    lg: "space-y-7",
+    xl: "space-y-9"
   },
   inline: {
     xs: "gap-2",
@@ -19,7 +19,7 @@ export const spacing = {
     lg: "gap-6"
   },
   inset: {
-    sm: "p-4",
+    sm: "p-5",
     md: "p-6",
     lg: "p-8"
   }

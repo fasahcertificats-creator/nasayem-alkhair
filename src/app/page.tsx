@@ -36,7 +36,9 @@ export default function HomePage() {
             <MoonStar aria-hidden="true" className={`${typography.tone.primary} size-5`} />
             <AppBadge tone="gold">تذكير اليوم</AppBadge>
           </div>
-          <p className={`font-arabic-studio ${typography.hierarchy.body} ${typography.tone.primary} font-medium`}>
+          <p
+            className={`font-arabic-studio ${typography.hierarchy.body} ${typography.tone.primary} font-medium`}
+          >
             تذكير اليوم
           </p>
           <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>

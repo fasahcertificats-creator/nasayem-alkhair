@@ -1,13 +1,13 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { Route } from "next";
 import { BookOpenText, Clock3, Home, Map, MoreHorizontal } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
-import { AppButton, spacing, typography } from "@/design-system";
+import { typography } from "@/design-system";
 import { cn } from "@/lib/utils";
 
 type NavigationItem = {
@@ -56,30 +56,29 @@ export function BottomNavigation() {
   return (
     <nav
       aria-label="التنقل الرئيسي"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 shadow-card backdrop-blur md:sticky"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-card/92 shadow-card backdrop-blur md:sticky"
     >
-      <div className={`mx-auto grid max-w-md grid-cols-5 ${spacing.inline.xs} ${spacing.inset.sm}`}>
+      <div className="mx-auto grid max-w-md grid-cols-5 gap-2 px-3 py-3">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.match(pathname);
 
           return (
-            <AppButton
+            <Link
               aria-current={isActive ? "page" : undefined}
-              asChild
               className={cn(
-                "h-auto min-w-0 flex-col rounded-md px-0 py-2",
+                "flex min-w-0 flex-col items-center justify-center gap-1 rounded-full px-2 py-2 text-center transition-colors",
                 typography.hierarchy.caption,
-                isActive ? "shadow-soft" : "shadow-none"
+                isActive
+                  ? "bg-gold/22 text-primary shadow-soft"
+                  : "text-muted-foreground hover:bg-secondary/70 hover:text-primary"
               )}
+              href={item.href}
               key={item.label}
-              tone={isActive ? "gold" : "ghost"}
             >
-              <Link href={item.href}>
-                <Icon aria-hidden="true" />
-                <span className="truncate">{item.label}</span>
-              </Link>
-            </AppButton>
+              <Icon aria-hidden="true" className="size-5" />
+              <span className="max-w-full truncate">{item.label}</span>
+            </Link>
           );
         })}
       </div>

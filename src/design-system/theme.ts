@@ -14,7 +14,7 @@ export const islamicPremiumTheme = {
     button: {
       base: [
         radius.full,
-        typography.weight.semibold,
+        typography.weight.medium,
         shadows.focus,
         "transition-all duration-200"
       ].join(" "),
@@ -28,7 +28,7 @@ export const islamicPremiumTheme = {
           colors.ivory.border,
           colors.ivory.surfaceRaised,
           colors.ivory.text,
-          shadows.soft,
+          shadows.none,
           "hover:border-gold hover:text-primary"
         ].join(" "),
         ghost: [colors.emerald.text, "hover:bg-secondary"].join(" ")
