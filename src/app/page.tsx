@@ -12,9 +12,8 @@ export default function HomePage() {
     >
       <section aria-labelledby="home-greeting" className={spacing.stack.sm}>
         <div className={spacing.stack.xs}>
-          <AppBadge tone="gold">نسائم الخير</AppBadge>
           <h1
-            className={`${typography.hierarchy.heading} ${typography.tone.primary}`}
+            className={`font-arabic-studio ${typography.hierarchy.heading} ${typography.tone.primary} font-semibold`}
             id="home-greeting"
           >
             السلام عليكم
@@ -25,7 +24,7 @@ export default function HomePage() {
       <section aria-labelledby="daily-spiritual-heading" className={spacing.stack.sm}>
         <div className="flex items-center justify-between">
           <h2
-            className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
+            className={`font-arabic-studio ${typography.hierarchy.subheading} ${typography.tone.primary} font-semibold`}
             id="daily-spiritual-heading"
           >
             تذكير اليوم
@@ -37,7 +36,7 @@ export default function HomePage() {
             <MoonStar aria-hidden="true" className={`${typography.tone.primary} size-5`} />
             <AppBadge tone="gold">تذكير اليوم</AppBadge>
           </div>
-          <p className={`${typography.hierarchy.body} ${typography.tone.primary}`}>
+          <p className={`font-arabic-studio ${typography.hierarchy.body} ${typography.tone.primary} font-medium`}>
             تذكير اليوم
           </p>
           <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
