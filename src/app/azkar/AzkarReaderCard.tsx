@@ -1,67 +1,57 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
+import { RotateCcw } from "lucide-react";
+import { useState } from "react";
 
-import { AppBadge, AppButton, AppCard, spacing, typography } from "@/design-system";
+import { AppButton, AppCard, spacing, typography } from "@/design-system";
 import type { AzkarItem } from "@/types";
 
 interface AzkarReaderCardProps {
-  isCompleted: boolean;
   item: AzkarItem;
-  onToggle: (itemId: string) => void;
 }
 
-function localizeSourceReference(source: string) {
-  return source
-    .replaceAll("Sahih Muslim", "صحيح مسلم")
-    .replaceAll("Sahih al-Bukhari", "صحيح البخاري")
-    .replaceAll("Sunan Abi Dawud", "سنن أبي داود")
-    .replaceAll("Jami` at-Tirmidhi", "سنن الترمذي");
-}
+export function AzkarReaderCard({ item }: AzkarReaderCardProps) {
+  const [counter, setCounter] = useState(0);
+  const hasCounter = item.displayMode !== "reading" && item.count > 1;
 
-export function AzkarReaderCard({ isCompleted, item, onToggle }: AzkarReaderCardProps) {
-  const isReadingOnly = item.displayMode === "reading" || item.count === 0;
+  function incrementCounter() {
+    setCounter((currentCounter) => Math.min(currentCounter + 1, item.count));
+  }
+
+  function resetCounter() {
+    setCounter(0);
+  }
 
   return (
     <AppCard className={`${spacing.inset.md} ${spacing.stack.md}`}>
-      <div className="flex items-center justify-between">
-        <AppBadge tone={isCompleted && !isReadingOnly ? "gold" : "ivory"}>
-          {isReadingOnly ? "قراءة" : isCompleted ? "مكتمل" : "للقراءة"}
-        </AppBadge>
-        {!isReadingOnly ? <AppBadge tone="ivory">{item.count} مرات</AppBadge> : null}
-      </div>
-
       <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
         {item.arabicText}
       </p>
-
-      {item.translation ? (
-        <div className={spacing.stack.xs}>
-          <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>المعنى</p>
-          <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            {item.translation}
-          </p>
-        </div>
-      ) : null}
 
       {item.source ? (
         <div className={spacing.stack.xs}>
           <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>المصدر</p>
           <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            {localizeSourceReference(item.source)}
+            {item.source}
           </p>
         </div>
       ) : null}
 
       {item.authenticity ? (
-        <AppBadge tone="ivory">{item.authenticity}</AppBadge>
+        <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
+          {item.authenticity}
+        </p>
       ) : null}
 
-      {!isReadingOnly ? (
-        <AppButton onClick={() => onToggle(item.id)} tone={isCompleted ? "outline" : "gold"}>
-          <CheckCircle2 aria-hidden="true" />
-          {isCompleted ? "إلغاء الإكمال" : "تمت القراءة"}
-        </AppButton>
+      {hasCounter ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <AppButton onClick={incrementCounter} tone="gold">
+            {counter} / {item.count}
+          </AppButton>
+          <AppButton aria-label="إعادة ضبط العد" onClick={resetCounter} tone="outline">
+            <RotateCcw aria-hidden="true" />
+          </AppButton>
+        </div>
       ) : null}
     </AppCard>
   );
