@@ -205,11 +205,6 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
             </AppCard>
           </>
         ) : null}
-        {stage.slug === "miqat" ? (
-          <AppButton asChild tone="gold">
-            <Link href={ROUTES.miqat}>عرض صفحة المواقيت المعتمدة</Link>
-          </AppButton>
-        ) : null}
         {stage.slug === "zamzam" ? (
           <AppButton asChild tone="gold">
             <Link href={ROUTES.umrahStage("sai")}>الانتقال إلى السعي</Link>

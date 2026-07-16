@@ -86,6 +86,7 @@ function AzkarCategoryContentComponent({
   const progressPercentage =
     items.length > 0 ? Math.round((completedItems.length / items.length) * 100) : 0;
   const isCategoryCompleted = Boolean(progress.completedCategories[category]);
+  const isReadingList = items.every((item) => item.displayMode === "reading" || item.count === 0);
 
   const toggleItem = useCallback((itemId: string) => {
     setProgress((currentProgress) => {
@@ -132,15 +133,15 @@ function AzkarCategoryContentComponent({
   return (
     <main
       className={`${spacing.inset.sm} ${spacing.stack.md} ${typography.fontFamily.arabic} ${typography.direction.arabic}`}
-      dir="rtl"
+        dir="rtl"
     >
       <section className={spacing.stack.sm} aria-labelledby="azkar-category-heading">
         <AppButton asChild tone="ghost">
-          <Link href={ROUTES.azkar}>العودة إلى أذكار السفر</Link>
+          <Link href={ROUTES.azkar}>العودة إلى الأذكار</Link>
         </AppButton>
         <div className={spacing.stack.xs}>
-          <AppBadge tone={isCategoryCompleted ? "gold" : "ivory"}>
-            {isCategoryCompleted ? "جلسة مكتملة" : "جلسة قراءة"}
+          <AppBadge tone={isCategoryCompleted && !isReadingList ? "gold" : "ivory"}>
+            {isReadingList ? "قائمة قراءة" : isCategoryCompleted ? "جلسة مكتملة" : "جلسة قراءة"}
           </AppBadge>
           <h1
             className={`${typography.hierarchy.heading} ${typography.tone.primary}`}
@@ -152,36 +153,38 @@ function AzkarCategoryContentComponent({
         </div>
       </section>
 
-      <section className={spacing.stack.sm} aria-labelledby="azkar-progress-heading">
-        <h2
-          className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
-          id="azkar-progress-heading"
-        >
-          تقدم القراءة
-        </h2>
-        <AppCard className={`${spacing.inset.md} ${spacing.stack.md}`}>
-          <div className="flex items-center justify-between">
-            <AppBadge tone="gold">{isHydrated ? `${progressPercentage}%` : "..."}</AppBadge>
-            <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-              {isHydrated ? `${completedItems.length} من ${items.length}` : "يتم التحميل"}
-            </p>
-          </div>
-          <div className={`h-2 overflow-hidden rounded-full ${colors.emerald.surfaceSoft}`}>
-            <div
-              className={`h-full rounded-full ${colors.gold.surface}`}
-              style={{ width: `${isHydrated ? progressPercentage : 0}%` }}
-            />
-          </div>
-          <AppButton
-            disabled={!isHydrated}
-            onClick={toggleCategorySession}
-            tone={isCategoryCompleted ? "outline" : "gold"}
+      {!isReadingList ? (
+        <section className={spacing.stack.sm} aria-labelledby="azkar-progress-heading">
+          <h2
+            className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
+            id="azkar-progress-heading"
           >
-            <CheckCircle2 aria-hidden="true" />
-            {isCategoryCompleted ? "إلغاء إكمال الجلسة" : "إكمال جلسة القسم"}
-          </AppButton>
-        </AppCard>
-      </section>
+            تقدم القراءة
+          </h2>
+          <AppCard className={`${spacing.inset.md} ${spacing.stack.md}`}>
+            <div className="flex items-center justify-between">
+              <AppBadge tone="gold">{isHydrated ? `${progressPercentage}%` : "..."}</AppBadge>
+              <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
+                {isHydrated ? `${completedItems.length} من ${items.length}` : "يتم التحميل"}
+              </p>
+            </div>
+            <div className={`h-2 overflow-hidden rounded-full ${colors.emerald.surfaceSoft}`}>
+              <div
+                className={`h-full rounded-full ${colors.gold.surface}`}
+                style={{ width: `${isHydrated ? progressPercentage : 0}%` }}
+              />
+            </div>
+            <AppButton
+              disabled={!isHydrated}
+              onClick={toggleCategorySession}
+              tone={isCategoryCompleted ? "outline" : "gold"}
+            >
+              <CheckCircle2 aria-hidden="true" />
+              {isCategoryCompleted ? "إلغاء إكمال الجلسة" : "إكمال جلسة القسم"}
+            </AppButton>
+          </AppCard>
+        </section>
+      ) : null}
 
       <section className={spacing.stack.sm} aria-labelledby="azkar-items-heading">
         <h2

@@ -7,8 +7,7 @@ import {
   BookOpen,
   Calendar,
   ChevronLeft,
-  Clock,
-  Compass,
+  Compass
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
@@ -16,40 +15,15 @@ import { useEffect, useMemo, useState } from "react";
 import { ROUTES } from "@/constants/routes.constants";
 import { loadProgress, type ProgressEntry } from "@/lib/app-state";
 
-const AZKAR_PROGRESS_KEY = "nasayem-alkhair:azkarProgress";
-
 interface HomeReminder {
+  authenticity?: string;
   source: string;
   text: string;
 }
 
 interface HomeContentProps {
   reminder: HomeReminder | null;
-  travelAzkarIds: string[];
   umrahStageCount: number;
-}
-
-interface AzkarProgressState {
-  completedItems?: Record<string, string>;
-}
-
-function readAzkarCompletedIds() {
-  if (typeof window === "undefined") {
-    return new Set<string>();
-  }
-
-  const value = window.localStorage.getItem(AZKAR_PROGRESS_KEY);
-
-  if (!value) {
-    return new Set<string>();
-  }
-
-  try {
-    const parsed = JSON.parse(value) as AzkarProgressState;
-    return new Set(Object.keys(parsed.completedItems ?? {}));
-  } catch {
-    return new Set<string>();
-  }
 }
 
 function getGreeting() {
@@ -119,12 +93,10 @@ function progressWidth(done: number, total: number) {
 
 export function HomeContent({
   reminder,
-  travelAzkarIds,
   umrahStageCount
 }: HomeContentProps) {
   const [dateParts, setDateParts] = useState({ gregorian: "", hijri: "" });
   const [greeting, setGreeting] = useState("السلام عليكم");
-  const [completedAzkarIds, setCompletedAzkarIds] = useState<Set<string>>(new Set());
   const [progress, setProgress] = useState<ProgressEntry[]>([]);
 
   useEffect(() => {
@@ -137,7 +109,6 @@ export function HomeContent({
 
       setDateParts(getArabicDateParts());
       setGreeting(getGreeting());
-      setCompletedAzkarIds(readAzkarCompletedIds());
       setProgress(loadProgress());
     });
 
@@ -146,26 +117,14 @@ export function HomeContent({
     };
   }, []);
 
-  const progressStats = useMemo(() => {
-    const travelDone = travelAzkarIds.filter((id) => completedAzkarIds.has(id)).length;
-    const umrahDone = progress.filter((entry) => entry.completed).length;
-
-    return {
-      travelDone,
-      umrahDone
-    };
-  }, [completedAzkarIds, progress, travelAzkarIds]);
+  const progressStats = useMemo(
+    () => ({
+      umrahDone: progress.filter((entry) => entry.completed).length
+    }),
+    [progress]
+  );
 
   const progressTiles = [
-    travelAzkarIds.length > 0
-      ? {
-          barClassName: "bg-gold",
-          done: progressStats.travelDone,
-          label: "أذكار السفر",
-          status: getStatus(progressStats.travelDone, travelAzkarIds.length),
-          total: travelAzkarIds.length
-        }
-      : null,
     umrahStageCount > 0
       ? {
           barClassName: "bg-emerald-600",
@@ -210,7 +169,7 @@ export function HomeContent({
           <div className="flex items-center gap-1.5">
             <BookMarked className="size-4 text-gold" />
             <h2 className="text-xs font-bold text-primary" id="daily-progress-heading">
-              تقدم العمرة وأذكار السفر
+              تقدم العمرة
             </h2>
           </div>
           <span className="flex items-center gap-0.5 text-[10px] font-bold text-gold">
@@ -240,19 +199,13 @@ export function HomeContent({
         >
           الوصول السريع
         </h2>
-        <div className="grid grid-cols-4 gap-2">
-          <QuickAccessCard href={ROUTES.azkar} icon={<BookOpen className="size-4" />} label="أذكار السفر" />
+        <div className="grid grid-cols-3 gap-2">
+          <QuickAccessCard href={ROUTES.azkar} icon={<BookOpen className="size-4" />} label="الأذكار" />
           <QuickAccessCard
             href={ROUTES.progress}
             icon={<BookMarked className="size-4" />}
             label="تقدم العمرة"
             tone="emerald"
-          />
-          <QuickAccessCard
-            href={ROUTES.miqat}
-            icon={<Clock className="size-4" />}
-            label="المواقيت الشرعية"
-            tone="indigo"
           />
           <QuickAccessCard
             href={ROUTES.umrah}
@@ -288,6 +241,7 @@ export function HomeContent({
             </p>
             <p className="text-left text-[10px] italic text-stone-400">
               — {localizeSourceReference(reminder.source)}
+              {reminder.authenticity ? ` - ${reminder.authenticity}` : ""}
             </p>
           </div>
         </section>

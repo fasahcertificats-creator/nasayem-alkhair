@@ -1,28 +1,24 @@
-import { getAzkarItems, getDuasByStageId, getUmrahStages } from "@/services/content";
+import { getAzkarItems, getUmrahStages } from "@/services/content";
 
 import { HomeContent } from "./HomeContent";
 
 export default function HomePage() {
-  const travelItems = getAzkarItems("travel");
-  const dailyReminder = travelItems[0];
-  const fallbackReminder = getDuasByStageId("travel")[0];
+  const dailyReminder =
+    getAzkarItems("quran-duas")[0] ??
+    getAzkarItems("prophetic-duas")[0] ??
+    getAzkarItems("comprehensive-duas")[0];
   const umrahStages = getUmrahStages();
   const reminder = dailyReminder
     ? {
         text: dailyReminder.arabicText,
-        source: dailyReminder.source
+        source: dailyReminder.source,
+        authenticity: dailyReminder.authenticity
       }
-    : fallbackReminder
-      ? {
-          text: fallbackReminder.arabicText,
-          source: fallbackReminder.sourceReference
-        }
-      : null;
+    : null;
 
   return (
     <HomeContent
       reminder={reminder}
-      travelAzkarIds={travelItems.map((item) => item.id)}
       umrahStageCount={umrahStages.length}
     />
   );

@@ -3,40 +3,84 @@ import { BookOpenText } from "lucide-react";
 
 import { ROUTES } from "@/constants/routes.constants";
 import { AppBadge, AppButton, AppCard, spacing, typography } from "@/design-system";
-import { getAzkarCategories, getAzkarItems } from "@/services/content";
+import { getAzkarItems } from "@/services/content";
+import type { AzkarCategory } from "@/types";
+
+const categoryOrder = [
+  "morning",
+  "evening",
+  "prayer",
+  "sleep",
+  "wakeup",
+  "after-prayer",
+  "quran-duas",
+  "prophetic-duas",
+  "names-of-allah",
+  "comprehensive-duas"
+] as const satisfies readonly AzkarCategory[];
 
 const categoryMetadata: Record<
-  "travel",
+  AzkarCategory,
   {
     description: string;
     title: string;
   }
 > = {
-  travel: {
-    title: "أذكار السفر",
-    description: "الأذكار المعتمدة المتاحة في هذا الإصدار للسفر والتنقل."
+  morning: {
+    title: "أذكار الصباح",
+    description: "أذكار ثابتة لبداية اليوم."
+  },
+  evening: {
+    title: "أذكار المساء",
+    description: "أذكار ثابتة لخاتمة اليوم."
+  },
+  prayer: {
+    title: "أذكار الصلاة",
+    description: "أذكار وأدعية ثابتة داخل الصلاة."
+  },
+  sleep: {
+    title: "أذكار النوم",
+    description: "أذكار ثابتة قبل النوم."
+  },
+  wakeup: {
+    title: "أذكار الاستيقاظ",
+    description: "أذكار ثابتة عند الاستيقاظ."
+  },
+  "after-prayer": {
+    title: "أذكار بعد الصلاة",
+    description: "أذكار ثابتة بعد السلام من الصلاة."
+  },
+  "quran-duas": {
+    title: "أدعية من القرآن",
+    description: "أدعية قرآنية جامعة."
+  },
+  "prophetic-duas": {
+    title: "أدعية النبي صلى الله عليه وسلم",
+    description: "أدعية نبوية صحيحة."
+  },
+  "names-of-allah": {
+    title: "أسماء الله الحسنى",
+    description: "قراءة لأسماء ثابتة بلا عداد تكرار."
+  },
+  "comprehensive-duas": {
+    title: "أدعية شاملة",
+    description: "أدعية جامعة ثابتة."
   }
 };
 
 export default function AzkarPage() {
-  const contentCategories = getAzkarCategories();
-  const categories = contentCategories.filter(
-    (category): category is "travel" =>
-      category === "travel" && getAzkarItems(category).length > 0
-  );
-
   return (
     <main
       className={`${spacing.inset.sm} ${spacing.stack.md} ${typography.fontFamily.arabic} ${typography.direction.arabic}`}
       dir="rtl"
     >
       <section className={spacing.stack.xs} aria-labelledby="azkar-heading">
-        <AppBadge tone="gold">السفر</AppBadge>
+        <AppBadge tone="gold">ورد المسلم</AppBadge>
         <h1
           className={`${typography.hierarchy.heading} ${typography.tone.primary}`}
           id="azkar-heading"
         >
-          أذكار السفر
+          الأذكار
         </h1>
       </section>
 
@@ -45,11 +89,11 @@ export default function AzkarPage() {
           className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
           id="azkar-categories-heading"
         >
-          القسم المتاح
+          الأقسام
         </h2>
 
         <div className={spacing.stack.sm}>
-          {categories.map((category) => {
+          {categoryOrder.map((category) => {
             const metadata = categoryMetadata[category];
             const itemCount = getAzkarItems(category).length;
 
@@ -74,7 +118,7 @@ export default function AzkarPage() {
                 </div>
 
                 <AppButton asChild tone="gold">
-                  <Link href={ROUTES.azkarCategory(category)}>فتح أذكار السفر</Link>
+                  <Link href={ROUTES.azkarCategory(category)}>فتح القسم</Link>
                 </AppButton>
               </AppCard>
             );

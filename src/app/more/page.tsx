@@ -6,12 +6,12 @@ import { AppCard, spacing, typography } from "@/design-system";
 const moreSections = [
   {
     title: "المصادر",
-    description: "يعتمد محتوى العمرة والمواقيت على المصادر المذكورة داخل كل صفحة.",
+    description: "يعتمد محتوى العمرة والأذكار على المصادر المذكورة داخل كل صفحة.",
     icon: BookOpenCheck
   },
   {
     title: "عن التطبيق",
-    description: "نسائم الخير دليل عربي مختصر للعمرة وأذكار السفر والمواقيت، مع عرض المحتوى المعتمد فقط.",
+    description: "نسائم الخير دليل عربي مختصر للعمرة والأذكار، مع عرض المحتوى المعتمد فقط.",
     icon: Info
   }
 ] as const;

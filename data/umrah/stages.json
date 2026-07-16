@@ -50,33 +50,40 @@
     "titleEn": "Miqat",
     "order": 2,
     "phase": "miqat",
-    "summary": "مرحلة مخصصة لمعلومات الميقات والانتقال إلى حالة الإحرام.",
-    "instructions": [],
+    "summary": "مرحلة موجزة للتنبه إلى موضع الإحرام قبل تجاوزه لمن أراد العمرة.",
+    "instructions": [
+      "تحقق من ميقات طريقك قبل الوصول إليه.",
+      "لا تتجاوز الميقات وأنت تريد العمرة إلا وقد أحرمت.",
+      "إذا كنت دون المواقيت فإحرامك من الموضع الذي تنشئ منه النسك."
+    ],
     "duas": [],
-    "sources": [],
+    "sources": [
+      "صحيح البخاري 1524",
+      "صحيح مسلم 1181a"
+    ],
     "progressKey": "umrah.miqat",
     "verificationStatus": "approved",
     "contentSections": [
       {
         "id": "miqat-overview",
-        "titleAr": "نظرة عامة على الميقات",
-        "bodyAr": "",
-        "verificationStatus": "draft",
-        "sourceReference": ""
+        "titleAr": "معنى الميقات في هذه المرحلة",
+        "bodyAr": "الميقات هو الموضع الذي لا يتجاوزه من أراد الحج أو العمرة إلا محرما، إذا كان مارا به أو بمحاذاته على طريقه.",
+        "verificationStatus": "approved",
+        "sourceReference": "صحيح البخاري 1524، صحيح مسلم 1181a"
       },
       {
         "id": "miqat-verification",
-        "titleAr": "توثيق محتوى الميقات",
-        "bodyAr": "",
-        "verificationStatus": "draft",
-        "sourceReference": ""
+        "titleAr": "حكم من كان دون المواقيت",
+        "bodyAr": "من كان منزله أو موضع إنشائه للنسك دون المواقيت، فإحرامه من حيث أنشأ، ولا يحتاج إلى الرجوع إلى ميقات أبعد.",
+        "verificationStatus": "approved",
+        "sourceReference": "صحيح البخاري 1524، صحيح مسلم 1181a"
       },
       {
         "id": "miqat-display-requirements",
-        "titleAr": "متطلبات عرض محتوى الميقات",
-        "bodyAr": "",
-        "verificationStatus": "draft",
-        "sourceReference": ""
+        "titleAr": "لا دعاء خاص للميقات",
+        "bodyAr": "لا تعرض هذه المرحلة دعاء خاصا بالميقات؛ ينتقل المعتمر بعد التنبه للميقات إلى الإحرام والتلبية بالنصوص الثابتة في مرحلة الإحرام.",
+        "verificationStatus": "approved",
+        "sourceReference": "تنبيه توثيقي؛ التلبية مذكورة في صحيح البخاري 1549 وصحيح مسلم 1184a"
       }
     ]
   },

@@ -15,17 +15,20 @@ function localizeSourceReference(source: string) {
   return source
     .replaceAll("Sahih Muslim", "صحيح مسلم")
     .replaceAll("Sahih al-Bukhari", "صحيح البخاري")
-    .replaceAll("Sunan Abi Dawud", "سنن أبي داود");
+    .replaceAll("Sunan Abi Dawud", "سنن أبي داود")
+    .replaceAll("Jami` at-Tirmidhi", "سنن الترمذي");
 }
 
 export function AzkarReaderCard({ isCompleted, item, onToggle }: AzkarReaderCardProps) {
+  const isReadingOnly = item.displayMode === "reading" || item.count === 0;
+
   return (
     <AppCard className={`${spacing.inset.md} ${spacing.stack.md}`}>
       <div className="flex items-center justify-between">
-        <AppBadge tone={isCompleted ? "gold" : "ivory"}>
-          {isCompleted ? "مكتمل" : "للقراءة"}
+        <AppBadge tone={isCompleted && !isReadingOnly ? "gold" : "ivory"}>
+          {isReadingOnly ? "قراءة" : isCompleted ? "مكتمل" : "للقراءة"}
         </AppBadge>
-        <AppBadge tone="ivory">{item.count} مرات</AppBadge>
+        {!isReadingOnly ? <AppBadge tone="ivory">{item.count} مرات</AppBadge> : null}
       </div>
 
       <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
@@ -50,10 +53,16 @@ export function AzkarReaderCard({ isCompleted, item, onToggle }: AzkarReaderCard
         </div>
       ) : null}
 
-      <AppButton onClick={() => onToggle(item.id)} tone={isCompleted ? "outline" : "gold"}>
-        <CheckCircle2 aria-hidden="true" />
-        {isCompleted ? "إلغاء الإكمال" : "تمت القراءة"}
-      </AppButton>
+      {item.authenticity ? (
+        <AppBadge tone="ivory">{item.authenticity}</AppBadge>
+      ) : null}
+
+      {!isReadingOnly ? (
+        <AppButton onClick={() => onToggle(item.id)} tone={isCompleted ? "outline" : "gold"}>
+          <CheckCircle2 aria-hidden="true" />
+          {isCompleted ? "إلغاء الإكمال" : "تمت القراءة"}
+        </AppButton>
+      ) : null}
     </AppCard>
   );
 }

@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpenText, Clock3, Home, Map, MoreHorizontal } from "lucide-react";
+import { BookOpenText, Home, Map, MoreHorizontal } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
@@ -25,7 +25,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     href: ROUTES.azkar,
-    label: "أذكار السفر",
+    label: "الأذكار",
     icon: BookOpenText,
     match: (pathname) => pathname.startsWith(ROUTES.azkar)
   },
@@ -34,12 +34,6 @@ const navigationItems: NavigationItem[] = [
     label: "دليل العمرة",
     icon: Map,
     match: (pathname) => pathname.startsWith(ROUTES.umrah)
-  },
-  {
-    href: ROUTES.miqat,
-    label: "المواقيت",
-    icon: Clock3,
-    match: (pathname) => pathname.startsWith(ROUTES.miqat)
   },
   {
     href: ROUTES.more,
@@ -57,7 +51,7 @@ export function BottomNavigation() {
       aria-label="التنقل الرئيسي"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white p-1 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-4px_12px_rgba(0,0,0,0.03)]"
     >
-      <div className="mx-auto grid max-w-md grid-cols-5 gap-0">
+      <div className="mx-auto grid max-w-md grid-cols-4 gap-0">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.match(pathname);

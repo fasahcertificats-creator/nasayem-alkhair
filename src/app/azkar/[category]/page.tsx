@@ -1,24 +1,71 @@
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
-import { ROUTES } from "@/constants/routes.constants";
 import { getAzkarItems } from "@/services/content";
+import type { AzkarCategory } from "@/types";
 
 import { AzkarCategoryContent } from "./AzkarCategoryContent";
 
+const categoryOrder = [
+  "morning",
+  "evening",
+  "prayer",
+  "sleep",
+  "wakeup",
+  "after-prayer",
+  "quran-duas",
+  "prophetic-duas",
+  "names-of-allah",
+  "comprehensive-duas"
+] as const satisfies readonly AzkarCategory[];
+
 const categoryMetadata: Record<
-  "travel",
+  AzkarCategory,
   {
     description: string;
     title: string;
   }
 > = {
-  travel: {
-    title: "أذكار السفر",
-    description: "الأذكار المعتمدة المتاحة في هذا الإصدار للسفر والتنقل."
+  morning: {
+    title: "أذكار الصباح",
+    description: "أذكار ثابتة لبداية اليوم."
+  },
+  evening: {
+    title: "أذكار المساء",
+    description: "أذكار ثابتة لخاتمة اليوم."
+  },
+  prayer: {
+    title: "أذكار الصلاة",
+    description: "أذكار وأدعية ثابتة داخل الصلاة."
+  },
+  sleep: {
+    title: "أذكار النوم",
+    description: "أذكار ثابتة قبل النوم."
+  },
+  wakeup: {
+    title: "أذكار الاستيقاظ",
+    description: "أذكار ثابتة عند الاستيقاظ."
+  },
+  "after-prayer": {
+    title: "أذكار بعد الصلاة",
+    description: "أذكار ثابتة بعد السلام من الصلاة."
+  },
+  "quran-duas": {
+    title: "أدعية من القرآن",
+    description: "أدعية قرآنية جامعة."
+  },
+  "prophetic-duas": {
+    title: "أدعية النبي صلى الله عليه وسلم",
+    description: "أدعية نبوية صحيحة."
+  },
+  "names-of-allah": {
+    title: "أسماء الله الحسنى",
+    description: "قراءة لأسماء ثابتة بلا عداد تكرار."
+  },
+  "comprehensive-duas": {
+    title: "أدعية شاملة",
+    description: "أدعية جامعة ثابتة."
   }
 };
-
-const categories = ["travel"] as const;
 
 interface AzkarCategoryPageProps {
   params: Promise<{
@@ -27,27 +74,21 @@ interface AzkarCategoryPageProps {
 }
 
 export function generateStaticParams() {
-  return categories
-    .filter((category) => getAzkarItems(category).length > 0)
-    .map((category) => ({
-      category
-    }));
+  return categoryOrder.map((category) => ({
+    category
+  }));
 }
 
 export default async function AzkarCategoryPage({ params }: AzkarCategoryPageProps) {
   const { category: categoryParam } = await params;
 
-  if (!categories.includes(categoryParam as "travel")) {
-    redirect(ROUTES.azkar);
+  if (!categoryOrder.includes(categoryParam as AzkarCategory)) {
+    notFound();
   }
 
-  const category = categoryParam as "travel";
+  const category = categoryParam as AzkarCategory;
   const metadata = categoryMetadata[category];
   const items = getAzkarItems(category);
-
-  if (items.length === 0) {
-    redirect(ROUTES.azkar);
-  }
 
   return (
     <AzkarCategoryContent
