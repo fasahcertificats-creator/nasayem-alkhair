@@ -136,7 +136,7 @@ function AzkarCategoryContentComponent({
     >
       <section className={spacing.stack.sm} aria-labelledby="azkar-category-heading">
         <AppButton asChild tone="ghost">
-          <Link href={ROUTES.azkar}>العودة إلى الأذكار</Link>
+          <Link href={ROUTES.azkar}>العودة إلى أذكار السفر</Link>
         </AppButton>
         <div className={spacing.stack.xs}>
           <AppBadge tone={isCategoryCompleted ? "gold" : "ivory"}>
@@ -191,24 +191,16 @@ function AzkarCategoryContentComponent({
           القراءة
         </h2>
 
-        {items.length > 0 ? (
-          <div className={spacing.stack.sm}>
-            {items.map((item) => (
-              <AzkarReaderCard
-                isCompleted={completedItemIds.has(item.id)}
-                item={item}
-                key={item.id}
-                onToggle={toggleItem}
-              />
-            ))}
-          </div>
-        ) : (
-          <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-            <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-              لا توجد أذكار معتمدة للعرض في هذا القسم حالياً.
-            </p>
-          </AppCard>
-        )}
+        <div className={spacing.stack.sm}>
+          {items.map((item) => (
+            <AzkarReaderCard
+              isCompleted={completedItemIds.has(item.id)}
+              item={item}
+              key={item.id}
+              onToggle={toggleItem}
+            />
+          ))}
+        </div>
       </section>
     </main>
   );

@@ -3,9 +3,8 @@ import { getAzkarItems, getDuasByStageId, getUmrahStages } from "@/services/cont
 import { HomeContent } from "./HomeContent";
 
 export default function HomePage() {
-  const morningItems = getAzkarItems("morning");
-  const eveningItems = getAzkarItems("evening");
-  const dailyReminder = morningItems[0] ?? eveningItems[0];
+  const travelItems = getAzkarItems("travel");
+  const dailyReminder = travelItems[0];
   const fallbackReminder = getDuasByStageId("travel")[0];
   const umrahStages = getUmrahStages();
   const reminder = dailyReminder
@@ -22,9 +21,8 @@ export default function HomePage() {
 
   return (
     <HomeContent
-      eveningAzkarIds={eveningItems.map((item) => item.id)}
-      morningAzkarIds={morningItems.map((item) => item.id)}
       reminder={reminder}
+      travelAzkarIds={travelItems.map((item) => item.id)}
       umrahStageCount={umrahStages.length}
     />
   );

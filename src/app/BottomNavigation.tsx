@@ -25,7 +25,7 @@ const navigationItems: NavigationItem[] = [
   },
   {
     href: ROUTES.azkar,
-    label: "الأذكار",
+    label: "أذكار السفر",
     icon: BookOpenText,
     match: (pathname) => pathname.startsWith(ROUTES.azkar)
   },

@@ -1,40 +1,24 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
+import { ROUTES } from "@/constants/routes.constants";
 import { getAzkarItems } from "@/services/content";
-import type { AzkarCategory } from "@/types";
 
 import { AzkarCategoryContent } from "./AzkarCategoryContent";
 
 const categoryMetadata: Record<
-  AzkarCategory,
+  "travel",
   {
     description: string;
     title: string;
   }
 > = {
-  morning: {
-    title: "أذكار الصباح",
-    description: "قراءة صباحية هادئة ومهيأة للمحتوى الموثق."
-  },
-  evening: {
-    title: "أذكار المساء",
-    description: "مساحة مسائية للذكر والمراجعة اليومية."
-  },
-  sleep: {
-    title: "أذكار النوم",
-    description: "قراءة مريحة قبل النوم."
-  },
-  wakeup: {
-    title: "أذكار الاستيقاظ",
-    description: "بداية يومية لطيفة بعد الاستيقاظ."
-  },
   travel: {
     title: "أذكار السفر",
-    description: "قسم مخصص لأذكار السفر والتنقل."
+    description: "الأذكار المعتمدة المتاحة في هذا الإصدار للسفر والتنقل."
   }
 };
 
-const categories = Object.keys(categoryMetadata) as AzkarCategory[];
+const categories = ["travel"] as const;
 
 interface AzkarCategoryPageProps {
   params: Promise<{
@@ -43,21 +27,27 @@ interface AzkarCategoryPageProps {
 }
 
 export function generateStaticParams() {
-  return categories.map((category) => ({
-    category
-  }));
+  return categories
+    .filter((category) => getAzkarItems(category).length > 0)
+    .map((category) => ({
+      category
+    }));
 }
 
 export default async function AzkarCategoryPage({ params }: AzkarCategoryPageProps) {
   const { category: categoryParam } = await params;
 
-  if (!categories.includes(categoryParam as AzkarCategory)) {
-    notFound();
+  if (!categories.includes(categoryParam as "travel")) {
+    redirect(ROUTES.azkar);
   }
 
-  const category = categoryParam as AzkarCategory;
+  const category = categoryParam as "travel";
   const metadata = categoryMetadata[category];
   const items = getAzkarItems(category);
+
+  if (items.length === 0) {
+    redirect(ROUTES.azkar);
+  }
 
   return (
     <AzkarCategoryContent

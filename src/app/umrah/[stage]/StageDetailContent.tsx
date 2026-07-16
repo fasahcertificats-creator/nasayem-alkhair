@@ -19,7 +19,7 @@ interface StageDetailContentProps {
 function StageSectionBody({ body }: { body: string }) {
   const lines = body
     .split(/\r?\n/)
-    .map((line) => line.trim())
+    .map((line) => localizeDisplayText(line.trim()))
     .filter(Boolean);
 
   if (lines.length > 1 && lines.every((line) => line.startsWith("- "))) {
@@ -58,7 +58,18 @@ function StageSectionBody({ body }: { body: string }) {
 }
 
 function localizeSourceReference(source: string) {
-  return source.replaceAll("Sahih Muslim", "صحيح مسلم").replaceAll("Sahih al-Bukhari", "صحيح البخاري");
+  return source
+    .replaceAll("Sahih Muslim", "صحيح مسلم")
+    .replaceAll("Sahih al-Bukhari", "صحيح البخاري")
+    .replaceAll("Sunan Abi Dawud", "سنن أبي داود");
+}
+
+function localizeDisplayText(text: string) {
+  return text
+    .replaceAll("Start", "البداية")
+    .replaceAll("Safa", "الصفا")
+    .replaceAll("Marwah", "المروة")
+    .replaceAll("Finish", "النهاية");
 }
 
 function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContentProps) {
@@ -187,7 +198,7 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
                     className={`${typography.hierarchy.body} ${typography.tone.muted}`}
                     key={instruction}
                   >
-                    {instruction}
+                    {localizeDisplayText(instruction)}
                   </li>
                 ))}
               </ul>

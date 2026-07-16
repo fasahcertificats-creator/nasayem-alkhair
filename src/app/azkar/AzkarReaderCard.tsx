@@ -11,6 +11,13 @@ interface AzkarReaderCardProps {
   onToggle: (itemId: string) => void;
 }
 
+function localizeSourceReference(source: string) {
+  return source
+    .replaceAll("Sahih Muslim", "صحيح مسلم")
+    .replaceAll("Sahih al-Bukhari", "صحيح البخاري")
+    .replaceAll("Sunan Abi Dawud", "سنن أبي داود");
+}
+
 export function AzkarReaderCard({ isCompleted, item, onToggle }: AzkarReaderCardProps) {
   return (
     <AppCard className={`${spacing.inset.md} ${spacing.stack.md}`}>
@@ -25,19 +32,23 @@ export function AzkarReaderCard({ isCompleted, item, onToggle }: AzkarReaderCard
         {item.arabicText}
       </p>
 
-      <div className={spacing.stack.xs}>
-        <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>المعنى</p>
-        <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-          {item.translation || "ستظهر الترجمة بعد اعتماد المحتوى."}
-        </p>
-      </div>
+      {item.translation ? (
+        <div className={spacing.stack.xs}>
+          <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>المعنى</p>
+          <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
+            {item.translation}
+          </p>
+        </div>
+      ) : null}
 
-      <div className={spacing.stack.xs}>
-        <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>المصدر</p>
-        <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-          {item.source || "سيظهر المصدر بعد اعتماد المحتوى."}
-        </p>
-      </div>
+      {item.source ? (
+        <div className={spacing.stack.xs}>
+          <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>المصدر</p>
+          <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
+            {localizeSourceReference(item.source)}
+          </p>
+        </div>
+      ) : null}
 
       <AppButton onClick={() => onToggle(item.id)} tone={isCompleted ? "outline" : "gold"}>
         <CheckCircle2 aria-hidden="true" />

@@ -9,8 +9,6 @@ import {
   ChevronLeft,
   Clock,
   Compass,
-  MapPin,
-  Sparkles
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
@@ -26,9 +24,8 @@ interface HomeReminder {
 }
 
 interface HomeContentProps {
-  eveningAzkarIds: string[];
-  morningAzkarIds: string[];
   reminder: HomeReminder | null;
+  travelAzkarIds: string[];
   umrahStageCount: number;
 }
 
@@ -67,7 +64,7 @@ function getGreeting() {
   }
 
   if (hours >= 17 && hours < 21) {
-    return "لا تنس أذكار المساء، فإنها حصن للمؤمن.";
+    return "نسأل الله أن يجعل مساءك عامراً بالذكر والسكينة.";
   }
 
   return "اختم يومك بذكر الله، فإن القلوب تطمئن بذكره.";
@@ -121,9 +118,8 @@ function progressWidth(done: number, total: number) {
 }
 
 export function HomeContent({
-  eveningAzkarIds,
-  morningAzkarIds,
   reminder,
+  travelAzkarIds,
   umrahStageCount
 }: HomeContentProps) {
   const [dateParts, setDateParts] = useState({ gregorian: "", hijri: "" });
@@ -151,17 +147,35 @@ export function HomeContent({
   }, []);
 
   const progressStats = useMemo(() => {
-    const morningDone = morningAzkarIds.filter((id) => completedAzkarIds.has(id)).length;
-    const eveningDone = eveningAzkarIds.filter((id) => completedAzkarIds.has(id)).length;
+    const travelDone = travelAzkarIds.filter((id) => completedAzkarIds.has(id)).length;
     const umrahDone = progress.filter((entry) => entry.completed).length;
 
     return {
-      eveningDone,
-      morningDone,
-      tasbihDone: 0,
+      travelDone,
       umrahDone
     };
-  }, [completedAzkarIds, eveningAzkarIds, morningAzkarIds, progress]);
+  }, [completedAzkarIds, progress, travelAzkarIds]);
+
+  const progressTiles = [
+    travelAzkarIds.length > 0
+      ? {
+          barClassName: "bg-gold",
+          done: progressStats.travelDone,
+          label: "أذكار السفر",
+          status: getStatus(progressStats.travelDone, travelAzkarIds.length),
+          total: travelAzkarIds.length
+        }
+      : null,
+    umrahStageCount > 0
+      ? {
+          barClassName: "bg-emerald-600",
+          done: progressStats.umrahDone,
+          label: "دليل العمرة",
+          status: getStatus(progressStats.umrahDone, umrahStageCount),
+          total: umrahStageCount
+        }
+      : null
+  ].filter((tile): tile is NonNullable<typeof tile> => tile !== null);
 
   return (
     <main className="space-y-4 overflow-x-hidden px-5 pb-12 pt-5 text-right" dir="rtl">
@@ -187,46 +201,6 @@ export function HomeContent({
         </div>
       </section>
 
-      <section
-        aria-labelledby="home-prayer-heading"
-        className="relative overflow-hidden rounded-2xl border border-[#163325] bg-gradient-to-br from-primary via-[#163325] to-[#11251B] p-4 text-white shadow-soft"
-      >
-        <div className="pointer-events-none absolute -bottom-12 -left-12 size-28 rounded-full bg-white/5" />
-        <div className="pointer-events-none absolute -right-6 -top-6 size-16 rounded-full bg-gold/10" />
-
-        <div className="relative z-10 flex flex-row items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#ECE1CE]/80">
-              <Clock className="size-3 text-gold" />
-              <span id="home-prayer-heading">الصلاة القادمة</span>
-            </div>
-            <h2 className="font-serif text-[18px] font-extrabold leading-none text-background sm:text-[20px]">
-              غير متاحة حالياً
-            </h2>
-            <p className="text-xs font-medium tracking-wide text-[#FAF6F0]">
-              لم تتوفر مواقيت صلاة موثوقة لهذا الموقع.
-            </p>
-          </div>
-
-          <div className="min-w-[80px] rounded-xl border border-white/5 bg-black/25 px-3 py-2 text-left">
-            <p className="mb-0.5 text-center text-[10px] font-bold text-[#ECE1CE]/70">الأذان</p>
-            <p className="text-center font-mono text-[18px] font-extrabold leading-none tracking-wider text-gold">
-              --:--
-            </p>
-          </div>
-        </div>
-
-        <div className="relative z-10 mt-3 flex items-center justify-between border-t border-white/10 pt-2 text-xs text-[#ECE1CE]/85">
-          <span className="flex items-center gap-1 text-[11px] font-medium">
-            <MapPin className="size-3 text-gold" />
-            الموقع غير محدد
-          </span>
-          <span className="rounded-lg bg-gold px-3 py-1 text-[11px] font-bold text-white">
-            بانتظار مصدر موثوق
-          </span>
-        </div>
-      </section>
-
       <Link
         aria-labelledby="daily-progress-heading"
         className="block cursor-pointer space-y-3 rounded-2xl border border-border bg-white p-4 shadow-soft transition hover:border-gold/30"
@@ -236,44 +210,26 @@ export function HomeContent({
           <div className="flex items-center gap-1.5">
             <BookMarked className="size-4 text-gold" />
             <h2 className="text-xs font-bold text-primary" id="daily-progress-heading">
-              التقدم اليومي للعبادات
+              تقدم العمرة وأذكار السفر
             </h2>
           </div>
           <span className="flex items-center gap-0.5 text-[10px] font-bold text-gold">
-            <span>تحديث الأوراد</span>
+            <span>عرض التقدم</span>
             <ChevronLeft className="size-3" />
           </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5">
-          <ProgressTile
-            barClassName="bg-gold"
-            done={progressStats.morningDone}
-            label="أذكار الصباح"
-            status={getStatus(progressStats.morningDone, morningAzkarIds.length)}
-            total={morningAzkarIds.length}
-          />
-          <ProgressTile
-            barClassName="bg-primary"
-            done={progressStats.eveningDone}
-            label="أذكار المساء"
-            status={getStatus(progressStats.eveningDone, eveningAzkarIds.length)}
-            total={eveningAzkarIds.length}
-          />
-          <ProgressTile
-            barClassName="bg-gold"
-            done={progressStats.tasbihDone}
-            label="التسبيح اليومي"
-            status="لم يبدأ"
-            total={100}
-          />
-          <ProgressTile
-            barClassName="bg-emerald-600"
-            done={progressStats.umrahDone}
-            label="ورد اليوم"
-            status={getStatus(progressStats.umrahDone, umrahStageCount)}
-            total={umrahStageCount}
-          />
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          {progressTiles.map((tile) => (
+            <ProgressTile
+              barClassName={tile.barClassName}
+              done={tile.done}
+              key={tile.label}
+              label={tile.label}
+              status={tile.status}
+              total={tile.total}
+            />
+          ))}
         </div>
       </Link>
 
@@ -285,17 +241,17 @@ export function HomeContent({
           الوصول السريع
         </h2>
         <div className="grid grid-cols-4 gap-2">
-          <QuickAccessCard href={ROUTES.azkar} icon={<BookOpen className="size-4" />} label="الأذكار" />
+          <QuickAccessCard href={ROUTES.azkar} icon={<BookOpen className="size-4" />} label="أذكار السفر" />
           <QuickAccessCard
             href={ROUTES.progress}
             icon={<BookMarked className="size-4" />}
-            label="ورد اليوم"
+            label="تقدم العمرة"
             tone="emerald"
           />
           <QuickAccessCard
             href={ROUTES.miqat}
             icon={<Clock className="size-4" />}
-            label="المواقيت"
+            label="المواقيت الشرعية"
             tone="indigo"
           />
           <QuickAccessCard
@@ -336,28 +292,6 @@ export function HomeContent({
           </div>
         </section>
       ) : null}
-
-      <div className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-secondary/60 p-3">
-        <div className="flex items-center gap-2.5">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 shadow-soft">
-            <Sparkles className="size-4" />
-          </div>
-          <div>
-            <h2 className="text-[10px] font-bold text-muted-foreground">التسبيح اليومي</h2>
-            <p className="mt-0.5 font-mono text-sm font-extrabold leading-none text-primary">
-              0 <span className="font-sans text-[9px] font-medium text-stone-400">تسبيحة</span>
-            </p>
-          </div>
-        </div>
-
-        <Link
-          className="flex shrink-0 items-center gap-0.5 rounded-lg border border-border/50 bg-white px-2.5 py-1 text-[11px] font-bold text-gold shadow-soft transition hover:bg-secondary"
-          href={ROUTES.progress}
-        >
-          <span>عرض الورد</span>
-          <ChevronLeft className="size-3" />
-        </Link>
-      </div>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 
 import { AppSection } from "@/design-system";
+import { getUmrahStages } from "@/services/content";
 
 import { PageLoadingState } from "../PageLoadingState";
 
@@ -12,14 +13,21 @@ const ProgressDashboard = dynamic(
 );
 
 export default function ProgressPage() {
+  const stages = getUmrahStages().map(({ id, progressKey, slug, titleAr }) => ({
+    id,
+    progressKey,
+    slug,
+    titleAr
+  }));
+
   return (
     <main>
       <AppSection
         description="متابعة المراحل المكتملة والمتبقية في دليل العمرة."
-        heading="التقدم"
+        heading="تقدم العمرة"
         spacing="lg"
       >
-        <ProgressDashboard />
+        <ProgressDashboard stages={stages} />
       </AppSection>
     </main>
   );

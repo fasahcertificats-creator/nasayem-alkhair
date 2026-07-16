@@ -5,31 +5,25 @@ import { memo, useEffect, useMemo, useState } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
 import { AppBadge, AppButton, AppCard, colors, spacing, typography } from "@/design-system";
-import { loadAppProgressState, type ProgressEntry } from "@/lib/app-state";
+import { loadProgress, type ProgressEntry } from "@/lib/app-state";
+import type { UmrahStage } from "@/types";
 
-const journeySteps = [
-  {
-    id: "ihram",
-    title: "الإحرام"
-  },
-  {
-    id: "tawaf",
-    title: "الطواف"
-  },
-  {
-    id: "sai",
-    title: "السعي"
-  },
-  {
-    id: "hair",
-    title: "الحلق أو التقصير"
-  }
-] as const;
+type ProgressStage = Pick<UmrahStage, "id" | "progressKey" | "slug" | "titleAr">;
 
-function ProgressDashboardComponent() {
+interface ProgressDashboardProps {
+  stages: ProgressStage[];
+}
+
+function isStageCompleted(stage: ProgressStage, completedStepIds: Set<string>) {
+  return (
+    completedStepIds.has(stage.id) ||
+    completedStepIds.has(stage.slug) ||
+    completedStepIds.has(stage.progressKey)
+  );
+}
+
+function ProgressDashboardComponent({ stages }: ProgressDashboardProps) {
   const [progress, setProgress] = useState<ProgressEntry[]>([]);
-  const [currentStreak, setCurrentStreak] = useState(0);
-  const [bestStreak, setBestStreak] = useState(0);
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
@@ -40,10 +34,7 @@ function ProgressDashboardComponent() {
         return;
       }
 
-      const appState = loadAppProgressState();
-      setProgress(appState.dailyProgress);
-      setCurrentStreak(appState.streak.currentStreak);
-      setBestStreak(appState.streak.bestStreak);
+      setProgress(loadProgress());
       setIsHydrated(true);
     });
 
@@ -56,9 +47,10 @@ function ProgressDashboardComponent() {
     () => new Set(progress.filter((entry) => entry.completed).map((entry) => entry.stepId)),
     [progress]
   );
-  const completedSteps = journeySteps.filter((step) => completedStepIds.has(step.id));
-  const upcomingSteps = journeySteps.filter((step) => !completedStepIds.has(step.id));
-  const progressPercentage = Math.round((completedSteps.length / journeySteps.length) * 100);
+  const completedSteps = stages.filter((stage) => isStageCompleted(stage, completedStepIds));
+  const upcomingSteps = stages.filter((stage) => !isStageCompleted(stage, completedStepIds));
+  const progressPercentage =
+    stages.length > 0 ? Math.round((completedSteps.length / stages.length) * 100) : 0;
 
   if (!isHydrated) {
     return (
@@ -89,22 +81,8 @@ function ProgressDashboardComponent() {
         <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
           {completedSteps.length === 0
             ? "لم تكتمل أي مرحلة بعد."
-            : `${completedSteps.length} من ${journeySteps.length} مراحل مكتملة.`}
+            : `${completedSteps.length} من ${stages.length} مراحل مكتملة.`}
         </p>
-        <div className={`grid ${spacing.inline.sm} sm:grid-cols-2`}>
-          <AppCard className={`${spacing.inset.sm} ${spacing.stack.xs}`}>
-            <AppBadge>السلسلة الحالية</AppBadge>
-            <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
-              {currentStreak} أيام
-            </p>
-          </AppCard>
-          <AppCard className={`${spacing.inset.sm} ${spacing.stack.xs}`}>
-            <AppBadge tone="gold">أفضل سلسلة</AppBadge>
-            <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
-              {bestStreak} أيام
-            </p>
-          </AppCard>
-        </div>
       </AppCard>
 
       <AppCard className={`${spacing.inset.lg} ${spacing.stack.lg}`}>
@@ -121,7 +99,7 @@ function ProgressDashboardComponent() {
                 key={step.id}
               >
                 <span className={`${typography.hierarchy.body} ${typography.tone.primary}`}>
-                  {step.title}
+                  {step.titleAr}
                 </span>
                 <AppBadge tone="gold">مكتملة</AppBadge>
               </div>
@@ -137,7 +115,7 @@ function ProgressDashboardComponent() {
               key={step.id}
             >
               <span className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-                {step.title}
+                {step.titleAr}
               </span>
               <AppBadge tone="ivory">متبقية</AppBadge>
             </div>

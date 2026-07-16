@@ -15,7 +15,10 @@ const authenticityLabel = {
 } as const;
 
 function localizeSourceReference(source: string) {
-  return source.replaceAll("Sahih Muslim", "صحيح مسلم").replaceAll("Sahih al-Bukhari", "صحيح البخاري");
+  return source
+    .replaceAll("Sahih Muslim", "صحيح مسلم")
+    .replaceAll("Sahih al-Bukhari", "صحيح البخاري")
+    .replaceAll("Sunan Abi Dawud", "سنن أبي داود");
 }
 
 export function DuaBlock({ dua }: DuaBlockProps) {
