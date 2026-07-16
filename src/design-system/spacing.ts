@@ -4,13 +4,13 @@ export const spacing = {
     md: "py-section-md",
     lg: "py-section-lg"
   },
-  container: "mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8",
+  container: "mx-auto w-full max-w-md px-5",
   stack: {
-    xs: "space-y-2.5",
-    sm: "space-y-4",
-    md: "space-y-5",
-    lg: "space-y-7",
-    xl: "space-y-9"
+    xs: "space-y-2",
+    sm: "space-y-3",
+    md: "space-y-4",
+    lg: "space-y-6",
+    xl: "space-y-8"
   },
   inline: {
     xs: "gap-2",
@@ -19,9 +19,9 @@ export const spacing = {
     lg: "gap-6"
   },
   inset: {
-    sm: "p-5",
-    md: "p-6",
-    lg: "p-8"
+    sm: "p-4",
+    md: "p-4",
+    lg: "p-5"
   }
 } as const;
 

@@ -22,17 +22,17 @@ export default function GlobalErrorPage({ error, reset }: GlobalErrorPageProps) 
     <main>
       <AppSection spacing="lg">
         <AppCard className={`${spacing.inset.lg} ${spacing.stack.md}`}>
-          <AppBadge tone="ivory">Safe fallback</AppBadge>
+          <AppBadge tone="ivory">تعذر العرض</AppBadge>
           <h1 className={`${typography.hierarchy.heading} ${typography.tone.primary}`}>
-            This view could not load
+            تعذر تحميل هذه الصفحة
           </h1>
           <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            The rest of the app is still available.
+            بقية التطبيق ما زالت متاحة.
           </p>
           <div className={`flex flex-wrap ${spacing.inline.sm}`}>
-            <AppButton onClick={reset}>Retry</AppButton>
+            <AppButton onClick={reset}>إعادة المحاولة</AppButton>
             <AppButton asChild tone="outline">
-              <Link href={ROUTES.home}>Go Home</Link>
+              <Link href={ROUTES.home}>العودة إلى الرئيسية</Link>
             </AppButton>
           </div>
         </AppCard>

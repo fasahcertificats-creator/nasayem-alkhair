@@ -24,7 +24,7 @@ export function Section({
 }: SectionProps) {
   return (
     <section className={cn(spacingClasses[spacing], className)} {...props}>
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-md px-5">
         {(heading || description) && (
           <div className="mb-8 max-w-3xl space-y-3">
             {heading && <h2 className="text-heading text-primary">{heading}</h2>}

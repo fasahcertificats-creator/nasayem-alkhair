@@ -17,9 +17,6 @@ export function MiqatCard({ miqat }: MiqatCardProps) {
         <h2 className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
           {miqat.nameAr}
         </h2>
-        <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
-          {miqat.nameEn}
-        </p>
       </div>
 
       <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>

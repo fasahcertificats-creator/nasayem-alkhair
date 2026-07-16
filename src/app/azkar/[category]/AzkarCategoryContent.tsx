@@ -204,7 +204,6 @@ function AzkarCategoryContentComponent({
           </div>
         ) : (
           <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-            <AppBadge tone="ivory">قيد التوثيق</AppBadge>
             <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
               لا توجد أذكار معتمدة للعرض في هذا القسم حالياً.
             </p>

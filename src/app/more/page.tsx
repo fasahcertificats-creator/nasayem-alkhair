@@ -1,21 +1,17 @@
-import { BookOpenCheck, Info, Settings } from "lucide-react";
+import Image from "next/image";
+import { BookOpenCheck, Info } from "lucide-react";
 
-import { AppBadge, AppCard, spacing, typography } from "@/design-system";
+import { AppCard, spacing, typography } from "@/design-system";
 
 const moreSections = [
   {
-    title: "الإعدادات",
-    description: "خيارات التطبيق ستضاف في مرحلة لاحقة.",
-    icon: Settings
-  },
-  {
     title: "المصادر",
-    description: "مساحة مخصصة لمراجع المحتوى المعتمد.",
+    description: "يعتمد محتوى العمرة والمواقيت على المصادر المذكورة داخل كل صفحة.",
     icon: BookOpenCheck
   },
   {
     title: "عن التطبيق",
-    description: "معلومات نسائم الخير وتفاصيله المستقبلية.",
+    description: "نسائم الخير دليل عربي مختصر للعمرة والأذكار، مع عرض المحتوى المعتمد فقط.",
     icon: Info
   }
 ] as const;
@@ -26,17 +22,20 @@ export default function MorePage() {
       className={`${spacing.inset.sm} ${spacing.stack.md} ${typography.fontFamily.arabic} ${typography.direction.arabic}`}
       dir="rtl"
     >
-      <section className={spacing.stack.xs} aria-labelledby="more-heading">
-        <AppBadge tone="gold">نسائم الخير</AppBadge>
+      <section className={`${spacing.stack.sm} text-center`} aria-labelledby="more-heading">
+        <Image
+          alt="نسائم الخير"
+          className="mx-auto h-24 w-auto"
+          height={1254}
+          src="/nasayem-logo.png"
+          width={1254}
+        />
         <h1
           className={`${typography.hierarchy.heading} ${typography.tone.primary}`}
           id="more-heading"
         >
           المزيد
         </h1>
-        <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-          مساحة هادئة للأقسام المساندة للتطبيق.
-        </p>
       </section>
 
       <section className={spacing.stack.sm} aria-labelledby="more-sections-heading">
@@ -44,7 +43,7 @@ export default function MorePage() {
           className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
           id="more-sections-heading"
         >
-          أقسام مستقبلية
+          معلومات التطبيق
         </h2>
 
         <div className={spacing.stack.sm}>

@@ -7,7 +7,6 @@ import { BookOpenText, Clock3, Home, Map, MoreHorizontal } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
-import { typography } from "@/design-system";
 import { cn } from "@/lib/utils";
 
 type NavigationItem = {
@@ -56,9 +55,9 @@ export function BottomNavigation() {
   return (
     <nav
       aria-label="التنقل الرئيسي"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-card/92 shadow-card backdrop-blur md:sticky"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white p-1 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-4px_12px_rgba(0,0,0,0.03)]"
     >
-      <div className="mx-auto grid max-w-md grid-cols-5 gap-2 px-3 py-3">
+      <div className="mx-auto grid max-w-md grid-cols-5 gap-0">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.match(pathname);
@@ -67,17 +66,21 @@ export function BottomNavigation() {
             <Link
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex min-w-0 flex-col items-center justify-center gap-1 rounded-full px-2 py-2 text-center transition-colors",
-                typography.hierarchy.caption,
+                "relative flex min-w-0 flex-col items-center justify-center rounded-xl px-0.5 py-2 text-center transition-all duration-200",
                 isActive
-                  ? "bg-gold/22 text-primary shadow-soft"
-                  : "text-muted-foreground hover:bg-secondary/70 hover:text-primary"
+                  ? "bg-secondary text-primary"
+                  : "text-muted-foreground hover:text-primary"
               )}
               href={item.href}
               key={item.label}
             >
-              <Icon aria-hidden="true" className="size-5" />
-              <span className="max-w-full truncate">{item.label}</span>
+              <Icon aria-hidden="true" className="mb-1 size-5" />
+              <span className="max-w-full truncate text-[12px] font-bold tracking-normal sm:text-[13px]">
+                {item.label}
+              </span>
+              {isActive ? (
+                <span className="absolute top-0 size-1.5 rounded-full bg-gold" />
+              ) : null}
             </Link>
           );
         })}

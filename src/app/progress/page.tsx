@@ -7,7 +7,7 @@ import { PageLoadingState } from "../PageLoadingState";
 const ProgressDashboard = dynamic(
   () => import("./ProgressDashboard").then((module) => module.ProgressDashboard),
   {
-    loading: () => <PageLoadingState label="Loading progress" />
+    loading: () => <PageLoadingState label="جاري تحميل التقدم" />
   }
 );
 
@@ -15,8 +15,8 @@ export default function ProgressPage() {
   return (
     <main>
       <AppSection
-        description="A simple view of completed and remaining journey steps."
-        heading="Progress"
+        description="متابعة المراحل المكتملة والمتبقية في دليل العمرة."
+        heading="التقدم"
         spacing="lg"
       >
         <ProgressDashboard />

@@ -57,6 +57,10 @@ function StageSectionBody({ body }: { body: string }) {
   );
 }
 
+function localizeSourceReference(source: string) {
+  return source.replaceAll("Sahih Muslim", "صحيح مسلم").replaceAll("Sahih al-Bukhari", "صحيح البخاري");
+}
+
 function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContentProps) {
   const [progress, setProgress] = useState<ProgressEntry[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -69,17 +73,7 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
     return Array.from(
       new Set(
         approvedDuas
-          .map((dua) =>
-            [
-              dua.sourceReference,
-              dua.sourceCollection,
-              dua.sourceNumber,
-              dua.sourceType,
-              dua.authenticity
-            ]
-              .filter(Boolean)
-              .join(" · ")
-          )
+          .map((dua) => localizeSourceReference(dua.sourceReference))
           .filter(Boolean)
       )
     );
@@ -102,7 +96,6 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
     stage.slug === "sai" ||
     stage.slug === "shaving-or-trimming-hair" ||
     stage.slug === "completion-of-umrah";
-  const hasContentSectionSlots = canDisplayContentSections && (stage.contentSections?.length ?? 0) > 0;
   const displayedSections = canDisplayContentSections
     ? (stage.contentSections ?? []).filter(
         (section) => section.verificationStatus === "approved" && section.bodyAr.trim().length > 0
@@ -179,27 +172,28 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
       </section>
 
       <section className={spacing.stack.sm} aria-labelledby="instructions-heading">
-        <h2
-          className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
-          id="instructions-heading"
-        >
-          الإرشادات
-        </h2>
-        <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-          {stage.instructions.length > 0 ? (
-            <ul className={spacing.stack.xs}>
-              {stage.instructions.map((instruction) => (
-                <li className={`${typography.hierarchy.body} ${typography.tone.muted}`} key={instruction}>
-                  {instruction}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-              سيتم إضافة الإرشادات بعد مراجعة المحتوى.
-            </p>
-          )}
-        </AppCard>
+        {stage.instructions.length > 0 ? (
+          <>
+            <h2
+              className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
+              id="instructions-heading"
+            >
+              الإرشادات
+            </h2>
+            <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
+              <ul className={spacing.stack.xs}>
+                {stage.instructions.map((instruction) => (
+                  <li
+                    className={`${typography.hierarchy.body} ${typography.tone.muted}`}
+                    key={instruction}
+                  >
+                    {instruction}
+                  </li>
+                ))}
+              </ul>
+            </AppCard>
+          </>
+        ) : null}
         {stage.slug === "miqat" ? (
           <AppButton asChild tone="gold">
             <Link href={ROUTES.miqat}>عرض صفحة المواقيت المعتمدة</Link>
@@ -236,7 +230,7 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
         </div>
       ) : null}
 
-      {hasContentSectionSlots ? (
+      {displayedSections.length > 0 ? (
         <section className={spacing.stack.sm} aria-labelledby="stage-sections-heading">
           <h2
             className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
@@ -244,37 +238,28 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
           >
             أقسام المرحلة
           </h2>
-          {displayedSections.length > 0 ? (
-            <div className={spacing.stack.sm}>
-              {displayedSections.map((section) => (
-                <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`} key={section.id}>
-                  <div className="flex items-center justify-between">
-                    <h3 className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
-                      {section.titleAr}
-                    </h3>
-                    <AppBadge tone="gold">معتمد</AppBadge>
-                  </div>
-                  <StageSectionBody body={section.bodyAr} />
-                  {section.sourceReference.trim().length > 0 ? (
-                    <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
-                      المصدر: {section.sourceReference}
-                    </p>
-                  ) : null}
-                </AppCard>
-              ))}
-            </div>
-          ) : (
-            <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-              <AppBadge tone="ivory">قيد التوثيق</AppBadge>
-              <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-                سيتم إضافة محتوى هذا القسم بعد مراجعته.
-              </p>
-            </AppCard>
-          )}
+          <div className={spacing.stack.sm}>
+            {displayedSections.map((section) => (
+              <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`} key={section.id}>
+                <div className="flex items-center justify-between">
+                  <h3 className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
+                    {section.titleAr}
+                  </h3>
+                  <AppBadge tone="gold">معتمد</AppBadge>
+                </div>
+                <StageSectionBody body={section.bodyAr} />
+                {section.sourceReference.trim().length > 0 ? (
+                  <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
+                    المصدر: {section.sourceReference}
+                  </p>
+                ) : null}
+              </AppCard>
+            ))}
+          </div>
         </section>
       ) : null}
 
-      {shouldDisplayDuasSection ? (
+      {shouldDisplayDuasSection && approvedDuas.length > 0 ? (
         <section className={spacing.stack.sm} aria-labelledby="duas-heading">
           <h2
             className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
@@ -282,48 +267,42 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
           >
             الأدعية المرتبطة
           </h2>
-          {approvedDuas.length > 0 ? (
-            <div className={spacing.stack.sm}>
-              {approvedDuas.map((dua) => (
-                <DuaBlock dua={dua} key={dua.id} />
-              ))}
-            </div>
-          ) : (
-            <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-              <AppBadge tone="ivory">قيد التوثيق</AppBadge>
-              <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-                سيتم إضافة المحتوى الموثق لهذه المرحلة قريبًا
-              </p>
-            </AppCard>
-          )}
+          <div className={spacing.stack.sm}>
+            {approvedDuas.map((dua) => (
+              <DuaBlock dua={dua} key={dua.id} />
+            ))}
+          </div>
         </section>
       ) : null}
 
-      <section className={spacing.stack.sm} aria-labelledby="sources-heading">
-        <h2
-          className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
-          id="sources-heading"
-        >
-          المصادر
-        </h2>
-        <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-          {displayedSources.length > 0 ? (
+      {displayedSources.length > 0 ? (
+        <section className={spacing.stack.sm} aria-labelledby="sources-heading">
+          <h2
+            className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
+            id="sources-heading"
+          >
+            المصادر
+          </h2>
+          <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
             <ul className={spacing.stack.xs}>
               {displayedSources.map((source) => (
-                <li className={`${typography.hierarchy.body} ${typography.tone.muted}`} key={source}>
-                  {source}
+                <li
+                  className={`${typography.hierarchy.body} ${typography.tone.muted}`}
+                  key={source}
+                >
+                  {localizeSourceReference(source)}
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-              سيتم عرض المصادر بعد اعتماد المحتوى.
-            </p>
-          )}
-        </AppCard>
-      </section>
+          </AppCard>
+        </section>
+      ) : null}
 
-      <AppButton disabled={!isHydrated} onClick={toggleCompletion} tone={isCompleted ? "outline" : "gold"}>
+      <AppButton
+        disabled={!isHydrated}
+        onClick={toggleCompletion}
+        tone={isCompleted ? "outline" : "gold"}
+      >
         <CheckCircle2 aria-hidden="true" />
         {isCompleted ? "إلغاء اكتمال المرحلة" : "تحديد المرحلة كمكتملة"}
       </AppButton>

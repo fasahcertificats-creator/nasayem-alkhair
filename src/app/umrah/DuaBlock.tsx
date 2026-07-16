@@ -5,6 +5,19 @@ interface DuaBlockProps {
   dua: Dua;
 }
 
+const authenticityLabel = {
+  Quran: "قرآن",
+  sahih: "صحيح",
+  hasan: "حسن",
+  weak: "ضعيف",
+  general: "عام",
+  "needs-review": "بحاجة إلى مراجعة"
+} as const;
+
+function localizeSourceReference(source: string) {
+  return source.replaceAll("Sahih Muslim", "صحيح مسلم").replaceAll("Sahih al-Bukhari", "صحيح البخاري");
+}
+
 export function DuaBlock({ dua }: DuaBlockProps) {
   if (dua.verificationStatus !== "approved") {
     return null;
@@ -14,14 +27,14 @@ export function DuaBlock({ dua }: DuaBlockProps) {
     <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
       <div className="flex items-center justify-between">
         <AppBadge tone="gold">{dua.titleAr}</AppBadge>
-        <AppBadge tone="ivory">{dua.authenticity}</AppBadge>
+        <AppBadge tone="ivory">{authenticityLabel[dua.authenticity]}</AppBadge>
       </div>
       <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
         {dua.arabicText}
       </p>
       <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>{dua.contextAr}</p>
       <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
-        {dua.sourceReference}
+        {localizeSourceReference(dua.sourceReference)}
       </p>
     </AppCard>
   );

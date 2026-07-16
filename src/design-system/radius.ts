@@ -3,7 +3,7 @@ export const radius = {
   md: "rounded-md",
   lg: "rounded-lg",
   xl: "rounded-xl",
-  card: "rounded-card",
+  card: "rounded-2xl",
   full: "rounded-full"
 } as const;
 

@@ -13,8 +13,8 @@ export const islamicPremiumTheme = {
   components: {
     button: {
       base: [
-        radius.full,
-        typography.weight.medium,
+        radius.xl,
+        typography.weight.bold,
         shadows.focus,
         "transition-all duration-200"
       ].join(" "),
@@ -28,20 +28,21 @@ export const islamicPremiumTheme = {
           colors.ivory.border,
           colors.ivory.surfaceRaised,
           colors.ivory.text,
-          shadows.none,
-          "hover:border-gold hover:text-primary"
+        shadows.none,
+          "hover:border-gold hover:bg-secondary"
         ].join(" "),
         ghost: [colors.emerald.text, "hover:bg-secondary"].join(" ")
       }
     },
     card: {
       base: [
-        radius.card,
+        "rounded-2xl",
         "border",
         colors.ivory.border,
         colors.ivory.surfaceRaised,
         colors.ivory.text,
-        shadows.card
+        shadows.card,
+        "overflow-hidden"
       ].join(" ")
     },
     section: {

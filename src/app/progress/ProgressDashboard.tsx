@@ -10,19 +10,19 @@ import { loadAppProgressState, type ProgressEntry } from "@/lib/app-state";
 const journeySteps = [
   {
     id: "ihram",
-    title: "Ihram"
+    title: "الإحرام"
   },
   {
     id: "tawaf",
-    title: "Tawaf"
+    title: "الطواف"
   },
   {
     id: "sai",
-    title: "Sa'i"
+    title: "السعي"
   },
   {
     id: "hair",
-    title: "Shaving/Cutting hair"
+    title: "الحلق أو التقصير"
   }
 ] as const;
 
@@ -64,9 +64,9 @@ function ProgressDashboardComponent() {
     return (
       <div className={`grid ${spacing.inline.lg} lg:grid-cols-[0.8fr_1.2fr]`}>
         <AppCard className={`${spacing.inset.lg} ${spacing.stack.md}`}>
-          <AppBadge tone="ivory">Loading</AppBadge>
+          <AppBadge tone="ivory">جاري التحميل</AppBadge>
           <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            Loading local progress.
+            يتم قراءة التقدم المحفوظ.
           </p>
         </AppCard>
       </div>
@@ -76,7 +76,7 @@ function ProgressDashboardComponent() {
   return (
     <div className={`grid ${spacing.inline.lg} lg:grid-cols-[0.8fr_1.2fr]`}>
       <AppCard className={`${spacing.inset.lg} ${spacing.stack.md}`}>
-        <AppBadge tone="gold">Daily Progress</AppBadge>
+        <AppBadge tone="gold">تقدم الرحلة</AppBadge>
         <p className={`${typography.hierarchy.display} ${typography.tone.primary}`}>
           {progressPercentage}%
         </p>
@@ -88,20 +88,20 @@ function ProgressDashboardComponent() {
         </div>
         <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
           {completedSteps.length === 0
-            ? "No steps completed yet today."
-            : `${completedSteps.length} of ${journeySteps.length} steps completed today.`}
+            ? "لم تكتمل أي مرحلة بعد."
+            : `${completedSteps.length} من ${journeySteps.length} مراحل مكتملة.`}
         </p>
         <div className={`grid ${spacing.inline.sm} sm:grid-cols-2`}>
           <AppCard className={`${spacing.inset.sm} ${spacing.stack.xs}`}>
-            <AppBadge>Current Streak</AppBadge>
+            <AppBadge>السلسلة الحالية</AppBadge>
             <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
-              {currentStreak} days
+              {currentStreak} أيام
             </p>
           </AppCard>
           <AppCard className={`${spacing.inset.sm} ${spacing.stack.xs}`}>
-            <AppBadge tone="gold">Best Streak</AppBadge>
+            <AppBadge tone="gold">أفضل سلسلة</AppBadge>
             <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
-              {bestStreak} days
+              {bestStreak} أيام
             </p>
           </AppCard>
         </div>
@@ -109,10 +109,10 @@ function ProgressDashboardComponent() {
 
       <AppCard className={`${spacing.inset.lg} ${spacing.stack.lg}`}>
         <div className={spacing.stack.sm}>
-          <AppBadge>Completed Steps</AppBadge>
+          <AppBadge>المراحل المكتملة</AppBadge>
           {completedSteps.length === 0 ? (
             <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-              Complete a step from the Umrah guide to begin tracking progress.
+              افتح دليل العمرة وحدد المرحلة المكتملة لبدء المتابعة.
             </p>
           ) : (
             completedSteps.map((step) => (
@@ -123,14 +123,14 @@ function ProgressDashboardComponent() {
                 <span className={`${typography.hierarchy.body} ${typography.tone.primary}`}>
                   {step.title}
                 </span>
-                <AppBadge tone="gold">Done</AppBadge>
+                <AppBadge tone="gold">مكتملة</AppBadge>
               </div>
             ))
           )}
         </div>
 
         <div className={spacing.stack.sm}>
-          <AppBadge tone="ivory">Remaining Steps</AppBadge>
+          <AppBadge tone="ivory">المراحل المتبقية</AppBadge>
           {upcomingSteps.map((step) => (
             <div
               className={`flex items-center justify-between rounded-full ${colors.ivory.surface} ${spacing.inset.sm}`}
@@ -139,13 +139,13 @@ function ProgressDashboardComponent() {
               <span className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
                 {step.title}
               </span>
-              <AppBadge tone="ivory">Pending</AppBadge>
+              <AppBadge tone="ivory">متبقية</AppBadge>
             </div>
           ))}
         </div>
 
         <AppButton asChild tone="outline">
-          <Link href={ROUTES.umrah}>Continue Guide</Link>
+          <Link href={ROUTES.umrah}>متابعة الدليل</Link>
         </AppButton>
       </AppCard>
     </div>

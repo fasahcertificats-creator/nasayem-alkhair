@@ -49,15 +49,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       <AppSection spacing="lg">
         <AppCard className={`${spacing.inset.lg} ${spacing.stack.md}`}>
           <h1 className={`${typography.hierarchy.heading} ${typography.tone.primary}`}>
-            Something went wrong
+            حدث خطأ غير متوقع
           </h1>
           <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            The app recovered safely. You can retry this view or return home.
+            يمكنك إعادة المحاولة أو العودة إلى الرئيسية.
           </p>
           <div className={`flex flex-wrap ${spacing.inline.sm}`}>
-            <AppButton onClick={this.retry}>Retry</AppButton>
+            <AppButton onClick={this.retry}>إعادة المحاولة</AppButton>
             <AppButton onClick={this.goHome} tone="outline">
-              Go Home
+              العودة إلى الرئيسية
             </AppButton>
           </div>
         </AppCard>

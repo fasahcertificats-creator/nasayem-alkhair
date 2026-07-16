@@ -10,13 +10,13 @@ export default function NotFoundPage() {
         <AppCard className={`${spacing.inset.lg} ${spacing.stack.md}`}>
           <AppBadge tone="ivory">404</AppBadge>
           <h1 className={`${typography.hierarchy.heading} ${typography.tone.primary}`}>
-            Page not found
+            الصفحة غير موجودة
           </h1>
           <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            This path is not available. Return home to continue your journey.
+            هذا المسار غير متاح. يمكنك العودة إلى الرئيسية.
           </p>
           <AppButton asChild>
-            <Link href={ROUTES.home}>Go Home</Link>
+            <Link href={ROUTES.home}>العودة إلى الرئيسية</Link>
           </AppButton>
         </AppCard>
       </AppSection>

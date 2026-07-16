@@ -46,9 +46,8 @@ export default function MiqatPage() {
           </div>
         ) : (
           <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-            <AppBadge tone="ivory">قيد التوثيق</AppBadge>
             <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-              لم تتم إضافة بيانات المواقيت بعد. ستظهر هنا بعد اعتماد المحتوى.
+              لا توجد مواقيت معتمدة للعرض حالياً.
             </p>
             <AppButton asChild tone="outline">
               <Link href={ROUTES.umrah}>العودة إلى دليل العمرة</Link>

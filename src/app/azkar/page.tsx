@@ -35,11 +35,9 @@ const categoryMetadata: Record<
   }
 };
 
-const defaultCategories: AzkarCategory[] = ["morning", "evening", "sleep", "wakeup", "travel"];
-
 export default function AzkarPage() {
   const contentCategories = getAzkarCategories();
-  const categories = contentCategories.length > 0 ? contentCategories : defaultCategories;
+  const categories = contentCategories.filter((category) => getAzkarItems(category).length > 0);
 
   return (
     <main
@@ -54,9 +52,6 @@ export default function AzkarPage() {
         >
           الأذكار
         </h1>
-        <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-          قراءة هادئة ومنظمة، جاهزة للمحتوى الموثق دون ازدحام.
-        </p>
       </section>
 
       <section className={spacing.stack.sm} aria-labelledby="azkar-categories-heading">
@@ -67,8 +62,9 @@ export default function AzkarPage() {
           الأقسام
         </h2>
 
-        <div className={spacing.stack.sm}>
-          {categories.map((category) => {
+        {categories.length > 0 ? (
+          <div className={spacing.stack.sm}>
+            {categories.map((category) => {
             const metadata = categoryMetadata[category];
             const itemCount = getAzkarItems(category).length;
 
@@ -97,8 +93,16 @@ export default function AzkarPage() {
                 </AppButton>
               </AppCard>
             );
-          })}
-        </div>
+            })}
+          </div>
+        ) : (
+          <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
+            <BookOpenText aria-hidden="true" className={`${typography.tone.primary} size-5`} />
+            <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
+              لا توجد أذكار معتمدة للعرض حالياً.
+            </p>
+          </AppCard>
+        )}
       </section>
     </main>
   );
