@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { memo } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
@@ -34,7 +34,7 @@ function UmrahCompanionContentComponent({ stages }: UmrahCompanionContentProps) 
         <div className={spacing.stack.sm}>
           {stages.map((stage, index) => (
             <Link
-              aria-label={`فتح مرحلة ${stage.titleAr}`}
+              aria-label={`عرض ${stage.titleAr}`}
               className="group block rounded-lg border border-border bg-white px-4 py-4 shadow-soft transition duration-200 hover:-translate-y-0.5 hover:border-gold/60 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               href={ROUTES.umrahStage(stage.slug)}
               key={stage.id}
@@ -52,7 +52,7 @@ function UmrahCompanionContentComponent({ stages }: UmrahCompanionContentProps) 
                   </p>
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-gold transition group-hover:text-primary">
                     <span>المزيد</span>
-                    <ChevronLeft aria-hidden="true" className="size-3.5" />
+                    <ChevronDown aria-hidden="true" className="size-3.5" />
                   </span>
                 </div>
               </div>

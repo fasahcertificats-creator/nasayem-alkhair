@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
 
@@ -21,48 +22,25 @@ function localizeSourceReference(source: string) {
     .replaceAll("Sunan Abi Dawud", "سنن أبي داود");
 }
 
-function localizeDisplayText(text: string) {
-  return text
-    .replaceAll("Start", "البداية")
-    .replaceAll("Safa", "الصفا")
-    .replaceAll("Marwah", "المروة")
-    .replaceAll("Finish", "النهاية")
-    .replaceAll("→", "←");
-}
-
 function isReligiousReference(source: string) {
-  return /القرآن|صحيح|سنن|البخاري|مسلم|أبو داود/.test(source);
-}
-
-function sectionRank(section: UmrahStageContentSection) {
-  if (isReligiousReference(section.sourceReference)) {
-    return 0;
-  }
-
-  if (/لا يثبت|لا يوجد|تنبيه/.test(section.titleAr + section.bodyAr)) {
-    return 1;
-  }
-
-  return 2;
+  return /القرآن|صحيح|سنن|البخاري|مسلم|أبي داود/.test(source);
 }
 
 function getDisplayedSections(stage: UmrahStage) {
-  const sections = (stage.contentSections ?? []).filter(
+  return (stage.contentSections ?? []).filter(
     (section) => section.verificationStatus === "approved" && section.bodyAr.trim().length > 0
   );
+}
 
-  if (stage.slug === "ihram") {
-    return sections;
-  }
-
-  return [...sections].sort((first, second) => sectionRank(first) - sectionRank(second));
+function splitBodyLines(body: string) {
+  return body
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
 
 function StageSectionBody({ body }: { body: string }) {
-  const lines = body
-    .split(/\r?\n/)
-    .map((line) => localizeDisplayText(line.trim()))
-    .filter(Boolean);
+  const lines = splitBodyLines(body);
 
   if (lines.length > 1 && lines.every((line) => line.startsWith("- "))) {
     return (
@@ -99,32 +77,73 @@ function StageSectionBody({ body }: { body: string }) {
   );
 }
 
-function StageSectionCard({ section }: { section: UmrahStageContentSection }) {
+function SectionReference({ source }: { source: string }) {
+  const trimmedSource = source.trim();
+
+  if (!trimmedSource) {
+    return null;
+  }
+
+  const label = isReligiousReference(trimmedSource) ? "المصدر" : "التصنيف";
+
+  return (
+    <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
+      {label}: {localizeSourceReference(trimmedSource)}
+    </p>
+  );
+}
+
+function PrimarySectionCard({ section }: { section: UmrahStageContentSection }) {
   return (
     <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
       <h2 className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
         {section.titleAr}
       </h2>
       <StageSectionBody body={section.bodyAr} />
-      {section.sourceReference.trim().length > 0 ? (
-        <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
-          المصدر: {localizeSourceReference(section.sourceReference)}
-        </p>
-      ) : null}
+      <SectionReference source={section.sourceReference} />
     </AppCard>
   );
 }
 
+function DisclosureSectionCard({ section }: { section: UmrahStageContentSection }) {
+  return (
+    <details className="group rounded-lg border border-border bg-white shadow-soft transition duration-200 open:shadow-card">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background [&::-webkit-details-marker]:hidden">
+        <span className="text-base font-bold leading-relaxed">{section.titleAr}</span>
+        <ChevronDown
+          aria-hidden="true"
+          className="size-4 shrink-0 text-gold transition duration-200 group-open:rotate-180"
+        />
+      </summary>
+      <div className={`${spacing.stack.sm} border-t border-border px-4 pb-4 pt-3`}>
+        <StageSectionBody body={section.bodyAr} />
+        <SectionReference source={section.sourceReference} />
+      </div>
+    </details>
+  );
+}
+
+function getPrimarySections(
+  approvedDuas: Dua[],
+  sections: UmrahStageContentSection[],
+  stage: UmrahStage
+) {
+  if (stage.slug === "ihram") {
+    return sections.filter((section) => section.id === "ihram-intention-clarification");
+  }
+
+  if (approvedDuas.length === 0 && sections.length > 0) {
+    return [sections[0]];
+  }
+
+  return [];
+}
+
 function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContentProps) {
   const sections = getDisplayedSections(stage);
-  const intentionSection =
-    stage.slug === "ihram"
-      ? sections.find((section) => section.id === "ihram-intention-clarification")
-      : undefined;
-  const remainingSections =
-    stage.slug === "ihram"
-      ? sections.filter((section) => section.id !== "ihram-intention-clarification")
-      : sections;
+  const primarySections = getPrimarySections(approvedDuas, sections, stage);
+  const primarySectionIds = new Set(primarySections.map((section) => section.id));
+  const disclosureSections = sections.filter((section) => !primarySectionIds.has(section.id));
 
   return (
     <main
@@ -148,7 +167,9 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
         </div>
       </section>
 
-      {intentionSection ? <StageSectionCard section={intentionSection} /> : null}
+      {primarySections.map((section) => (
+        <PrimarySectionCard key={section.id} section={section} />
+      ))}
 
       {approvedDuas.length > 0 ? (
         <section className={spacing.stack.sm} aria-label="الأذكار والأدعية الثابتة">
@@ -158,10 +179,10 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
         </section>
       ) : null}
 
-      {remainingSections.length > 0 ? (
+      {disclosureSections.length > 0 ? (
         <section className={spacing.stack.sm} aria-label="تفاصيل المرحلة">
-          {remainingSections.map((section) => (
-            <StageSectionCard key={section.id} section={section} />
+          {disclosureSections.map((section) => (
+            <DisclosureSectionCard key={section.id} section={section} />
           ))}
         </section>
       ) : null}
