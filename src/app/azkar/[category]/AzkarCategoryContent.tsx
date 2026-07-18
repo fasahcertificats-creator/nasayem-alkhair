@@ -3,21 +3,25 @@ import { memo } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
 import { AppButton, spacing, typography } from "@/design-system";
-import type { AzkarItem } from "@/types";
+import type { AzkarCategory, AzkarItem } from "@/types";
 
 import { AzkarReaderCard } from "../AzkarReaderCard";
 
 interface AzkarCategoryContentProps {
+  category: AzkarCategory;
   description: string;
   items: AzkarItem[];
   title: string;
 }
 
 function AzkarCategoryContentComponent({
+  category,
   description,
   items,
   title
 }: AzkarCategoryContentProps) {
+  const isNamesOfAllah = category === "names-of-allah";
+
   return (
     <main
       className={`${spacing.inset.sm} ${spacing.stack.md} ${typography.fontFamily.arabic} ${typography.direction.arabic}`}
@@ -42,10 +46,21 @@ function AzkarCategoryContentComponent({
         </div>
       </section>
 
-      <section className={spacing.stack.sm} aria-label={title}>
-        {items.map((item) => (
-          <AzkarReaderCard item={item} key={item.id} />
-        ))}
+      <section className={isNamesOfAllah ? "" : spacing.stack.sm} aria-label={title}>
+        {isNamesOfAllah ? (
+          <div className="grid grid-cols-2 gap-2 pb-24 sm:grid-cols-3">
+            {items.map((item) => (
+              <div
+                className="rounded-lg border border-border bg-white px-3 py-4 text-center shadow-soft"
+                key={item.id}
+              >
+                <p className="text-lg font-bold leading-relaxed text-primary">{item.arabicText}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          items.map((item) => <AzkarReaderCard item={item} key={item.id} />)
+        )}
       </section>
     </main>
   );

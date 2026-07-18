@@ -92,6 +92,7 @@ export default async function AzkarCategoryPage({ params }: AzkarCategoryPagePro
 
   return (
     <AzkarCategoryContent
+      category={category}
       description={metadata.description}
       items={items}
       title={metadata.title}

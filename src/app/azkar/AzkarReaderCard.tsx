@@ -24,6 +24,12 @@ export function AzkarReaderCard({ item }: AzkarReaderCardProps) {
 
   return (
     <AppCard className={`${spacing.inset.md} ${spacing.stack.md}`}>
+      {item.title ? (
+        <h2 className={`${typography.hierarchy.body} font-bold ${typography.tone.primary}`}>
+          {item.title}
+        </h2>
+      ) : null}
+
       <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
         {item.arabicText}
       </p>
@@ -37,18 +43,17 @@ export function AzkarReaderCard({ item }: AzkarReaderCardProps) {
         </div>
       ) : null}
 
-      {item.authenticity ? (
-        <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
-          {item.authenticity}
-        </p>
-      ) : null}
-
       {hasCounter ? (
         <div className="flex flex-wrap items-center gap-2">
-          <AppButton onClick={incrementCounter} tone="gold">
-            {counter} / {item.count}
+          <AppButton
+            aria-label={`التكرار ${counter} من ${item.count}`}
+            className="min-h-11 min-w-24"
+            onClick={incrementCounter}
+            tone="gold"
+          >
+            التكرار {counter} من {item.count}
           </AppButton>
-          <AppButton aria-label="إعادة ضبط العد" onClick={resetCounter} tone="outline">
+          <AppButton aria-label="إعادة ضبط التكرار" onClick={resetCounter} tone="outline">
             <RotateCcw aria-hidden="true" />
           </AppButton>
         </div>

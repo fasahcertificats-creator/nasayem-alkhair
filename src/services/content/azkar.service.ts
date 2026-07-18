@@ -38,6 +38,8 @@ function isAzkarItem(value: unknown): value is AzkarItem {
     typeof value.source === "string" &&
     typeof value.order === "number" &&
     (value.authenticity === undefined || typeof value.authenticity === "string") &&
+    (value.sourceReference === undefined || typeof value.sourceReference === "string") &&
+    (value.title === undefined || typeof value.title === "string") &&
     (value.displayMode === undefined ||
       value.displayMode === "counter" ||
       value.displayMode === "reading") &&

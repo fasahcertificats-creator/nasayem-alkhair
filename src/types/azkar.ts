@@ -19,6 +19,8 @@ export interface AzkarItem {
   authenticity?: string;
   displayMode?: "counter" | "reading";
   isSpecificallyPrescribed?: boolean;
+  sourceReference?: string;
+  title?: string;
   translation: string;
   count: number;
   source: string;
