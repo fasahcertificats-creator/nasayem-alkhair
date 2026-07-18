@@ -1,4 +1,4 @@
-import { AppBadge, AppCard, spacing, typography } from "@/design-system";
+import { AppCard, spacing, typography } from "@/design-system";
 import type { Dua } from "@/types";
 
 interface DuaBlockProps {
@@ -26,19 +26,37 @@ export function DuaBlock({ dua }: DuaBlockProps) {
     return null;
   }
 
+  const isQuran = dua.sourceType === "Quran" || dua.authenticity === "Quran";
+
   return (
     <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-      <div className="flex items-center justify-between">
-        <AppBadge tone="gold">{dua.titleAr}</AppBadge>
-        <AppBadge tone="ivory">{authenticityLabel[dua.authenticity]}</AppBadge>
-      </div>
-      <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
+      <h2 className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
+        {dua.titleAr}
+      </h2>
+      <p
+        className={
+          isQuran
+            ? "font-serif text-xl leading-loose text-primary"
+            : `${typography.hierarchy.subheading} ${typography.tone.primary}`
+        }
+      >
         {dua.arabicText}
       </p>
-      <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>{dua.contextAr}</p>
-      <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
-        {localizeSourceReference(dua.sourceReference)}
-      </p>
+      {dua.contextAr ? (
+        <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
+          {dua.contextAr}
+        </p>
+      ) : null}
+      <div className={spacing.stack.xs}>
+        {dua.sourceReference ? (
+          <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
+            المصدر: {localizeSourceReference(dua.sourceReference)}
+          </p>
+        ) : null}
+        <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
+          الدرجة: {authenticityLabel[dua.authenticity]}
+        </p>
+      </div>
     </AppCard>
   );
 }

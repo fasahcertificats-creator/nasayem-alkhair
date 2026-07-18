@@ -4,7 +4,6 @@ import type { ContentVerificationStatus } from "./dua";
 export type UmrahStagePhase =
   | "preparation"
   | "travel"
-  | "miqat"
   | "ihram"
   | "tawaf"
   | "sai"
@@ -30,6 +29,5 @@ export interface UmrahStage {
   instructions: string[];
   duas: EntityId[];
   sources: string[];
-  progressKey: string;
   verificationStatus: ContentVerificationStatus;
 }

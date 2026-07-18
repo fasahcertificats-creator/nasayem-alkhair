@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 import { getDuasByStageId, getUmrahStages } from "@/services/content";
 
@@ -18,6 +18,11 @@ export function generateStaticParams() {
 
 export default async function UmrahStagePage({ params }: StagePageProps) {
   const { stage: stageSlug } = await params;
+
+  if (stageSlug === "miqat") {
+    permanentRedirect("/umrah/ihram");
+  }
+
   const stage = getUmrahStages().find((item) => item.slug === stageSlug);
 
   if (!stage) {

@@ -23,7 +23,6 @@ export type {
   KnowledgeSource,
   KnowledgeSourceType
 } from "./knowledge";
-export type { Miqat } from "./miqat";
 export type { CompletedAzkarEntry, ProductProgress } from "./product-progress";
 export type { ThemeMode } from "./theme";
 export type { UmrahContent } from "./umrah";

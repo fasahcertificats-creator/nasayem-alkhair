@@ -1,19 +1,61 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
-import { AppBadge, AppButton, AppCard, spacing, typography } from "@/design-system";
-import { loadProgress, saveProgress, type ProgressEntry } from "@/lib/app-state";
-import type { Dua, UmrahStage } from "@/types";
+import { AppButton, AppCard, spacing, typography } from "@/design-system";
+import type { Dua, UmrahStage, UmrahStageContentSection } from "@/types";
 
 import { DuaBlock } from "../DuaBlock";
 
 interface StageDetailContentProps {
   approvedDuas: Dua[];
   stage: UmrahStage;
+}
+
+function localizeSourceReference(source: string) {
+  return source
+    .replaceAll("Sahih Muslim", "صحيح مسلم")
+    .replaceAll("Sahih al-Bukhari", "صحيح البخاري")
+    .replaceAll("Sunan Abi Dawud", "سنن أبي داود");
+}
+
+function localizeDisplayText(text: string) {
+  return text
+    .replaceAll("Start", "البداية")
+    .replaceAll("Safa", "الصفا")
+    .replaceAll("Marwah", "المروة")
+    .replaceAll("Finish", "النهاية")
+    .replaceAll("→", "←");
+}
+
+function isReligiousReference(source: string) {
+  return /القرآن|صحيح|سنن|البخاري|مسلم|أبو داود/.test(source);
+}
+
+function sectionRank(section: UmrahStageContentSection) {
+  if (isReligiousReference(section.sourceReference)) {
+    return 0;
+  }
+
+  if (/لا يثبت|لا يوجد|تنبيه/.test(section.titleAr + section.bodyAr)) {
+    return 1;
+  }
+
+  return 2;
+}
+
+function getDisplayedSections(stage: UmrahStage) {
+  const sections = (stage.contentSections ?? []).filter(
+    (section) => section.verificationStatus === "approved" && section.bodyAr.trim().length > 0
+  );
+
+  if (stage.slug === "ihram") {
+    return sections;
+  }
+
+  return [...sections].sort((first, second) => sectionRank(first) - sectionRank(second));
 }
 
 function StageSectionBody({ body }: { body: string }) {
@@ -57,109 +99,36 @@ function StageSectionBody({ body }: { body: string }) {
   );
 }
 
-function localizeSourceReference(source: string) {
-  return source
-    .replaceAll("Sahih Muslim", "صحيح مسلم")
-    .replaceAll("Sahih al-Bukhari", "صحيح البخاري")
-    .replaceAll("Sunan Abi Dawud", "سنن أبي داود");
-}
-
-function localizeDisplayText(text: string) {
-  return text
-    .replaceAll("Start", "البداية")
-    .replaceAll("Safa", "الصفا")
-    .replaceAll("Marwah", "المروة")
-    .replaceAll("Finish", "النهاية");
+function StageSectionCard({ section }: { section: UmrahStageContentSection }) {
+  return (
+    <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
+      <h2 className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
+        {section.titleAr}
+      </h2>
+      <StageSectionBody body={section.bodyAr} />
+      {section.sourceReference.trim().length > 0 ? (
+        <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
+          المصدر: {localizeSourceReference(section.sourceReference)}
+        </p>
+      ) : null}
+    </AppCard>
+  );
 }
 
 function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContentProps) {
-  const [progress, setProgress] = useState<ProgressEntry[]>([]);
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  const approvedDuaSources = useMemo(() => {
-    if (stage.slug !== "travel") {
-      return [];
-    }
-
-    return Array.from(
-      new Set(
-        approvedDuas
-          .map((dua) => localizeSourceReference(dua.sourceReference))
-          .filter(Boolean)
-      )
-    );
-  }, [approvedDuas, stage.slug]);
-
-  const displayedSources = stage.sources.length > 0 ? stage.sources : approvedDuaSources;
-  const shouldDisplayDuasSection =
-    !["ihram", "entering-makkah", "seeing-kaaba", "zamzam", "completion-of-umrah"].includes(
-      stage.slug
-    ) ||
-    approvedDuas.length > 0;
-  const canDisplayContentSections =
-    stage.slug === "ihram" ||
-    stage.slug === "talbiyah" ||
-    stage.slug === "entering-makkah" ||
-    stage.slug === "entering-al-masjid-al-haram" ||
-    stage.slug === "seeing-kaaba" ||
-    stage.slug === "tawaf" ||
-    stage.slug === "zamzam" ||
-    stage.slug === "sai" ||
-    stage.slug === "shaving-or-trimming-hair" ||
-    stage.slug === "completion-of-umrah";
-  const displayedSections = canDisplayContentSections
-    ? (stage.contentSections ?? []).filter(
-        (section) => section.verificationStatus === "approved" && section.bodyAr.trim().length > 0
-      )
-    : [];
-
-  useEffect(() => {
-    let isMounted = true;
-
-    queueMicrotask(() => {
-      if (!isMounted) {
-        return;
-      }
-
-      setProgress(loadProgress());
-      setIsHydrated(true);
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const isCompleted = useMemo(
-    () =>
-      progress.some(
-        (entry) => entry.completed && (entry.stepId === stage.id || entry.stepId === stage.slug)
-      ),
-    [progress, stage.id, stage.slug]
-  );
-
-  const toggleCompletion = useCallback(() => {
-    setProgress((currentProgress) => {
-      const existingEntry = currentProgress.find(
-        (entry) => entry.stepId === stage.id || entry.stepId === stage.slug
-      );
-      const nextProgress = existingEntry
-        ? currentProgress.map((entry) =>
-            entry.stepId === existingEntry.stepId
-              ? { ...entry, completed: !entry.completed, timestamp: Date.now() }
-              : entry
-          )
-        : [...currentProgress, { stepId: stage.id, completed: true, timestamp: Date.now() }];
-
-      saveProgress(nextProgress);
-
-      return nextProgress;
-    });
-  }, [stage.id, stage.slug]);
+  const sections = getDisplayedSections(stage);
+  const intentionSection =
+    stage.slug === "ihram"
+      ? sections.find((section) => section.id === "ihram-intention-clarification")
+      : undefined;
+  const remainingSections =
+    stage.slug === "ihram"
+      ? sections.filter((section) => section.id !== "ihram-intention-clarification")
+      : sections;
 
   return (
     <main
-      className={`${spacing.inset.sm} ${spacing.stack.md} ${typography.fontFamily.arabic} ${typography.direction.arabic}`}
+      className={`${spacing.inset.sm} ${spacing.stack.md} ${typography.fontFamily.arabic} ${typography.direction.arabic} pb-24`}
       dir="rtl"
     >
       <section className={spacing.stack.sm} aria-labelledby="stage-heading">
@@ -167,9 +136,6 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
           <Link href={ROUTES.umrah}>العودة إلى دليل العمرة</Link>
         </AppButton>
         <div className={spacing.stack.xs}>
-          <AppBadge tone={isCompleted ? "gold" : "ivory"}>
-            {isCompleted ? "مرحلة مكتملة" : "مرحلة مفتوحة"}
-          </AppBadge>
           <h1
             className={`${typography.hierarchy.heading} ${typography.tone.primary}`}
             id="stage-heading"
@@ -182,136 +148,23 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
         </div>
       </section>
 
-      <section className={spacing.stack.sm} aria-labelledby="instructions-heading">
-        {stage.instructions.length > 0 ? (
-          <>
-            <h2
-              className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
-              id="instructions-heading"
-            >
-              الإرشادات
-            </h2>
-            <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-              <ul className={spacing.stack.xs}>
-                {stage.instructions.map((instruction) => (
-                  <li
-                    className={`${typography.hierarchy.body} ${typography.tone.muted}`}
-                    key={instruction}
-                  >
-                    {localizeDisplayText(instruction)}
-                  </li>
-                ))}
-              </ul>
-            </AppCard>
-          </>
-        ) : null}
-        {stage.slug === "zamzam" ? (
-          <AppButton asChild tone="gold">
-            <Link href={ROUTES.umrahStage("sai")}>الانتقال إلى السعي</Link>
-          </AppButton>
-        ) : null}
-      </section>
+      {intentionSection ? <StageSectionCard section={intentionSection} /> : null}
 
-      {stage.slug === "sai" ? (
-        <AppButton asChild tone="gold">
-          <Link href={ROUTES.umrahStage("shaving-or-trimming-hair")}>الانتقال إلى الحلق أو التقصير</Link>
-        </AppButton>
-      ) : null}
-      {stage.slug === "shaving-or-trimming-hair" ? (
-        <AppButton asChild tone="gold">
-          <Link href={ROUTES.umrahStage("completion-of-umrah")}>الانتقال إلى إتمام العمرة</Link>
-        </AppButton>
-      ) : null}
-      {stage.slug === "completion-of-umrah" ? (
-        <div className="flex flex-wrap gap-2">
-          <AppButton asChild tone="gold">
-            <Link href={ROUTES.umrah}>العودة إلى دليل العمرة</Link>
-          </AppButton>
-          <AppButton asChild tone="outline">
-            <Link href={ROUTES.progress}>عرض التقدم</Link>
-          </AppButton>
-          <AppButton asChild tone="ghost">
-            <Link href={ROUTES.home}>العودة إلى الرئيسية</Link>
-          </AppButton>
-        </div>
-      ) : null}
-
-      {displayedSections.length > 0 ? (
-        <section className={spacing.stack.sm} aria-labelledby="stage-sections-heading">
-          <h2
-            className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
-            id="stage-sections-heading"
-          >
-            أقسام المرحلة
-          </h2>
-          <div className={spacing.stack.sm}>
-            {displayedSections.map((section) => (
-              <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`} key={section.id}>
-                <div className="flex items-center justify-between">
-                  <h3 className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
-                    {section.titleAr}
-                  </h3>
-                  <AppBadge tone="gold">معتمد</AppBadge>
-                </div>
-                <StageSectionBody body={section.bodyAr} />
-                {section.sourceReference.trim().length > 0 ? (
-                  <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
-                    المصدر: {section.sourceReference}
-                  </p>
-                ) : null}
-              </AppCard>
-            ))}
-          </div>
+      {approvedDuas.length > 0 ? (
+        <section className={spacing.stack.sm} aria-label="الأذكار والأدعية الثابتة">
+          {approvedDuas.map((dua) => (
+            <DuaBlock dua={dua} key={dua.id} />
+          ))}
         </section>
       ) : null}
 
-      {shouldDisplayDuasSection && approvedDuas.length > 0 ? (
-        <section className={spacing.stack.sm} aria-labelledby="duas-heading">
-          <h2
-            className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
-            id="duas-heading"
-          >
-            الأدعية المرتبطة
-          </h2>
-          <div className={spacing.stack.sm}>
-            {approvedDuas.map((dua) => (
-              <DuaBlock dua={dua} key={dua.id} />
-            ))}
-          </div>
+      {remainingSections.length > 0 ? (
+        <section className={spacing.stack.sm} aria-label="تفاصيل المرحلة">
+          {remainingSections.map((section) => (
+            <StageSectionCard key={section.id} section={section} />
+          ))}
         </section>
       ) : null}
-
-      {displayedSources.length > 0 ? (
-        <section className={spacing.stack.sm} aria-labelledby="sources-heading">
-          <h2
-            className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
-            id="sources-heading"
-          >
-            المصادر
-          </h2>
-          <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
-            <ul className={spacing.stack.xs}>
-              {displayedSources.map((source) => (
-                <li
-                  className={`${typography.hierarchy.body} ${typography.tone.muted}`}
-                  key={source}
-                >
-                  {localizeSourceReference(source)}
-                </li>
-              ))}
-            </ul>
-          </AppCard>
-        </section>
-      ) : null}
-
-      <AppButton
-        disabled={!isHydrated}
-        onClick={toggleCompletion}
-        tone={isCompleted ? "outline" : "gold"}
-      >
-        <CheckCircle2 aria-hidden="true" />
-        {isCompleted ? "إلغاء اكتمال المرحلة" : "تحديد المرحلة كمكتملة"}
-      </AppButton>
     </main>
   );
 }

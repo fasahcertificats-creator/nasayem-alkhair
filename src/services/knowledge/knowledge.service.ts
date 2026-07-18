@@ -46,7 +46,6 @@ const knowledgeRelationEntityTypes = new Set<KnowledgeRelationEntityType>([
   "knowledge-category",
   "umrah-stage",
   "azkar-category",
-  "miqat",
   "daily-reminder",
   "prayer-related-content"
 ]);

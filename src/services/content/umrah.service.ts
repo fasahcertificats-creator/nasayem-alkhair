@@ -14,7 +14,6 @@ import type {
 const umrahStagePhases = new Set<UmrahStagePhase>([
   "preparation",
   "travel",
-  "miqat",
   "ihram",
   "tawaf",
   "sai",
@@ -113,7 +112,6 @@ function isUmrahStage(value: unknown): value is UmrahStage {
     isStringArray(value.instructions) &&
     isStringArray(value.duas) &&
     isStringArray(value.sources) &&
-    typeof value.progressKey === "string" &&
     typeof value.verificationStatus === "string" &&
     verificationStatusValues.has(value.verificationStatus as ContentVerificationStatus)
   );
@@ -127,9 +125,16 @@ function parseCollection<T>(data: unknown, guard: (value: unknown) => value is T
   return data.filter(guard);
 }
 
+function getAllDuas(): Dua[] {
+  return parseCollection(duasData, isDua).sort((first, second) => first.order - second.order);
+}
+
 function getAllDuasByStageId(stageId: string): Dua[] {
+  const stage = getUmrahStages().find((item) => item.slug === stageId || item.id === stageId);
+  const stageDuaIds = new Set(stage?.duas ?? []);
+
   return parseCollection(duasData, isDua)
-    .filter((dua) => dua.stageId === stageId)
+    .filter((dua) => dua.stageId === stageId || stageDuaIds.has(dua.id))
     .sort((first, second) => first.order - second.order);
 }
 
@@ -143,4 +148,8 @@ export function getUmrahStageById(id: string): UmrahStage | undefined {
 
 export function getDuasByStageId(stageId: string): Dua[] {
   return getAllDuasByStageId(stageId).filter((dua) => dua.verificationStatus === "approved");
+}
+
+export function getDuaById(id: string): Dua | undefined {
+  return getAllDuas().find((dua) => dua.id === id && dua.verificationStatus === "approved");
 }

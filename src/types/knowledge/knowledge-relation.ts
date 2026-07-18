@@ -4,7 +4,6 @@ export type KnowledgeRelationEntityType =
   | "knowledge-category"
   | "umrah-stage"
   | "azkar-category"
-  | "miqat"
   | "daily-reminder"
   | "prayer-related-content";
 
