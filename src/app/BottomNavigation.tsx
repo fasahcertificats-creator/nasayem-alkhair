@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpenText, Clock, Compass, Home, Sparkles } from "lucide-react";
+import { BookOpenText, BriefcaseBusiness, Clock, Compass, Home } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
@@ -36,16 +36,16 @@ const navigationItems: NavigationItem[] = [
     match: (pathname) => pathname.startsWith(ROUTES.azkar)
   },
   {
-    href: ROUTES.tasbih,
-    label: "التسبيح",
-    icon: Sparkles,
-    match: (pathname) => pathname.startsWith(ROUTES.tasbih)
-  },
-  {
     href: ROUTES.umrah,
     label: "دليل العمرة",
     icon: Compass,
     match: (pathname) => pathname.startsWith(ROUTES.umrah)
+  },
+  {
+    href: ROUTES.services,
+    label: "الخدمات",
+    icon: BriefcaseBusiness,
+    match: (pathname) => pathname.startsWith(ROUTES.services) || pathname.startsWith(ROUTES.more)
   }
 ];
 
@@ -56,6 +56,7 @@ export function BottomNavigation() {
     <nav
       aria-label="التنقل الرئيسي"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/95 p-1 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-4px_12px_rgba(0,0,0,0.03)] backdrop-blur"
+      dir="rtl"
     >
       <div className="mx-auto grid w-full max-w-[560px] grid-cols-5 gap-0">
         {navigationItems.map((item) => {

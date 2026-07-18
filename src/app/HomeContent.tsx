@@ -27,6 +27,7 @@ interface HomeReminder {
 
 interface HomeContentProps {
   reminder: HomeReminder | null;
+  wird: HomeReminder | null;
 }
 
 const prayerRows = [
@@ -80,7 +81,7 @@ function localizeSourceReference(source: string) {
     .replaceAll("Sahih al-Bukhari", "صحيح البخاري");
 }
 
-export function HomeContent({ reminder }: HomeContentProps) {
+export function HomeContent({ reminder, wird }: HomeContentProps) {
   const [dateParts] = useState(getArabicDateParts);
   const [greeting] = useState(getGreeting);
   const [tasbihCount] = useState(() => {
@@ -122,6 +123,7 @@ export function HomeContent({ reminder }: HomeContentProps) {
       <DailyWorshipCard />
       <QuickAccess />
       <DailyReminder reminder={reminder} />
+      <DailyWird wird={wird} />
       <TasbihSummary count={tasbihCount} />
     </main>
   );
@@ -294,6 +296,52 @@ function DailyReminder({ reminder }: { reminder: HomeReminder | null }) {
         </Link>
       </div>
     </section>
+  );
+}
+
+function DailyWird({ wird }: { wird: HomeReminder | null }) {
+  if (!wird) {
+    return null;
+  }
+
+  return (
+    <Link
+      className="block rounded-2xl border border-border bg-secondary/70 p-4 shadow-soft transition hover:border-emerald-700/20 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      href={ROUTES.azkarCategory("quran-duas")}
+    >
+      <section className="relative space-y-2.5 overflow-hidden" aria-labelledby="daily-wird-heading">
+        <div className="pointer-events-none absolute left-0 top-0 size-16 rounded-br-full bg-emerald-700/5" />
+
+        <div className="flex items-center justify-between border-b border-border/50 pb-1.5">
+          <div className="flex items-center gap-1.5">
+            <BookMarked className="size-4 text-emerald-700" strokeWidth={1.7} />
+            <h2 className="text-xs font-bold text-primary" id="daily-wird-heading">
+              ورد اليوم
+            </h2>
+          </div>
+          <span className="rounded-md bg-white px-1.5 py-0.5 text-[9px] font-bold text-emerald-700">
+            ورد مختصر
+          </span>
+        </div>
+
+        <div className="space-y-1">
+          <p className="line-clamp-3 py-0.5 text-center font-serif text-[14px] font-semibold leading-loose text-primary">
+            {wird.text}
+          </p>
+          <p className="text-left text-[10px] text-muted-foreground">
+            {localizeSourceReference(wird.source)}
+            {wird.authenticity ? ` - ${wird.authenticity}` : ""}
+          </p>
+        </div>
+
+        <div className="flex justify-end">
+          <span className="flex items-center gap-0.5 text-[11px] font-bold text-emerald-700">
+            <span>فتح الورد</span>
+            <ChevronLeft className="size-3" strokeWidth={1.7} />
+          </span>
+        </div>
+      </section>
+    </Link>
   );
 }
 

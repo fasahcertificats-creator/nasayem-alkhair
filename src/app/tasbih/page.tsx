@@ -9,7 +9,7 @@ const dhikrOptions = [
   "الله أكبر",
   "لا إله إلا الله",
   "أستغفر الله",
-  "اللهم صل على النبي ﷺ"
+  "الصلاة على النبي ﷺ"
 ] as const;
 
 export default function TasbihPage() {
@@ -50,11 +50,10 @@ export default function TasbihPage() {
     });
   }
 
-  function reset() {
-    saveCounts({
-      ...counts,
-      [selectedDhikr]: 0
-    });
+  function resetAllTasbih() {
+    if (window.confirm("هل تريد تصفير عدادات التسبيح فقط؟")) {
+      saveCounts({});
+    }
   }
 
   const currentCount = counts[selectedDhikr] || 0;
@@ -67,62 +66,67 @@ export default function TasbihPage() {
           التسبيح
         </h1>
         <p className="text-body-premium text-muted-foreground">
-          صفحة هادئة للذكر والعد، بلا نظام إنجاز أو مزاحمة للقراءة.
+          اذكر الله بطمأنينة
         </p>
       </section>
 
-      <section className="space-y-2 rounded-2xl border border-border bg-white p-4 shadow-soft" aria-label="اختيار الذكر">
-        <h2 className="text-sm font-bold text-primary">اختر الذكر</h2>
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {dhikrOptions.map((dhikr) => {
-            const isSelected = dhikr === selectedDhikr;
-
-            return (
-              <button
-                className={`min-h-11 shrink-0 rounded-xl border px-3.5 py-2 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                  isSelected
-                    ? "border-primary bg-primary text-white"
-                    : "border-border bg-secondary text-muted-foreground hover:text-primary"
-                }`}
-                key={dhikr}
-                onClick={() => selectDhikr(dhikr)}
-                type="button"
-              >
-                {dhikr}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="rounded-3xl border border-border bg-white p-6 text-center shadow-card">
-        <div className="mx-auto mb-6 flex w-fit items-center gap-2 rounded-full border border-border bg-secondary px-5 py-2 text-gold">
+      <section className="rounded-[22px] border border-border bg-white p-5 text-center shadow-card">
+        <div className="mx-auto mb-5 flex w-fit items-center gap-2 rounded-full border border-border bg-secondary px-4 py-2 text-gold">
           <Sparkles className="size-4.5" strokeWidth={1.7} />
           <span className="text-base font-bold text-gold">{selectedDhikr}</span>
         </div>
 
-        <div className="mx-auto mb-6 max-w-[280px] rounded-2xl border border-border bg-background py-7 shadow-inner">
-          <p className="font-mono text-7xl font-extrabold tracking-wider text-primary">{currentCount}</p>
+        <div className="mx-auto mb-5 max-w-[260px] rounded-2xl border border-border bg-background py-6 shadow-inner">
+          <p className="font-mono text-[64px] font-extrabold leading-none tracking-wider text-primary sm:text-[68px]">
+            {currentCount.toLocaleString("ar-SA")}
+          </p>
           <p className="mt-2 text-xs font-bold text-muted-foreground">عداد الذكر الحالي</p>
         </div>
 
         <button
-          className="min-h-44 w-full rounded-[28px] border-8 border-background bg-primary text-white shadow-card transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="min-h-[118px] w-full rounded-[22px] bg-primary px-4 text-white transition active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           onClick={increment}
           type="button"
         >
           <span className="block text-lg font-extrabold">اضغط للتسبيح</span>
-          <span className="mt-1 block text-xs text-white/70">لمسة واحدة تزيد العداد مرة واحدة</span>
+          <span className="mt-1 block text-xs text-white/70">لمسة واحدة تزيد العدد</span>
         </button>
 
-        <div className="mt-4 flex items-center justify-between gap-3 text-right">
+        <div className="mt-5 space-y-2 text-right">
+          <h2 className="text-sm font-bold text-primary">اختر الذكر</h2>
+          <div className="grid grid-cols-2 gap-2">
+            {dhikrOptions.map((dhikr) => {
+              const isSelected = dhikr === selectedDhikr;
+
+              return (
+                <button
+                  aria-pressed={isSelected}
+                  className={`min-h-12 rounded-xl border px-3 py-2 text-sm font-bold leading-relaxed transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                    isSelected
+                      ? "border-primary bg-primary text-white"
+                      : "border-border bg-secondary text-primary hover:border-gold/40"
+                  }`}
+                  key={dhikr}
+                  onClick={() => selectDhikr(dhikr)}
+                  type="button"
+                >
+                  {dhikr}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4 text-right">
           <div>
             <p className="text-xs font-bold text-muted-foreground">محفوظ اليوم</p>
-            <p className="text-sm font-extrabold text-primary">{totalCount} تسبيحة</p>
+            <p className="text-sm font-extrabold text-primary">
+              {totalCount.toLocaleString("ar-SA")} تسبيحة
+            </p>
           </div>
           <button
-            className="flex min-h-11 items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2 text-xs font-bold text-primary transition hover:bg-background"
-            onClick={reset}
+            className="flex min-h-11 items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2 text-xs font-bold text-primary transition hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            onClick={resetAllTasbih}
             type="button"
           >
             <RotateCcw className="size-4" strokeWidth={1.7} />

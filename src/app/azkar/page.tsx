@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
@@ -112,6 +112,27 @@ export default function AzkarPage() {
               </Link>
             );
           })}
+          <Link
+            aria-label="فتح التسبيح"
+            className="group col-span-2 flex min-h-[118px] items-center justify-between gap-4 rounded-[22px] border border-border bg-secondary/80 px-4 py-4 text-right shadow-soft transition duration-200 hover:-translate-y-0.5 hover:border-emerald-700/30 hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background max-[330px]:col-span-1"
+            href={ROUTES.tasbih}
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--success-soft)] text-emerald-700">
+                <Sparkles aria-hidden="true" className="size-6" strokeWidth={1.7} />
+              </div>
+              <div className="min-w-0 space-y-1">
+                <h2 className="text-base font-bold text-primary">التسبيح</h2>
+                <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                  عداد بسيط للذكر والاستغفار
+                </p>
+              </div>
+            </div>
+            <span className="flex shrink-0 items-center gap-1 text-[11px] font-bold text-emerald-700">
+              <span>فتح التسبيح</span>
+              <ChevronDown aria-hidden="true" className="size-3" />
+            </span>
+          </Link>
         </div>
       </section>
     </main>

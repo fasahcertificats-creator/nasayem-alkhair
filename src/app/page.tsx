@@ -3,10 +3,11 @@ import { getAzkarItems } from "@/services/content";
 import { HomeContent } from "./HomeContent";
 
 export default function HomePage() {
-  const dailyReminder =
-    getAzkarItems("quran-duas")[0] ??
-    getAzkarItems("prophetic-duas")[0] ??
-    getAzkarItems("comprehensive-duas")[0];
+  const quranDuas = getAzkarItems("quran-duas");
+  const propheticDuas = getAzkarItems("prophetic-duas");
+  const comprehensiveDuas = getAzkarItems("comprehensive-duas");
+  const dailyReminder = propheticDuas[0] ?? comprehensiveDuas[0] ?? quranDuas[0];
+  const dailyWird = quranDuas.find((item) => item.id !== dailyReminder?.id) ?? quranDuas[0];
   const reminder = dailyReminder
     ? {
         text: dailyReminder.arabicText,
@@ -15,5 +16,13 @@ export default function HomePage() {
       }
     : null;
 
-  return <HomeContent reminder={reminder} />;
+  const wird = dailyWird
+    ? {
+        text: dailyWird.arabicText,
+        source: dailyWird.source,
+        authenticity: dailyWird.authenticity
+      }
+    : null;
+
+  return <HomeContent reminder={reminder} wird={wird} />;
 }
