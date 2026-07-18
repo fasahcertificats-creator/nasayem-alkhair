@@ -1,9 +1,10 @@
 "use client";
 
+import { AlertCircle } from "lucide-react";
 import type { ErrorInfo, ReactNode } from "react";
 import { Component } from "react";
 
-import { AppButton, AppCard, AppSection, spacing, typography } from "@/design-system";
+import { AppButton } from "@/design-system";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -46,22 +47,27 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
 
     return (
-      <AppSection spacing="lg">
-        <AppCard className={`${spacing.inset.lg} ${spacing.stack.md}`}>
-          <h1 className={`${typography.hierarchy.heading} ${typography.tone.primary}`}>
-            حدث خطأ غير متوقع
-          </h1>
-          <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            يمكنك إعادة المحاولة أو العودة إلى الرئيسية.
-          </p>
-          <div className={`flex flex-wrap ${spacing.inline.sm}`}>
-            <AppButton onClick={this.retry}>إعادة المحاولة</AppButton>
-            <AppButton onClick={this.goHome} tone="outline">
-              العودة إلى الرئيسية
-            </AppButton>
+      <div className="px-5 py-8 text-right" dir="rtl">
+        <div className="rounded-[22px] border border-border bg-white p-5 shadow-soft">
+          <div className="space-y-4">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-secondary text-gold">
+              <AlertCircle className="size-5" strokeWidth={1.7} />
+            </div>
+            <div className="space-y-2">
+              <h1 className="text-heading text-primary">حدث خطأ غير متوقع</h1>
+              <p className="text-body-premium text-muted-foreground">
+                يمكنك إعادة المحاولة أو العودة إلى الصفحة الرئيسية.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <AppButton onClick={this.retry}>إعادة المحاولة</AppButton>
+              <AppButton onClick={this.goHome} tone="outline">
+                العودة للرئيسية
+              </AppButton>
+            </div>
           </div>
-        </AppCard>
-      </AppSection>
+        </div>
+      </div>
     );
   }
 }

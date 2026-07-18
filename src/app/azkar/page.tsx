@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import type { CSSProperties } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
@@ -28,43 +28,43 @@ const categoryMetadata: Record<
 > = {
   morning: {
     title: "أذكار الصباح",
-    accent: "#2C8BC7"
+    accent: "var(--category-morning)"
   },
   evening: {
     title: "أذكار المساء",
-    accent: "#C84F5B"
+    accent: "var(--category-evening)"
   },
   prayer: {
     title: "أذكار الصلاة",
-    accent: "#A8732A"
+    accent: "var(--category-prayer)"
   },
   sleep: {
     title: "أذكار النوم",
-    accent: "#8B4FB3"
+    accent: "var(--category-sleep)"
   },
   wakeup: {
     title: "أذكار الاستيقاظ",
-    accent: "#B45B8B"
+    accent: "var(--category-wakeup)"
   },
   "after-prayer": {
     title: "أذكار بعد الصلاة",
-    accent: "#467AB8"
+    accent: "var(--category-after-prayer)"
   },
   "quran-duas": {
     title: "أدعية من القرآن",
-    accent: "#6F7478"
+    accent: "var(--category-quran-duas)"
   },
   "prophetic-duas": {
     title: "أدعية النبي صلى الله عليه وسلم",
-    accent: "#B78920"
+    accent: "var(--category-prophetic-duas)"
   },
   "names-of-allah": {
     title: "أسماء الله الحسنى",
-    accent: "#B24D59"
+    accent: "var(--category-names-of-allah)"
   },
   "comprehensive-duas": {
     title: "أدعية شاملة",
-    accent: "#2F7F76"
+    accent: "var(--category-comprehensive-duas)"
   }
 };
 
@@ -90,7 +90,7 @@ export default function AzkarPage() {
 
             return (
               <Link
-                aria-label={`فتح قسم ${metadata.title}`}
+                aria-label={`عرض ${metadata.title}`}
                 className="group flex min-h-[118px] flex-col items-center justify-center rounded-[22px] border border-border bg-white px-3 py-5 text-center shadow-soft transition duration-200 hover:-translate-y-0.5 hover:border-[color:var(--category-accent)] hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--category-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 href={ROUTES.azkarCategory(category)}
                 key={category}
@@ -107,7 +107,7 @@ export default function AzkarPage() {
                   style={{ color: metadata.accent }}
                 >
                   <span>المزيد</span>
-                  <ChevronLeft aria-hidden="true" className="size-3" />
+                  <ChevronDown aria-hidden="true" className="size-3" />
                 </span>
               </Link>
             );

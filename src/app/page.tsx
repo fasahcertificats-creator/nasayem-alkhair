@@ -1,4 +1,4 @@
-import { getAzkarItems, getUmrahStages } from "@/services/content";
+import { getAzkarItems } from "@/services/content";
 
 import { HomeContent } from "./HomeContent";
 
@@ -7,7 +7,6 @@ export default function HomePage() {
     getAzkarItems("quran-duas")[0] ??
     getAzkarItems("prophetic-duas")[0] ??
     getAzkarItems("comprehensive-duas")[0];
-  const umrahStages = getUmrahStages();
   const reminder = dailyReminder
     ? {
         text: dailyReminder.arabicText,
@@ -16,10 +15,5 @@ export default function HomePage() {
       }
     : null;
 
-  return (
-    <HomeContent
-      reminder={reminder}
-      umrahStageCount={umrahStages.length}
-    />
-  );
+  return <HomeContent reminder={reminder} />;
 }

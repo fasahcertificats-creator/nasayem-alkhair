@@ -51,7 +51,7 @@ function AzkarCategoryContentComponent({
           <div className="grid grid-cols-2 gap-2 pb-24 sm:grid-cols-3">
             {items.map((item) => (
               <div
-                className="rounded-lg border border-border bg-white px-3 py-4 text-center shadow-soft"
+                className="rounded-2xl border border-border bg-white px-3 py-4 text-center shadow-soft"
                 key={item.id}
               >
                 <p className="text-lg font-bold leading-relaxed text-primary">{item.arabicText}</p>

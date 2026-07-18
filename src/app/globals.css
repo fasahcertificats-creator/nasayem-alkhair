@@ -43,33 +43,60 @@
 }
 
 :root {
-  --background: #faf9f6;
-  --foreground: #1b3b2b;
-  --card: #ffffff;
-  --card-foreground: #1b3b2b;
+  --app-background: #faf9f6;
+  --surface-primary: #ffffff;
+  --surface-secondary: #f8f6f2;
+  --green-primary: #1b3b2b;
+  --green-deep: #1b3b2b;
+  --green-muted: #163325;
+  --gold-primary: #b8934e;
+  --gold-muted: #d5b06b;
+  --text-primary: #1b3b2b;
+  --text-secondary: #8b7e6d;
+  --text-muted: #8b7e6d;
+  --border-soft: #eae4d9;
+  --active-background: #f8f6f2;
+  --success-soft: #ecfdf5;
+  --blue-soft: #f0f9ff;
+  --purple-soft: #eef2ff;
+  --gold-soft: #fffbeb;
+  --category-morning: #2c8bc7;
+  --category-evening: #c84f5b;
+  --category-prayer: #a8732a;
+  --category-sleep: #8b4fb3;
+  --category-wakeup: #b45b8b;
+  --category-after-prayer: #467ab8;
+  --category-quran-duas: #6f7478;
+  --category-prophetic-duas: #b78920;
+  --category-names-of-allah: #b24d59;
+  --category-comprehensive-duas: #2f7f76;
+  --background: var(--app-background);
+  --foreground: var(--text-primary);
+  --card: var(--surface-primary);
+  --card-foreground: var(--text-primary);
   --popover: #ffffff;
-  --popover-foreground: #1b3b2b;
-  --primary: #1b3b2b;
-  --primary-foreground: #faf9f6;
-  --secondary: #f8f6f2;
-  --secondary-foreground: #1b3b2b;
-  --muted: #f8f6f2;
-  --muted-foreground: #8b7e6d;
-  --accent: #b8934e;
-  --accent-foreground: #1b3b2b;
+  --popover-foreground: var(--text-primary);
+  --primary: var(--green-primary);
+  --primary-foreground: var(--app-background);
+  --secondary: var(--surface-secondary);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--surface-secondary);
+  --muted-foreground: var(--text-muted);
+  --accent: var(--gold-primary);
+  --accent-foreground: var(--text-primary);
   --destructive: hsl(0 63% 46%);
   --destructive-foreground: hsl(210 40% 98%);
-  --border: #eae4d9;
-  --input: #eae4d9;
-  --ring: #1b3b2b;
-  --gold: #b8934e;
+  --border: var(--border-soft);
+  --input: var(--border-soft);
+  --ring: var(--green-primary);
+  --gold: var(--gold-primary);
   --gold-foreground: #ffffff;
-  --emerald-deep: #1b3b2b;
-  --ivory-warm: #f8f6f2;
+  --emerald-deep: var(--green-deep);
+  --ivory-warm: var(--surface-secondary);
   --radius: 0.75rem;
-  --radius-card: 1rem;
+  --radius-card: 1.375rem;
   --shadow-soft: 0 1px 2px rgb(0 0 0 / 5%);
-  --shadow-card: 0 1px 3px rgb(0 0 0 / 6%);
+  --shadow-card: 0 4px 14px rgb(27 59 43 / 5%);
   --shadow-focus: 0 0 0 3px rgb(27 59 43 / 14%);
   --spacing-section-sm: 1.5rem;
   --spacing-section-md: 2rem;
@@ -98,6 +125,11 @@
       sans-serif;
     text-rendering: optimizeLegibility;
   }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 @layer utilities {
@@ -111,30 +143,30 @@
   }
 
   .text-display {
-    font-size: 1.75rem;
+    font-size: 1.625rem;
     font-weight: 800;
     line-height: 1.2;
   }
 
   .text-heading {
-    font-size: 1.5rem;
-    font-weight: 800;
+    font-size: 1.375rem;
+    font-weight: 700;
     line-height: 1.25;
   }
 
   .text-subheading {
-    font-size: 1rem;
-    font-weight: 800;
+    font-size: 1.0625rem;
+    font-weight: 700;
     line-height: 1.4;
   }
 
   .text-body-premium {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     line-height: 1.7;
   }
 
   .text-caption-premium {
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     line-height: 1.5;
   }
 }

@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpenText, Home, Map, MoreHorizontal } from "lucide-react";
+import { BookOpenText, Clock, Compass, Home, Sparkles } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
@@ -24,22 +24,28 @@ const navigationItems: NavigationItem[] = [
     match: (pathname) => pathname === ROUTES.home
   },
   {
+    href: ROUTES.prayerTimes,
+    label: "أوقات الصلاة",
+    icon: Clock,
+    match: (pathname) => pathname.startsWith(ROUTES.prayerTimes)
+  },
+  {
     href: ROUTES.azkar,
     label: "الأذكار",
     icon: BookOpenText,
     match: (pathname) => pathname.startsWith(ROUTES.azkar)
   },
   {
-    href: ROUTES.umrah,
-    label: "دليل العمرة",
-    icon: Map,
-    match: (pathname) => pathname.startsWith(ROUTES.umrah)
+    href: ROUTES.tasbih,
+    label: "التسبيح",
+    icon: Sparkles,
+    match: (pathname) => pathname.startsWith(ROUTES.tasbih)
   },
   {
-    href: ROUTES.more,
-    label: "المزيد",
-    icon: MoreHorizontal,
-    match: (pathname) => pathname.startsWith(ROUTES.more)
+    href: ROUTES.umrah,
+    label: "دليل العمرة",
+    icon: Compass,
+    match: (pathname) => pathname.startsWith(ROUTES.umrah)
   }
 ];
 
@@ -49,9 +55,9 @@ export function BottomNavigation() {
   return (
     <nav
       aria-label="التنقل الرئيسي"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white p-1 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-4px_12px_rgba(0,0,0,0.03)]"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/95 p-1 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-4px_12px_rgba(0,0,0,0.03)] backdrop-blur"
     >
-      <div className="mx-auto grid max-w-md grid-cols-4 gap-0">
+      <div className="mx-auto grid w-full max-w-[560px] grid-cols-5 gap-0">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.match(pathname);
@@ -60,7 +66,7 @@ export function BottomNavigation() {
             <Link
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "relative flex min-w-0 flex-col items-center justify-center rounded-xl px-0.5 py-2 text-center transition-all duration-200",
+                "relative flex min-h-14 min-w-0 flex-col items-center justify-center rounded-xl px-0.5 py-2 text-center transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 isActive
                   ? "bg-secondary text-primary"
                   : "text-muted-foreground hover:text-primary"
@@ -68,8 +74,8 @@ export function BottomNavigation() {
               href={item.href}
               key={item.label}
             >
-              <Icon aria-hidden="true" className="mb-1 size-5" />
-              <span className="max-w-full truncate text-[12px] font-bold tracking-normal sm:text-[13px]">
+              <Icon aria-hidden="true" className="mb-1 size-[22px]" strokeWidth={1.7} />
+              <span className="max-w-full truncate text-[11px] font-bold tracking-normal sm:text-[12px]">
                 {item.label}
               </span>
               {isActive ? (

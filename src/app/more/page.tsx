@@ -1,75 +1,75 @@
-import Image from "next/image";
-import { BookOpenCheck, Info } from "lucide-react";
+import {
+  BookOpenCheck,
+  Calculator,
+  Info,
+  LocateFixed,
+  Scale,
+  ShieldCheck
+} from "lucide-react";
 
-import { AppCard, spacing, typography } from "@/design-system";
-
-const moreSections = [
+const settingRows = [
   {
-    title: "المصادر",
-    description: "يعتمد محتوى العمرة والأذكار على المصادر المذكورة داخل كل صفحة.",
+    title: "عن التطبيق",
+    description: "نسائم الخير دليل عربي مختصر للأذكار والعمرة.",
+    icon: Info
+  },
+  {
+    title: "مصادر المحتوى",
+    description: "تعرض المصادر داخل صفحات القراءة حيث يلزم.",
     icon: BookOpenCheck
   },
   {
-    title: "عن التطبيق",
-    description: "نسائم الخير دليل عربي مختصر للعمرة والأذكار، مع عرض المحتوى المعتمد فقط.",
-    icon: Info
+    title: "طريقة حساب الصلاة",
+    description: "تستخدم الصفحة الحالية عرضا محليا بسيطا عند عدم توفر الحساب الحي.",
+    icon: Calculator
+  },
+  {
+    title: "تحديث الموقع",
+    description: "يتطلب إذن المستخدم عند تفعيل الربط بالموقع.",
+    icon: LocateFixed
+  },
+  {
+    title: "سياسة الخصوصية",
+    description: "يحفظ التطبيق بعض العدادات محليا على جهازك.",
+    icon: ShieldCheck
+  },
+  {
+    title: "إصدار التطبيق",
+    description: "نسخة إنتاجية متوافقة مع الويب والتحويل المستقبلي للجوال.",
+    icon: Scale
   }
 ] as const;
 
 export default function MorePage() {
   return (
-    <main
-      className={`${spacing.inset.sm} ${spacing.stack.md} ${typography.fontFamily.arabic} ${typography.direction.arabic}`}
-      dir="rtl"
-    >
-      <section className={`${spacing.stack.sm} text-center`} aria-labelledby="more-heading">
-        <Image
-          alt="نسائم الخير"
-          className="mx-auto h-24 w-auto"
-          height={1254}
-          src="/nasayem-logo.png"
-          width={1254}
-        />
-        <h1
-          className={`${typography.hierarchy.heading} ${typography.tone.primary}`}
-          id="more-heading"
-        >
+    <main className="space-y-4 px-5 pb-12 pt-5 text-right" dir="rtl">
+      <section className="space-y-1.5" aria-labelledby="more-heading">
+        <h1 className="text-heading text-primary" id="more-heading">
           المزيد
         </h1>
+        <p className="text-body-premium text-muted-foreground">
+          إعدادات ومعلومات مختصرة عن التطبيق والمحتوى.
+        </p>
       </section>
 
-      <section className={spacing.stack.sm} aria-labelledby="more-sections-heading">
-        <h2
-          className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}
-          id="more-sections-heading"
-        >
-          معلومات التطبيق
-        </h2>
+      <section className="space-y-2.5" aria-label="إعدادات التطبيق">
+        {settingRows.map((row) => {
+          const Icon = row.icon;
 
-        <div className={spacing.stack.sm}>
-          {moreSections.map((section) => {
-            const Icon = section.icon;
-
-            return (
-              <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`} key={section.title}>
-                <div className={`flex items-start ${spacing.inline.sm}`}>
-                  <Icon
-                    aria-hidden="true"
-                    className={`${typography.tone.primary} mt-1 size-5 shrink-0`}
-                  />
-                  <div className={spacing.stack.xs}>
-                    <h3 className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
-                      {section.title}
-                    </h3>
-                    <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-                      {section.description}
-                    </p>
-                  </div>
+          return (
+            <div className="rounded-2xl border border-border bg-white p-4 shadow-soft" key={row.title}>
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-gold">
+                  <Icon className="size-4.5" strokeWidth={1.7} />
                 </div>
-              </AppCard>
-            );
-          })}
-        </div>
+                <div className="space-y-1">
+                  <h2 className="text-sm font-bold text-primary">{row.title}</h2>
+                  <p className="text-xs leading-relaxed text-muted-foreground">{row.description}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </section>
     </main>
   );

@@ -5,7 +5,9 @@ export const ROUTES = {
   azkar: "/azkar" as Route,
   miqat: "/miqat" as Route,
   more: "/more" as Route,
+  prayerTimes: "/prayer-times" as Route,
   progress: "/progress" as Route,
+  tasbih: "/tasbih" as Route,
   umrah: "/umrah" as Route,
   azkarCategory: (category: string) => `/azkar/${category}` as Route,
   umrahStage: (stage: string) => `/umrah/${stage}` as Route

@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { AlertCircle } from "lucide-react";
 import { useEffect } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
-import { AppBadge, AppButton, AppCard, AppSection, spacing, typography } from "@/design-system";
+import { AppButton } from "@/design-system";
 
 interface GlobalErrorPageProps {
   error: Error & { digest?: string };
@@ -19,24 +20,26 @@ export default function GlobalErrorPage({ error, reset }: GlobalErrorPageProps) 
   }, [error]);
 
   return (
-    <main>
-      <AppSection spacing="lg">
-        <AppCard className={`${spacing.inset.lg} ${spacing.stack.md}`}>
-          <AppBadge tone="ivory">تعذر العرض</AppBadge>
-          <h1 className={`${typography.hierarchy.heading} ${typography.tone.primary}`}>
-            تعذر تحميل هذه الصفحة
-          </h1>
-          <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            بقية التطبيق ما زالت متاحة.
-          </p>
-          <div className={`flex flex-wrap ${spacing.inline.sm}`}>
+    <main className="px-5 py-8 text-right" dir="rtl">
+      <section className="rounded-[22px] border border-border bg-white p-5 shadow-soft">
+        <div className="space-y-4">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-secondary text-gold">
+            <AlertCircle className="size-5" strokeWidth={1.7} />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-heading text-primary">تعذر تحميل هذه الصفحة</h1>
+            <p className="text-body-premium text-muted-foreground">
+              يمكنك إعادة المحاولة أو العودة إلى الصفحة الرئيسية.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
             <AppButton onClick={reset}>إعادة المحاولة</AppButton>
             <AppButton asChild tone="outline">
-              <Link href={ROUTES.home}>العودة إلى الرئيسية</Link>
+              <Link href={ROUTES.home}>العودة للرئيسية</Link>
             </AppButton>
           </div>
-        </AppCard>
-      </AppSection>
+        </div>
+      </section>
     </main>
   );
 }

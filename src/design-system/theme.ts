@@ -36,7 +36,7 @@ export const islamicPremiumTheme = {
     },
     card: {
       base: [
-        "rounded-2xl",
+        "rounded-[22px]",
         "border",
         colors.ivory.border,
         colors.ivory.surfaceRaised,
