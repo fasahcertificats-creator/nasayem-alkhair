@@ -10,6 +10,8 @@ export { AzkarCategoryCard } from "./AzkarCategoryCard";
 export type { AzkarCategoryCardProps } from "./AzkarCategoryCard";
 export { AzkarRepetitionControl } from "./AzkarRepetitionControl";
 export type { AzkarRepetitionControlProps } from "./AzkarRepetitionControl";
+export { AzkarSourceMeta } from "./AzkarSourceMeta";
+export type { AzkarSourceMetaProps } from "./AzkarSourceMeta";
 export { IconBadge } from "./IconBadge";
 export type { IconBadgeProps } from "./IconBadge";
 export { IslamicPattern } from "./IslamicPattern";
