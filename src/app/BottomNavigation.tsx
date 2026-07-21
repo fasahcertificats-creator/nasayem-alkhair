@@ -55,10 +55,10 @@ export function BottomNavigation() {
   return (
     <nav
       aria-label="التنقل الرئيسي"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/95 p-1 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-4px_12px_rgba(0,0,0,0.03)] backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--nasayem-border)] bg-[color-mix(in_srgb,var(--nasayem-surface)_94%,transparent)] p-1.5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-navigation backdrop-blur"
       dir="rtl"
     >
-      <div className="mx-auto grid w-full max-w-[560px] grid-cols-5 gap-0">
+      <div className="mx-auto grid w-full max-w-[560px] min-w-0 grid-cols-5 gap-0">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.match(pathname);
@@ -67,9 +67,9 @@ export function BottomNavigation() {
             <Link
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "relative flex min-h-14 min-w-0 flex-col items-center justify-center rounded-xl px-0.5 py-2 text-center transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                "relative mx-0.5 flex min-h-14 min-w-0 flex-col items-center justify-center rounded-[var(--radius-medium)] px-0.5 py-2 text-center transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 isActive
-                  ? "bg-secondary text-primary"
+                  ? "bg-[var(--nasayem-green-050)] text-primary"
                   : "text-muted-foreground hover:text-primary"
               )}
               href={item.href}
@@ -80,7 +80,7 @@ export function BottomNavigation() {
                 {item.label}
               </span>
               {isActive ? (
-                <span className="absolute top-0 size-1.5 rounded-full bg-gold" />
+                <span className="absolute top-1 h-0.5 w-5 rounded-full bg-gold" />
               ) : null}
             </Link>
           );

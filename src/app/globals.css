@@ -36,6 +36,8 @@
   --radius-card: var(--radius-card);
   --shadow-soft: var(--shadow-soft);
   --shadow-card: var(--shadow-card);
+  --shadow-card-elevated: var(--shadow-card-elevated);
+  --shadow-navigation: var(--shadow-navigation);
   --shadow-focus: var(--shadow-focus);
   --spacing-section-sm: var(--spacing-section-sm);
   --spacing-section-md: var(--spacing-section-md);
@@ -43,20 +45,79 @@
 }
 
 :root {
-  --app-background: #faf9f6;
-  --surface-primary: #ffffff;
-  --surface-secondary: #f8f6f2;
-  --green-primary: #1b3b2b;
-  --green-deep: #1b3b2b;
-  --green-muted: #163325;
-  --gold-primary: #b8934e;
-  --gold-muted: #d5b06b;
-  --text-primary: #1b3b2b;
-  --text-secondary: #8b7e6d;
-  --text-muted: #8b7e6d;
-  --border-soft: #eae4d9;
-  --active-background: #f8f6f2;
-  --success-soft: #ecfdf5;
+  --nasayem-bg: #f7f4ed;
+  --nasayem-surface: #fffdf8;
+  --nasayem-surface-muted: #f3efe6;
+  --nasayem-green-900: #173d31;
+  --nasayem-green-800: #174b39;
+  --nasayem-green-700: #23634b;
+  --nasayem-green-100: #e7f0ea;
+  --nasayem-green-050: #f1f6f2;
+  --nasayem-sage-600: #7f998a;
+  --nasayem-sage-400: #a9baaf;
+  --nasayem-sage-100: #e8efea;
+  --nasayem-gold-600: #b88f43;
+  --nasayem-gold-500: #c5a15a;
+  --nasayem-gold-200: #e5d3ac;
+  --nasayem-gold-100: #f1e7d1;
+  --nasayem-gold-050: #f8f2e5;
+  --nasayem-text: #173a30;
+  --nasayem-text-secondary: #817363;
+  --nasayem-text-muted: #a19382;
+  --nasayem-border: #e6ded1;
+  --nasayem-border-strong: #d8cbb9;
+  --nasayem-success: #23634b;
+  --color-background: var(--nasayem-bg);
+  --color-surface: var(--nasayem-surface);
+  --color-primary: var(--nasayem-green-900);
+  --color-primary-hover: #102f25;
+  --color-accent: var(--nasayem-gold-600);
+  --color-border: var(--nasayem-border);
+  --color-text: var(--nasayem-text);
+  --color-text-secondary: var(--nasayem-text-secondary);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --radius-small: 12px;
+  --radius-medium: 16px;
+  --radius-large: 20px;
+  --radius-card: 22px;
+  --radius-pill: 999px;
+  --type-display-size: 1.75rem;
+  --type-display-line: 1.2;
+  --type-page-heading-size: 1.375rem;
+  --type-page-heading-line: 1.28;
+  --type-section-heading-size: 1.125rem;
+  --type-section-heading-line: 1.4;
+  --type-card-title-size: 1rem;
+  --type-card-title-line: 1.55;
+  --type-body-size: 0.9375rem;
+  --type-body-line: 1.75;
+  --type-supporting-size: 0.8125rem;
+  --type-supporting-line: 1.65;
+  --type-label-size: 0.75rem;
+  --type-label-line: 1.5;
+  --type-badge-size: 0.6875rem;
+  --type-badge-line: 1.45;
+  --app-background: var(--nasayem-bg);
+  --surface-primary: var(--nasayem-surface);
+  --surface-secondary: var(--nasayem-surface-muted);
+  --green-primary: var(--nasayem-green-900);
+  --green-deep: var(--nasayem-green-900);
+  --green-muted: var(--nasayem-green-800);
+  --gold-primary: var(--nasayem-gold-600);
+  --gold-muted: var(--nasayem-gold-200);
+  --text-primary: var(--nasayem-text);
+  --text-secondary: var(--nasayem-text-secondary);
+  --text-muted: var(--nasayem-text-muted);
+  --border-soft: var(--nasayem-border);
+  --active-background: var(--nasayem-green-050);
+  --success-soft: var(--nasayem-green-050);
   --blue-soft: #f0f9ff;
   --purple-soft: #eef2ff;
   --gold-soft: #fffbeb;
@@ -93,14 +154,16 @@
   --gold-foreground: #ffffff;
   --emerald-deep: var(--green-deep);
   --ivory-warm: var(--surface-secondary);
-  --radius: 0.75rem;
-  --radius-card: 1.375rem;
-  --shadow-soft: 0 1px 2px rgb(0 0 0 / 5%);
-  --shadow-card: 0 4px 14px rgb(27 59 43 / 5%);
-  --shadow-focus: 0 0 0 3px rgb(27 59 43 / 14%);
-  --spacing-section-sm: 1.5rem;
-  --spacing-section-md: 2rem;
-  --spacing-section-lg: 2.75rem;
+  --radius: var(--radius-small);
+  --shadow-soft: 0 1px 2px rgb(65 48 31 / 4%);
+  --shadow-card: 0 10px 24px rgb(65 48 31 / 6%);
+  --shadow-card-elevated: 0 16px 36px rgb(65 48 31 / 8%);
+  --shadow-navigation: 0 -10px 28px rgb(65 48 31 / 8%);
+  --shadow-shell: 0 18px 52px rgb(65 48 31 / 10%);
+  --shadow-focus: 0 0 0 3px rgb(184 143 67 / 24%);
+  --spacing-section-sm: var(--space-6);
+  --spacing-section-md: var(--space-8);
+  --spacing-section-lg: var(--space-10);
 }
 
 .dark {
@@ -110,6 +173,12 @@
 @layer base {
   * {
     border-color: var(--border);
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
   }
 
   body {
@@ -130,6 +199,22 @@
   a {
     -webkit-tap-highlight-color: transparent;
   }
+
+  :focus-visible {
+    outline: 2px solid var(--nasayem-gold-600);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
 }
 
 @layer utilities {
@@ -143,30 +228,45 @@
   }
 
   .text-display {
-    font-size: 1.625rem;
+    font-size: var(--type-display-size);
     font-weight: 800;
-    line-height: 1.2;
+    line-height: var(--type-display-line);
   }
 
   .text-heading {
-    font-size: 1.375rem;
+    font-size: var(--type-page-heading-size);
     font-weight: 700;
-    line-height: 1.25;
+    line-height: var(--type-page-heading-line);
   }
 
   .text-subheading {
-    font-size: 1.0625rem;
+    font-size: var(--type-section-heading-size);
     font-weight: 700;
-    line-height: 1.4;
+    line-height: var(--type-section-heading-line);
   }
 
   .text-body-premium {
-    font-size: 0.9375rem;
-    line-height: 1.7;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
   }
 
   .text-caption-premium {
-    font-size: 0.75rem;
-    line-height: 1.5;
+    font-size: var(--type-supporting-size);
+    line-height: var(--type-supporting-line);
+  }
+
+  .text-card-title {
+    font-size: var(--type-card-title-size);
+    line-height: var(--type-card-title-line);
+  }
+
+  .text-label-premium {
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+
+  .text-badge-premium {
+    font-size: var(--type-badge-size);
+    line-height: var(--type-badge-line);
   }
 }

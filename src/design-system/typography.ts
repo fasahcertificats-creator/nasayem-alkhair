@@ -11,8 +11,12 @@ export const typography = {
     display: "text-display",
     heading: "text-heading",
     subheading: "text-subheading",
+    cardTitle: "text-card-title",
     body: "text-body-premium",
-    caption: "text-caption-premium"
+    supporting: "text-caption-premium",
+    caption: "text-caption-premium",
+    label: "text-label-premium",
+    badge: "text-badge-premium"
   },
   tone: {
     primary: "text-primary",

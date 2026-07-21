@@ -1,4 +1,14 @@
 export const spacing = {
+  rhythm: {
+    px4: "var(--space-1)",
+    px8: "var(--space-2)",
+    px12: "var(--space-3)",
+    px16: "var(--space-4)",
+    px20: "var(--space-5)",
+    px24: "var(--space-6)",
+    px32: "var(--space-8)",
+    px40: "var(--space-10)"
+  },
   section: {
     sm: "py-section-sm",
     md: "py-section-md",
