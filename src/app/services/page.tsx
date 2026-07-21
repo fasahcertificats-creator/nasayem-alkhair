@@ -140,18 +140,18 @@ export default function ServicesPage() {
   }
 
   return (
-    <main className="space-y-4 px-5 pt-5 pb-12 text-right" dir="rtl">
-      <section className="space-y-2" aria-labelledby="services-heading">
+    <main className="w-full min-w-0 max-w-full space-y-4 px-5 pt-5 pb-12 text-right" dir="rtl">
+      <section className="min-w-0 max-w-full space-y-2" aria-labelledby="services-heading">
         <span className="bg-secondary text-gold inline-flex w-fit rounded-md px-2 py-1 text-[10px] font-bold">
           استشارة مجانية
         </span>
         <PageHeading id="services-heading">الخدمات</PageHeading>
-        <p className="text-body-premium text-muted-foreground">
+        <p className="text-body-premium text-muted-foreground max-w-full break-words">
           اختر الخدمة التي تحتاجها، وسنجهز لك رسالة استفسار مباشرة.
         </p>
       </section>
 
-      <section className="grid grid-cols-2 gap-2.5" aria-label="اختيار الخدمة">
+      <section className="grid w-full min-w-0 grid-cols-2 gap-2.5" aria-label="اختيار الخدمة">
         {services.map((service) => {
           const Icon = service.icon;
           const isSelected = service.id === selectedService.id;
@@ -159,7 +159,7 @@ export default function ServicesPage() {
           return (
             <button
               aria-pressed={isSelected}
-              className={`shadow-soft focus-visible:ring-gold focus-visible:ring-offset-background min-h-[132px] rounded-[20px] border p-3 text-right transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${
+              className={`shadow-soft focus-visible:ring-gold focus-visible:ring-offset-background min-h-[132px] w-full min-w-0 rounded-[20px] border p-3 text-right transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${
                 isSelected
                   ? "border-primary bg-[var(--success-soft)]"
                   : "border-border hover:border-gold/40 bg-white"
@@ -168,7 +168,7 @@ export default function ServicesPage() {
               onClick={() => setSelectedServiceId(service.id)}
               type="button"
             >
-              <div className="flex items-start justify-between gap-2">
+              <div className="flex min-w-0 items-start justify-between gap-2">
                 <div className="bg-secondary text-gold flex size-9 shrink-0 items-center justify-center rounded-xl">
                   <Icon className="size-4.5" strokeWidth={1.7} />
                 </div>
@@ -178,10 +178,10 @@ export default function ServicesPage() {
                   </span>
                 ) : null}
               </div>
-              <h2 className="text-primary mt-3 text-sm leading-relaxed font-bold">
+              <h2 className="text-primary mt-3 max-w-full break-words text-sm leading-relaxed font-bold">
                 {service.title}
               </h2>
-              <p className="text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed">
+              <p className="text-muted-foreground mt-1 line-clamp-2 max-w-full break-words text-xs leading-relaxed">
                 {service.description}
               </p>
             </button>
@@ -189,25 +189,25 @@ export default function ServicesPage() {
         })}
       </section>
 
-      <section className="border-border shadow-soft space-y-3 rounded-[22px] border bg-white p-4">
-        <div className="space-y-1">
-          <h2 className="text-primary text-base font-bold">{selectedService.title}</h2>
-          <p className="text-muted-foreground text-sm leading-relaxed">{selectedService.intro}</p>
+      <section className="border-border shadow-soft min-w-0 max-w-full space-y-3 rounded-[22px] border bg-white p-4">
+        <div className="min-w-0 space-y-1">
+          <h2 className="text-primary max-w-full break-words text-base font-bold">{selectedService.title}</h2>
+          <p className="text-muted-foreground max-w-full break-words text-sm leading-relaxed">{selectedService.intro}</p>
         </div>
-        <ul className="space-y-2">
+        <ul className="min-w-0 space-y-2">
           {selectedService.points.map((point) => (
-            <li className="text-primary flex items-center gap-2 text-sm font-medium" key={point}>
+            <li className="text-primary flex min-w-0 items-center gap-2 text-sm font-medium" key={point}>
               <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--success-soft)] text-emerald-700">
                 <Check className="size-3" strokeWidth={2} />
               </span>
-              <span>{point}</span>
+              <span className="min-w-0 flex-1 break-words">{point}</span>
             </li>
           ))}
         </ul>
       </section>
 
       <section
-        className="border-border shadow-soft space-y-3 rounded-[22px] border bg-white p-4"
+        className="border-border shadow-soft min-w-0 max-w-full space-y-3 rounded-[22px] border bg-white p-4"
         aria-labelledby="consultation-heading"
       >
         <h2 className="text-primary text-base font-bold" id="consultation-heading">
@@ -216,7 +216,7 @@ export default function ServicesPage() {
         <label className="block space-y-1.5">
           <span className="text-muted-foreground text-xs font-bold">الاسم - اختياري</span>
           <input
-            className="border-border bg-background text-primary focus:border-gold focus:ring-gold/20 min-h-11 w-full rounded-xl border px-3 py-2 text-sm font-medium transition outline-none focus:ring-2"
+            className="border-border bg-background text-primary focus:border-gold focus:ring-gold/20 min-h-11 w-full max-w-full rounded-xl border px-3 py-2 text-sm font-medium transition outline-none focus:ring-2"
             onChange={(event) => setName(event.target.value)}
             placeholder="اكتب اسمك إن رغبت"
             type="text"
@@ -225,7 +225,7 @@ export default function ServicesPage() {
         </label>
 
         <a
-          className="bg-primary hover:bg-primary/95 focus-visible:ring-gold focus-visible:ring-offset-background flex min-h-12 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+          className="bg-primary hover:bg-primary/95 focus-visible:ring-gold focus-visible:ring-offset-background flex min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
           href={whatsappHref(primaryWhatsappNumber, preparedMessage)}
           rel="noreferrer"
           target="_blank"
@@ -234,20 +234,20 @@ export default function ServicesPage() {
           الاستفسار الآن عبر واتساب
         </a>
 
-        <details className="border-border bg-secondary/70 rounded-xl border">
-          <summary className="text-primary flex min-h-11 cursor-pointer list-none items-center justify-between px-3 py-2 text-xs font-bold [&::-webkit-details-marker]:hidden">
-            <span>معاينة الرسالة</span>
+        <details className="border-border bg-secondary/70 min-w-0 max-w-full rounded-xl border">
+          <summary className="text-primary flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-xs font-bold [&::-webkit-details-marker]:hidden">
+            <span className="min-w-0 break-words">معاينة الرسالة</span>
             <FileText className="text-gold size-4" strokeWidth={1.7} />
           </summary>
           <div className="border-border border-t p-3">
-            <p className="text-primary text-sm leading-relaxed whitespace-pre-line">
+            <p className="text-primary max-w-full break-words text-sm leading-relaxed whitespace-pre-line">
               {preparedMessage}
             </p>
           </div>
         </details>
 
         <button
-          className="border-border bg-secondary text-primary hover:bg-background flex min-h-11 items-center justify-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition"
+          className="border-border bg-secondary text-primary hover:bg-background flex min-h-11 w-full min-w-0 items-center justify-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition"
           onClick={copyMessage}
           type="button"
         >
@@ -261,23 +261,23 @@ export default function ServicesPage() {
         ) : null}
       </section>
 
-      <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3" aria-label="مزايا التواصل">
+      <section className="grid w-full min-w-0 grid-cols-1 gap-2.5 sm:grid-cols-3" aria-label="مزايا التواصل">
         {trustItems.map((item) => {
           const Icon = item.icon;
 
           return (
             <div
-              className="border-border bg-secondary/70 shadow-soft flex items-center justify-center gap-2 rounded-2xl border p-3 text-center"
+              className="border-border bg-secondary/70 shadow-soft flex min-w-0 items-center justify-center gap-2 rounded-2xl border p-3 text-center"
               key={item.label}
             >
               <Icon className="text-gold size-3.5" strokeWidth={1.7} />
-              <p className="text-primary text-xs font-bold">{item.label}</p>
+              <p className="text-primary min-w-0 break-words text-xs font-bold">{item.label}</p>
             </div>
           );
         })}
       </section>
 
-      <section className="space-y-2.5" aria-labelledby="office-info-heading">
+      <section className="min-w-0 max-w-full space-y-2.5" aria-labelledby="office-info-heading">
         <h2 className="text-primary text-base font-bold" id="office-info-heading">
           معلومات المكتب
         </h2>
@@ -294,8 +294,8 @@ export default function ServicesPage() {
           content="عدن - الشيخ عثمان - شارع عمر المختار"
           subtitle="بجانب مدرسة الحصاد الأهلية"
         />
-        <div className="border-border shadow-soft rounded-2xl border bg-white p-4">
-          <div className="flex items-start gap-3">
+        <div className="border-border shadow-soft min-w-0 max-w-full rounded-2xl border bg-white p-4">
+          <div className="flex min-w-0 items-start gap-3">
             <IconTile>
               <Phone className="size-4.5" strokeWidth={1.7} />
             </IconTile>
@@ -314,9 +314,9 @@ export default function ServicesPage() {
         />
       </section>
 
-      <section className="border-border bg-secondary/70 shadow-soft rounded-2xl border p-4 text-center">
+      <section className="border-border bg-secondary/70 shadow-soft min-w-0 max-w-full rounded-2xl border p-4 text-center">
         <h2 className="text-primary text-sm font-bold">مكتب نسائم الخير</h2>
-        <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
+        <p className="text-muted-foreground mt-1 max-w-full break-words text-xs leading-relaxed">
           خدمات العمرة والتأشيرات والحجوزات
         </p>
       </section>
@@ -344,13 +344,13 @@ function OfficeInfoCard({
   subtitle: string;
 }) {
   return (
-    <div className="border-border shadow-soft rounded-2xl border bg-white p-4">
-      <div className="flex items-start gap-3">
+    <div className="border-border shadow-soft min-w-0 max-w-full rounded-2xl border bg-white p-4">
+      <div className="flex min-w-0 items-start gap-3">
         <IconTile>{icon}</IconTile>
         <div className="min-w-0 space-y-1">
           <h3 className="text-primary text-sm font-bold">{title}</h3>
-          <p className="text-primary text-sm font-semibold">{content}</p>
-          <p className="text-muted-foreground text-xs leading-relaxed">{subtitle}</p>
+          <p className="text-primary max-w-full break-words text-sm font-semibold">{content}</p>
+          <p className="text-muted-foreground max-w-full break-words text-xs leading-relaxed">{subtitle}</p>
         </div>
       </div>
     </div>
@@ -359,11 +359,11 @@ function OfficeInfoCard({
 
 function ContactRow({ display, phone }: { display: string; phone: string }) {
   return (
-    <div className="border-border bg-background flex flex-wrap items-center justify-between gap-2 rounded-xl border p-2.5">
+    <div className="border-border bg-background flex w-full min-w-0 flex-wrap items-center justify-between gap-2 rounded-xl border p-2.5">
       <span className="text-primary font-mono text-sm font-bold whitespace-nowrap" dir="ltr">
         {display}
       </span>
-      <div className="flex items-center gap-1.5">
+      <div className="flex shrink-0 items-center gap-1.5">
         <a
           aria-label={`اتصال ${display}`}
           className="border-border text-primary rounded-lg border bg-white px-2 py-1 text-[11px] font-bold"
