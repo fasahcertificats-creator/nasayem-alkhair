@@ -9,6 +9,7 @@ interface ReligiousTextProps {
   children: string;
   className?: string;
   kind: ReligiousContentKind;
+  showSourceMeta?: boolean;
   source?: string;
   sourceReference?: string;
   title?: ReactNode;
@@ -126,7 +127,7 @@ function SourceReference({
   return <p>مرجع المصدر: {sourceReference}</p>;
 }
 
-function SourceMeta({
+export function ReligiousSourceMeta({
   authenticity,
   source,
   sourceReference
@@ -158,6 +159,7 @@ export function ReligiousText({
   children,
   className,
   kind,
+  showSourceMeta = true,
   source,
   sourceReference,
   title
@@ -183,7 +185,13 @@ export function ReligiousText({
         <p className="text-primary text-center font-serif text-[22px] leading-[2] font-bold whitespace-pre-line sm:text-[24px]">
           {verse}
         </p>
-        <SourceMeta authenticity={authenticity} source={source} sourceReference={sourceReference} />
+        {showSourceMeta ? (
+          <ReligiousSourceMeta
+            authenticity={authenticity}
+            source={source}
+            sourceReference={sourceReference}
+          />
+        ) : null}
       </div>
     );
   }
@@ -200,7 +208,13 @@ export function ReligiousText({
         <p className="text-primary text-right text-[18px] leading-[1.9] font-semibold whitespace-pre-line sm:text-[20px]">
           {children}
         </p>
-        <SourceMeta authenticity={authenticity} source={source} sourceReference={sourceReference} />
+        {showSourceMeta ? (
+          <ReligiousSourceMeta
+            authenticity={authenticity}
+            source={source}
+            sourceReference={sourceReference}
+          />
+        ) : null}
       </div>
     );
   }
@@ -212,7 +226,13 @@ export function ReligiousText({
         <p className="text-primary text-right text-[17px] leading-[1.85] font-semibold whitespace-pre-line sm:text-[19px]">
           {children}
         </p>
-        <SourceMeta authenticity={authenticity} source={source} sourceReference={sourceReference} />
+        {showSourceMeta ? (
+          <ReligiousSourceMeta
+            authenticity={authenticity}
+            source={source}
+            sourceReference={sourceReference}
+          />
+        ) : null}
       </div>
     );
   }

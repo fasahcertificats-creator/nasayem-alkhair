@@ -1,9 +1,15 @@
 "use client";
 
-import { RotateCcw } from "lucide-react";
 import { useState } from "react";
 
-import { AppButton, AppCard, ReligiousText, spacing } from "@/design-system";
+import {
+  AzkarRepetitionControl,
+  IslamicPattern,
+  ReligiousSourceMeta,
+  ReligiousText,
+  SurfaceCard,
+  spacing
+} from "@/design-system";
 import type { AzkarCategory, AzkarItem } from "@/types";
 
 interface AzkarReaderCardProps {
@@ -40,32 +46,48 @@ export function AzkarReaderCard({ item }: AzkarReaderCardProps) {
   }
 
   return (
-    <AppCard className={`${spacing.inset.md} ${spacing.stack.md}`}>
-      <ReligiousText
+    <SurfaceCard
+      className={`${spacing.inset.md} ${spacing.stack.md}`}
+      decoration={
+        contentKind === "quran" ? null : (
+          <IslamicPattern
+            className="-top-4 end-2"
+            opacity={0.035}
+            size="small"
+            tone="green"
+            variant="corner"
+          />
+        )
+      }
+      variant="default"
+    >
+      <div className="relative min-w-0">
+        <ReligiousText
+          authenticity={item.authenticity}
+          kind={contentKind}
+          showSourceMeta={false}
+          source={item.source}
+          sourceReference={item.sourceReference}
+          title={item.title}
+        >
+          {item.arabicText}
+        </ReligiousText>
+      </div>
+
+      <ReligiousSourceMeta
         authenticity={item.authenticity}
-        kind={contentKind}
         source={item.source}
         sourceReference={item.sourceReference}
-        title={item.title}
-      >
-        {item.arabicText}
-      </ReligiousText>
+      />
 
       {hasCounter ? (
-        <div className="flex flex-wrap items-center gap-2">
-          <AppButton
-            aria-label={`التكرار ${counter} من ${item.count}`}
-            className="min-h-11 min-w-24"
-            onClick={incrementCounter}
-            tone="gold"
-          >
-            التكرار {counter} من {item.count}
-          </AppButton>
-          <AppButton aria-label="إعادة ضبط التكرار" onClick={resetCounter} tone="outline">
-            <RotateCcw aria-hidden="true" />
-          </AppButton>
-        </div>
+        <AzkarRepetitionControl
+          count={counter}
+          onIncrement={incrementCounter}
+          onReset={resetCounter}
+          target={item.count}
+        />
       ) : null}
-    </AppCard>
+    </SurfaceCard>
   );
 }

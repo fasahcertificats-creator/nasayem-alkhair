@@ -1,10 +1,29 @@
-import Link from "next/link";
-import { ChevronDown, Sparkles } from "lucide-react";
-import type { CSSProperties } from "react";
+import {
+  BookOpen,
+  ChevronDown,
+  CloudSun,
+  Heart,
+  Moon,
+  ScrollText,
+  Sparkles,
+  Star,
+  Sun,
+  Sunrise,
+  type LucideIcon
+} from "lucide-react";
 
 import { ROUTES } from "@/constants/routes.constants";
-import { PageHeading, spacing, typography } from "@/design-system";
+import {
+  AzkarCategoryCard,
+  IconBadge,
+  IslamicPattern,
+  PageHeading,
+  SurfaceCard,
+  spacing,
+  typography
+} from "@/design-system";
 import type { AzkarCategory } from "@/types";
+import Link from "next/link";
 
 const categoryOrder = [
   "morning",
@@ -23,48 +42,59 @@ const categoryMetadata: Record<
   AzkarCategory,
   {
     accent: string;
+    icon: LucideIcon;
     title: string;
   }
 > = {
   morning: {
     title: "أذكار الصباح",
-    accent: "var(--category-morning)"
+    accent: "#5A96B8",
+    icon: Sun
   },
   evening: {
     title: "أذكار المساء",
-    accent: "var(--category-evening)"
+    accent: "#B86A72",
+    icon: Moon
   },
   prayer: {
     title: "أذكار الصلاة",
-    accent: "var(--category-prayer)"
+    accent: "#B88F43",
+    icon: Star
   },
   sleep: {
     title: "أذكار النوم",
-    accent: "var(--category-sleep)"
+    accent: "#8E75A8",
+    icon: Moon
   },
   wakeup: {
     title: "أذكار الاستيقاظ",
-    accent: "var(--category-wakeup)"
+    accent: "#B87A94",
+    icon: Sunrise
   },
   "after-prayer": {
     title: "أذكار بعد الصلاة",
-    accent: "var(--category-after-prayer)"
+    accent: "#5C88B8",
+    icon: ScrollText
   },
   "quran-duas": {
     title: "أدعية من القرآن",
-    accent: "var(--category-quran-duas)"
+    accent: "#7F998A",
+    icon: BookOpen
   },
   "prophetic-duas": {
     title: "أدعية النبي صلى الله عليه وسلم",
-    accent: "var(--category-prophetic-duas)"
+    accent: "#A9853E",
+    icon: Heart
   },
   "names-of-allah": {
     title: "أسماء الله الحسنى",
-    accent: "var(--category-names-of-allah)"
+    accent: "#A45E67",
+    icon: Sparkles
   },
   "comprehensive-duas": {
     title: "أدعية شاملة",
-    accent: "var(--category-comprehensive-duas)"
+    accent: "#5F9A91",
+    icon: CloudSun
   }
 };
 
@@ -74,60 +104,62 @@ export default function AzkarPage() {
       className={`${spacing.inset.sm} ${spacing.stack.md} ${typography.fontFamily.arabic} ${typography.direction.arabic}`}
       dir="rtl"
     >
-      <section className={spacing.stack.xs} aria-labelledby="azkar-heading">
+      <section className="relative min-w-0 overflow-hidden rounded-[var(--radius-card)] px-2 py-1" aria-labelledby="azkar-heading">
+        <IslamicPattern className="-top-6 end-1" opacity={0.04} size="medium" tone="gold" variant="header" />
         <PageHeading id="azkar-heading">الأذكار</PageHeading>
       </section>
 
       <section aria-label="أقسام الأذكار">
-        <div className="grid grid-cols-2 gap-3 max-[330px]:grid-cols-1 sm:gap-3.5">
+        <div className="grid min-w-0 grid-cols-2 gap-3 sm:gap-3.5">
           {categoryOrder.map((category) => {
             const metadata = categoryMetadata[category];
 
             return (
-              <Link
-                aria-label={`عرض ${metadata.title}`}
-                className="group border-border shadow-soft hover:shadow-card focus-visible:ring-offset-background flex min-h-[118px] flex-col items-center justify-center rounded-[22px] border bg-white px-3 py-5 text-center transition duration-200 hover:-translate-y-0.5 hover:border-[color:var(--category-accent)] focus-visible:ring-2 focus-visible:ring-[color:var(--category-accent)] focus-visible:ring-offset-2 focus-visible:outline-none"
+              <AzkarCategoryCard
+                accent={metadata.accent}
+                actionLabel="المزيد"
                 href={ROUTES.azkarCategory(category)}
+                icon={metadata.icon}
                 key={category}
-                style={{ "--category-accent": metadata.accent } as CSSProperties}
-              >
-                <span
-                  className="max-w-full text-[15px] leading-relaxed font-semibold text-balance sm:text-base"
-                  style={{ color: metadata.accent }}
-                >
-                  {metadata.title}
-                </span>
-                <span
-                  className="mt-2 inline-flex items-center gap-0.5 text-[11px] font-medium opacity-75 transition group-hover:opacity-100"
-                  style={{ color: metadata.accent }}
-                >
-                  <span>المزيد</span>
-                  <ChevronDown aria-hidden="true" className="size-3" />
-                </span>
-              </Link>
+                title={metadata.title}
+              />
             );
           })}
-          <Link
-            aria-label="فتح التسبيح"
-            className="group border-border bg-secondary/80 shadow-soft hover:shadow-card focus-visible:ring-gold focus-visible:ring-offset-background col-span-2 flex min-h-[118px] items-center justify-between gap-4 rounded-[22px] border px-4 py-4 text-right transition duration-200 hover:-translate-y-0.5 hover:border-emerald-700/30 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none max-[330px]:col-span-1"
-            href={ROUTES.tasbih}
+          <SurfaceCard
+            className="col-span-2 p-4"
+            decoration={
+              <IslamicPattern
+                className="-top-5 end-2"
+                opacity={0.035}
+                size="medium"
+                tone="green"
+                variant="corner"
+              />
+            }
+            variant="muted"
           >
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--success-soft)] text-emerald-700">
-                <Sparkles aria-hidden="true" className="size-6" strokeWidth={1.7} />
+            <Link
+              aria-label="فتح التسبيح"
+              className="group relative flex min-h-[112px] min-w-0 items-center justify-between gap-4 rounded-[var(--radius-large)] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+              href={ROUTES.tasbih}
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <IconBadge tone="green">
+                  <Sparkles aria-hidden="true" />
+                </IconBadge>
+                <div className="min-w-0 space-y-1">
+                  <h2 className="text-primary text-[17px] leading-relaxed font-bold">التسبيح</h2>
+                  <p className="text-muted-foreground line-clamp-2 text-[13px] leading-relaxed">
+                    عداد بسيط للذكر والاستغفار
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0 space-y-1">
-                <h2 className="text-primary text-base font-bold">التسبيح</h2>
-                <p className="text-muted-foreground line-clamp-2 text-xs leading-relaxed">
-                  عداد بسيط للذكر والاستغفار
-                </p>
-              </div>
-            </div>
-            <span className="flex shrink-0 items-center gap-1 text-[11px] font-bold text-emerald-700">
-              <span>فتح التسبيح</span>
-              <ChevronDown aria-hidden="true" className="size-3" />
-            </span>
-          </Link>
+              <span className="flex shrink-0 items-center gap-1 text-[13px] font-bold text-primary/75 transition group-hover:text-primary">
+                <span>فتح التسبيح</span>
+                <ChevronDown aria-hidden="true" className="size-3.5" />
+              </span>
+            </Link>
+          </SurfaceCard>
         </div>
       </section>
     </main>
