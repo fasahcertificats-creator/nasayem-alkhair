@@ -1,7 +1,9 @@
 "use client";
 
 import { RotateCcw, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { PageHeading } from "@/design-system";
 
 const dhikrOptions = [
   "سبحان الله",
@@ -12,41 +14,113 @@ const dhikrOptions = [
   "الصلاة على النبي ﷺ"
 ] as const;
 
+const tasbihCountsStorageKey = "nasayem_tasbih_counts";
+const activePhraseStorageKey = "nasayem_tasbih_active_phrase";
+const tasbihDayStorageKey = "nasayem_tasbih_day_key";
+const maxTasbihCount = 999999;
+
+function getLocalDayKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function isApprovedDhikr(value: unknown): value is (typeof dhikrOptions)[number] {
+  return typeof value === "string" && dhikrOptions.includes(value as (typeof dhikrOptions)[number]);
+}
+
+function sanitizeCounts(value: unknown): Record<string, number> {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return {};
+  }
+
+  const nextCounts: Record<string, number> = {};
+
+  for (const [key, count] of Object.entries(value)) {
+    if (!isApprovedDhikr(key) || !Number.isInteger(count) || count < 0) {
+      continue;
+    }
+
+    nextCounts[key] = Math.min(count, maxTasbihCount);
+  }
+
+  return nextCounts;
+}
+
+function readStoredCounts() {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  try {
+    const currentDayKey = getLocalDayKey();
+    const savedDayKey = localStorage.getItem(tasbihDayStorageKey);
+
+    if (savedDayKey && savedDayKey !== currentDayKey) {
+      localStorage.setItem(tasbihCountsStorageKey, JSON.stringify({}));
+      localStorage.setItem(tasbihDayStorageKey, currentDayKey);
+      return {};
+    }
+
+    if (!savedDayKey) {
+      localStorage.setItem(tasbihDayStorageKey, currentDayKey);
+    }
+
+    const savedCounts = localStorage.getItem(tasbihCountsStorageKey);
+
+    return sanitizeCounts(savedCounts ? JSON.parse(savedCounts) : {});
+  } catch {
+    return {};
+  }
+}
+
+function readStoredPhrase() {
+  if (typeof window === "undefined") {
+    return dhikrOptions[0];
+  }
+
+  return isApprovedDhikr(localStorage.getItem(activePhraseStorageKey))
+    ? localStorage.getItem(activePhraseStorageKey)!
+    : dhikrOptions[0];
+}
+
 export default function TasbihPage() {
-  const [selectedDhikr, setSelectedDhikr] = useState<string>(() => {
-    if (typeof window === "undefined") {
-      return dhikrOptions[0];
-    }
+  const [selectedDhikr, setSelectedDhikr] = useState<string>(dhikrOptions[0]);
+  const [counts, setCounts] = useState<Record<string, number>>({});
 
-    return localStorage.getItem("nasayem_tasbih_active_phrase") || dhikrOptions[0];
-  });
-  const [counts, setCounts] = useState<Record<string, number>>(() => {
-    if (typeof window === "undefined") {
-      return {};
-    }
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setSelectedDhikr(readStoredPhrase());
+      setCounts(readStoredCounts());
+    }, 0);
 
-    try {
-      const savedCounts = localStorage.getItem("nasayem_tasbih_counts");
-      return savedCounts ? (JSON.parse(savedCounts) as Record<string, number>) : {};
-    } catch {
-      return {};
-    }
-  });
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   function saveCounts(nextCounts: Record<string, number>) {
-    setCounts(nextCounts);
-    localStorage.setItem("nasayem_tasbih_counts", JSON.stringify(nextCounts));
+    const sanitizedCounts = sanitizeCounts(nextCounts);
+    setCounts(sanitizedCounts);
+    localStorage.setItem(tasbihDayStorageKey, getLocalDayKey());
+    localStorage.setItem(tasbihCountsStorageKey, JSON.stringify(sanitizedCounts));
   }
 
   function selectDhikr(dhikr: string) {
+    if (!isApprovedDhikr(dhikr)) {
+      return;
+    }
+
     setSelectedDhikr(dhikr);
-    localStorage.setItem("nasayem_tasbih_active_phrase", dhikr);
+    localStorage.setItem(activePhraseStorageKey, dhikr);
   }
 
   function increment() {
+    const currentCount = counts[selectedDhikr] || 0;
+
     saveCounts({
       ...counts,
-      [selectedDhikr]: (counts[selectedDhikr] || 0) + 1
+      [selectedDhikr]: Math.min(currentCount + 1, maxTasbihCount)
     });
   }
 
@@ -60,31 +134,27 @@ export default function TasbihPage() {
   const totalCount = Object.values(counts).reduce((sum, value) => sum + (Number(value) || 0), 0);
 
   return (
-    <main className="space-y-4 px-5 pb-12 pt-5 text-right" dir="rtl">
+    <main className="space-y-4 px-5 pt-5 pb-12 text-right" dir="rtl">
       <section className="space-y-1.5" aria-labelledby="tasbih-heading">
-        <h1 className="text-heading text-primary" id="tasbih-heading">
-          التسبيح
-        </h1>
-        <p className="text-body-premium text-muted-foreground">
-          اذكر الله بطمأنينة
-        </p>
+        <PageHeading id="tasbih-heading">التسبيح</PageHeading>
+        <p className="text-body-premium text-muted-foreground">اذكر الله بطمأنينة</p>
       </section>
 
-      <section className="rounded-[22px] border border-border bg-white p-5 text-center shadow-card">
-        <div className="mx-auto mb-5 flex w-fit items-center gap-2 rounded-full border border-border bg-secondary px-4 py-2 text-gold">
+      <section className="border-border shadow-card rounded-[22px] border bg-white p-5 text-center">
+        <div className="border-border bg-secondary text-gold mx-auto mb-5 flex w-fit items-center gap-2 rounded-full border px-4 py-2">
           <Sparkles className="size-4.5" strokeWidth={1.7} />
-          <span className="text-base font-bold text-gold">{selectedDhikr}</span>
+          <span className="text-gold text-base font-bold">{selectedDhikr}</span>
         </div>
 
-        <div className="mx-auto mb-5 max-w-[260px] rounded-2xl border border-border bg-background py-6 shadow-inner">
-          <p className="font-mono text-[64px] font-extrabold leading-none tracking-wider text-primary sm:text-[68px]">
+        <div className="border-border bg-background mx-auto mb-5 max-w-[260px] rounded-2xl border py-6 shadow-inner">
+          <p className="text-primary font-mono text-[64px] leading-none font-extrabold tracking-wider sm:text-[68px]">
             {currentCount.toLocaleString("ar-SA")}
           </p>
-          <p className="mt-2 text-xs font-bold text-muted-foreground">عداد الذكر الحالي</p>
+          <p className="text-muted-foreground mt-2 text-xs font-bold">عداد الذكر الحالي</p>
         </div>
 
         <button
-          className="min-h-[118px] w-full rounded-[22px] bg-primary px-4 text-white transition active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="bg-primary focus-visible:ring-gold focus-visible:ring-offset-background min-h-[118px] w-full rounded-[22px] px-4 text-white transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.99]"
           onClick={increment}
           type="button"
         >
@@ -93,7 +163,7 @@ export default function TasbihPage() {
         </button>
 
         <div className="mt-5 space-y-2 text-right">
-          <h2 className="text-sm font-bold text-primary">اختر الذكر</h2>
+          <h2 className="text-primary text-sm font-bold">اختر الذكر</h2>
           <div className="grid grid-cols-2 gap-2">
             {dhikrOptions.map((dhikr) => {
               const isSelected = dhikr === selectedDhikr;
@@ -101,7 +171,7 @@ export default function TasbihPage() {
               return (
                 <button
                   aria-pressed={isSelected}
-                  className={`min-h-12 rounded-xl border px-3 py-2 text-sm font-bold leading-relaxed transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                  className={`focus-visible:ring-gold focus-visible:ring-offset-background min-h-12 rounded-xl border px-3 py-2 text-sm leading-relaxed font-bold transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${
                     isSelected
                       ? "border-primary bg-primary text-white"
                       : "border-border bg-secondary text-primary hover:border-gold/40"
@@ -117,15 +187,15 @@ export default function TasbihPage() {
           </div>
         </div>
 
-        <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4 text-right">
+        <div className="border-border mt-5 flex items-center justify-between gap-3 border-t pt-4 text-right">
           <div>
-            <p className="text-xs font-bold text-muted-foreground">محفوظ اليوم</p>
-            <p className="text-sm font-extrabold text-primary">
+            <p className="text-muted-foreground text-xs font-bold">محفوظ اليوم</p>
+            <p className="text-primary text-sm font-extrabold">
               {totalCount.toLocaleString("ar-SA")} تسبيحة
             </p>
           </div>
           <button
-            className="flex min-h-11 items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2 text-xs font-bold text-primary transition hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="border-border bg-secondary text-primary hover:bg-background focus-visible:ring-gold focus-visible:ring-offset-background flex min-h-11 items-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             onClick={resetAllTasbih}
             type="button"
           >

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { memo } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
-import { AppButton, AppCard, spacing, typography } from "@/design-system";
+import { AppButton, AppCard, PageHeading, spacing, typography } from "@/design-system";
 import type { Dua, UmrahStage, UmrahStageContentSection } from "@/types";
 
 import { DuaBlock } from "../DuaBlock";
@@ -107,15 +107,15 @@ function PrimarySectionCard({ section }: { section: UmrahStageContentSection }) 
 
 function DisclosureSectionCard({ section }: { section: UmrahStageContentSection }) {
   return (
-    <details className="group rounded-lg border border-border bg-white shadow-soft transition duration-200 open:shadow-card">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background [&::-webkit-details-marker]:hidden">
-        <span className="text-base font-bold leading-relaxed">{section.titleAr}</span>
+    <details className="group border-border shadow-soft open:shadow-card rounded-lg border bg-white transition duration-200">
+      <summary className="text-primary focus-visible:ring-gold focus-visible:ring-offset-background flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none [&::-webkit-details-marker]:hidden">
+        <span className="text-base leading-relaxed font-bold">{section.titleAr}</span>
         <ChevronDown
           aria-hidden="true"
-          className="size-4 shrink-0 text-gold transition duration-200 group-open:rotate-180"
+          className="text-gold size-4 shrink-0 transition duration-200 group-open:rotate-180"
         />
       </summary>
-      <div className={`${spacing.stack.sm} border-t border-border px-4 pb-4 pt-3`}>
+      <div className={`${spacing.stack.sm} border-border border-t px-4 pt-3 pb-4`}>
         <StageSectionBody body={section.bodyAr} />
         <SectionReference source={section.sourceReference} />
       </div>
@@ -155,15 +155,8 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
           <Link href={ROUTES.umrah}>العودة إلى دليل العمرة</Link>
         </AppButton>
         <div className={spacing.stack.xs}>
-          <h1
-            className={`${typography.hierarchy.heading} ${typography.tone.primary}`}
-            id="stage-heading"
-          >
-            {stage.titleAr}
-          </h1>
-          <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            {stage.summary}
-          </p>
+          <PageHeading id="stage-heading">{stage.titleAr}</PageHeading>
+          <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>{stage.summary}</p>
         </div>
       </section>
 

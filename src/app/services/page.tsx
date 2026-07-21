@@ -16,6 +16,8 @@ import {
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 
+import { PageHeading } from "@/design-system";
+
 type ServiceId = "umrah" | "family-visit" | "work-visa" | "transport";
 
 type Service = {
@@ -47,11 +49,7 @@ const services: Service[] = [
     title: "تأشيرات الزيارة العائلية",
     description: "توضيح المتطلبات ومتابعة تجهيز الطلب.",
     intro: "نوضح لك المتطلبات الأساسية ونساعدك في تجهيز الطلب.",
-    points: [
-      "توضيح المتطلبات الأساسية",
-      "مراجعة البيانات قبل التقديم",
-      "متابعة تجهيز الطلب"
-    ],
+    points: ["توضيح المتطلبات الأساسية", "مراجعة البيانات قبل التقديم", "متابعة تجهيز الطلب"],
     message:
       "السلام عليكم، أرغب في الاستفسار عن تأشيرة الزيارة العائلية، والمتطلبات والإجراءات اللازمة.",
     icon: UsersRound
@@ -61,13 +59,8 @@ const services: Service[] = [
     title: "تأشيرات العمل",
     description: "مراجعة المتطلبات ومتابعة إجراءات التأشيرة.",
     intro: "نراجع المتطلبات ونوضح المستندات المطلوبة قبل المتابعة.",
-    points: [
-      "مراجعة متطلبات التأشيرة",
-      "توضيح المستندات المطلوبة",
-      "متابعة إجراءات الطلب"
-    ],
-    message:
-      "السلام عليكم، أرغب في الاستفسار عن تأشيرات العمل، والمتطلبات والإجراءات المتاحة.",
+    points: ["مراجعة متطلبات التأشيرة", "توضيح المستندات المطلوبة", "متابعة إجراءات الطلب"],
+    message: "السلام عليكم، أرغب في الاستفسار عن تأشيرات العمل، والمتطلبات والإجراءات المتاحة.",
     icon: BriefcaseBusiness
   },
   {
@@ -85,6 +78,12 @@ const services: Service[] = [
     icon: Plane
   }
 ];
+
+const trustItems = [
+  { label: "استشارة مجانية", icon: Check },
+  { label: "وضوح المتطلبات", icon: FileText },
+  { label: "متابعة حتى اكتمال الطلب", icon: Clock }
+] as const;
 
 function buildMessage(service: Service, name: string) {
   const trimmedName = name.trim();
@@ -104,28 +103,49 @@ function whatsappHref(phone: string, message?: string) {
 export default function ServicesPage() {
   const [selectedServiceId, setSelectedServiceId] = useState<ServiceId>("umrah");
   const [name, setName] = useState("");
-  const [isCopied, setIsCopied] = useState(false);
-  const selectedService = services.find((service) => service.id === selectedServiceId) ?? services[0];
+  const [copyState, setCopyState] = useState<"idle" | "success" | "error">("idle");
+  const selectedService =
+    services.find((service) => service.id === selectedServiceId) ?? services[0];
   const preparedMessage = useMemo(
     () => buildMessage(selectedService, name),
     [name, selectedService]
   );
 
   async function copyMessage() {
-    await navigator.clipboard.writeText(preparedMessage);
-    setIsCopied(true);
-    window.setTimeout(() => setIsCopied(false), 1600);
+    try {
+      if (navigator.clipboard?.writeText && window.isSecureContext) {
+        await navigator.clipboard.writeText(preparedMessage);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = preparedMessage;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand("copy");
+        document.body.removeChild(textarea);
+
+        if (!copied) {
+          throw new Error("copy-failed");
+        }
+      }
+
+      setCopyState("success");
+    } catch {
+      setCopyState("error");
+    } finally {
+      window.setTimeout(() => setCopyState("idle"), 1800);
+    }
   }
 
   return (
-    <main className="space-y-4 px-5 pb-12 pt-5 text-right" dir="rtl">
+    <main className="space-y-4 px-5 pt-5 pb-12 text-right" dir="rtl">
       <section className="space-y-2" aria-labelledby="services-heading">
-        <span className="inline-flex w-fit rounded-md bg-secondary px-2 py-1 text-[10px] font-bold text-gold">
+        <span className="bg-secondary text-gold inline-flex w-fit rounded-md px-2 py-1 text-[10px] font-bold">
           استشارة مجانية
         </span>
-        <h1 className="text-heading text-primary" id="services-heading">
-          الخدمات
-        </h1>
+        <PageHeading id="services-heading">الخدمات</PageHeading>
         <p className="text-body-premium text-muted-foreground">
           اختر الخدمة التي تحتاجها، وسنجهز لك رسالة استفسار مباشرة.
         </p>
@@ -139,27 +159,29 @@ export default function ServicesPage() {
           return (
             <button
               aria-pressed={isSelected}
-              className={`min-h-[132px] rounded-[20px] border p-3 text-right shadow-soft transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+              className={`shadow-soft focus-visible:ring-gold focus-visible:ring-offset-background min-h-[132px] rounded-[20px] border p-3 text-right transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${
                 isSelected
                   ? "border-primary bg-[var(--success-soft)]"
-                  : "border-border bg-white hover:border-gold/40"
+                  : "border-border hover:border-gold/40 bg-white"
               }`}
               key={service.id}
               onClick={() => setSelectedServiceId(service.id)}
               type="button"
             >
               <div className="flex items-start justify-between gap-2">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-gold">
+                <div className="bg-secondary text-gold flex size-9 shrink-0 items-center justify-center rounded-xl">
                   <Icon className="size-4.5" strokeWidth={1.7} />
                 </div>
                 {isSelected ? (
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-white">
+                  <span className="bg-primary flex size-5 shrink-0 items-center justify-center rounded-full text-white">
                     <Check className="size-3" strokeWidth={2} />
                   </span>
                 ) : null}
               </div>
-              <h2 className="mt-3 text-sm font-bold leading-relaxed text-primary">{service.title}</h2>
-              <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+              <h2 className="text-primary mt-3 text-sm leading-relaxed font-bold">
+                {service.title}
+              </h2>
+              <p className="text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed">
                 {service.description}
               </p>
             </button>
@@ -167,14 +189,14 @@ export default function ServicesPage() {
         })}
       </section>
 
-      <section className="space-y-3 rounded-[22px] border border-border bg-white p-4 shadow-soft">
+      <section className="border-border shadow-soft space-y-3 rounded-[22px] border bg-white p-4">
         <div className="space-y-1">
-          <h2 className="text-base font-bold text-primary">{selectedService.title}</h2>
-          <p className="text-sm leading-relaxed text-muted-foreground">{selectedService.intro}</p>
+          <h2 className="text-primary text-base font-bold">{selectedService.title}</h2>
+          <p className="text-muted-foreground text-sm leading-relaxed">{selectedService.intro}</p>
         </div>
         <ul className="space-y-2">
           {selectedService.points.map((point) => (
-            <li className="flex items-center gap-2 text-sm font-medium text-primary" key={point}>
+            <li className="text-primary flex items-center gap-2 text-sm font-medium" key={point}>
               <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--success-soft)] text-emerald-700">
                 <Check className="size-3" strokeWidth={2} />
               </span>
@@ -184,14 +206,17 @@ export default function ServicesPage() {
         </ul>
       </section>
 
-      <section className="space-y-3 rounded-[22px] border border-border bg-white p-4 shadow-soft" aria-labelledby="consultation-heading">
-        <h2 className="text-base font-bold text-primary" id="consultation-heading">
+      <section
+        className="border-border shadow-soft space-y-3 rounded-[22px] border bg-white p-4"
+        aria-labelledby="consultation-heading"
+      >
+        <h2 className="text-primary text-base font-bold" id="consultation-heading">
           ابدأ استشارتك
         </h2>
         <label className="block space-y-1.5">
-          <span className="text-xs font-bold text-muted-foreground">الاسم - اختياري</span>
+          <span className="text-muted-foreground text-xs font-bold">الاسم - اختياري</span>
           <input
-            className="min-h-11 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium text-primary outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20"
+            className="border-border bg-background text-primary focus:border-gold focus:ring-gold/20 min-h-11 w-full rounded-xl border px-3 py-2 text-sm font-medium transition outline-none focus:ring-2"
             onChange={(event) => setName(event.target.value)}
             placeholder="اكتب اسمك إن رغبت"
             type="text"
@@ -200,7 +225,7 @@ export default function ServicesPage() {
         </label>
 
         <a
-          className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white transition hover:bg-primary/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="bg-primary hover:bg-primary/95 focus-visible:ring-gold focus-visible:ring-offset-background flex min-h-12 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
           href={whatsappHref(primaryWhatsappNumber, preparedMessage)}
           rel="noreferrer"
           target="_blank"
@@ -209,36 +234,51 @@ export default function ServicesPage() {
           الاستفسار الآن عبر واتساب
         </a>
 
-        <details className="rounded-xl border border-border bg-secondary/70">
-          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-3 py-2 text-xs font-bold text-primary [&::-webkit-details-marker]:hidden">
+        <details className="border-border bg-secondary/70 rounded-xl border">
+          <summary className="text-primary flex min-h-11 cursor-pointer list-none items-center justify-between px-3 py-2 text-xs font-bold [&::-webkit-details-marker]:hidden">
             <span>معاينة الرسالة</span>
-            <FileText className="size-4 text-gold" strokeWidth={1.7} />
+            <FileText className="text-gold size-4" strokeWidth={1.7} />
           </summary>
-          <div className="border-t border-border p-3">
-            <p className="whitespace-pre-line text-sm leading-relaxed text-primary">{preparedMessage}</p>
+          <div className="border-border border-t p-3">
+            <p className="text-primary text-sm leading-relaxed whitespace-pre-line">
+              {preparedMessage}
+            </p>
           </div>
         </details>
 
         <button
-          className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2 text-xs font-bold text-primary transition hover:bg-background"
+          className="border-border bg-secondary text-primary hover:bg-background flex min-h-11 items-center justify-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold transition"
           onClick={copyMessage}
           type="button"
         >
           <Copy className="size-4" strokeWidth={1.7} />
-          {isCopied ? "تم النسخ" : "نسخ الرسالة"}
+          {copyState === "success" ? "تم النسخ" : "نسخ الرسالة"}
         </button>
+        {copyState === "error" ? (
+          <p className="text-muted-foreground text-center text-xs font-bold">
+            تعذر النسخ تلقائيا. يمكنك نسخ الرسالة من المعاينة.
+          </p>
+        ) : null}
       </section>
 
       <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3" aria-label="مزايا التواصل">
-        {["استشارة مجانية", "تواصل باللغة العربية", "متابعة حتى اكتمال الطلب"].map((item) => (
-          <div className="rounded-2xl border border-border bg-secondary/70 p-3 text-center shadow-soft" key={item}>
-            <p className="text-xs font-bold text-primary">{item}</p>
-          </div>
-        ))}
+        {trustItems.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <div
+              className="border-border bg-secondary/70 shadow-soft flex items-center justify-center gap-2 rounded-2xl border p-3 text-center"
+              key={item.label}
+            >
+              <Icon className="text-gold size-3.5" strokeWidth={1.7} />
+              <p className="text-primary text-xs font-bold">{item.label}</p>
+            </div>
+          );
+        })}
       </section>
 
       <section className="space-y-2.5" aria-labelledby="office-info-heading">
-        <h2 className="text-base font-bold text-primary" id="office-info-heading">
+        <h2 className="text-primary text-base font-bold" id="office-info-heading">
           معلومات المكتب
         </h2>
 
@@ -254,13 +294,13 @@ export default function ServicesPage() {
           content="عدن - الشيخ عثمان - شارع عمر المختار"
           subtitle="بجانب مدرسة الحصاد الأهلية"
         />
-        <div className="rounded-2xl border border-border bg-white p-4 shadow-soft">
+        <div className="border-border shadow-soft rounded-2xl border bg-white p-4">
           <div className="flex items-start gap-3">
             <IconTile>
               <Phone className="size-4.5" strokeWidth={1.7} />
             </IconTile>
             <div className="min-w-0 flex-1 space-y-3">
-              <h3 className="text-sm font-bold text-primary">أرقام التواصل</h3>
+              <h3 className="text-primary text-sm font-bold">أرقام التواصل</h3>
               <ContactRow display="+967 77 436 0027" phone={primaryWhatsappNumber} />
               <ContactRow display="+967 77 438 3736" phone={secondaryWhatsappNumber} />
             </div>
@@ -274,9 +314,9 @@ export default function ServicesPage() {
         />
       </section>
 
-      <section className="rounded-2xl border border-border bg-secondary/70 p-4 text-center shadow-soft">
-        <h2 className="text-sm font-bold text-primary">مكتب نسائم الخير</h2>
-        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+      <section className="border-border bg-secondary/70 shadow-soft rounded-2xl border p-4 text-center">
+        <h2 className="text-primary text-sm font-bold">مكتب نسائم الخير</h2>
+        <p className="text-muted-foreground mt-1 text-xs leading-relaxed">
           خدمات العمرة والتأشيرات والحجوزات
         </p>
       </section>
@@ -286,7 +326,7 @@ export default function ServicesPage() {
 
 function IconTile({ children }: { children: ReactNode }) {
   return (
-    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-gold">
+    <div className="bg-secondary text-gold flex size-9 shrink-0 items-center justify-center rounded-xl">
       {children}
     </div>
   );
@@ -304,13 +344,13 @@ function OfficeInfoCard({
   subtitle: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-white p-4 shadow-soft">
+    <div className="border-border shadow-soft rounded-2xl border bg-white p-4">
       <div className="flex items-start gap-3">
         <IconTile>{icon}</IconTile>
         <div className="min-w-0 space-y-1">
-          <h3 className="text-sm font-bold text-primary">{title}</h3>
-          <p className="text-sm font-semibold text-primary">{content}</p>
-          <p className="text-xs leading-relaxed text-muted-foreground">{subtitle}</p>
+          <h3 className="text-primary text-sm font-bold">{title}</h3>
+          <p className="text-primary text-sm font-semibold">{content}</p>
+          <p className="text-muted-foreground text-xs leading-relaxed">{subtitle}</p>
         </div>
       </div>
     </div>
@@ -319,14 +359,14 @@ function OfficeInfoCard({
 
 function ContactRow({ display, phone }: { display: string; phone: string }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-background p-2.5">
-      <span className="font-mono text-sm font-bold text-primary" dir="ltr">
+    <div className="border-border bg-background flex flex-wrap items-center justify-between gap-2 rounded-xl border p-2.5">
+      <span className="text-primary font-mono text-sm font-bold whitespace-nowrap" dir="ltr">
         {display}
       </span>
       <div className="flex items-center gap-1.5">
         <a
           aria-label={`اتصال ${display}`}
-          className="rounded-lg border border-border bg-white px-2 py-1 text-[11px] font-bold text-primary"
+          className="border-border text-primary rounded-lg border bg-white px-2 py-1 text-[11px] font-bold"
           href={`tel:+${phone}`}
         >
           اتصال

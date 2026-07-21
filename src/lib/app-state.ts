@@ -29,10 +29,43 @@ function canUseStorage(): boolean {
 }
 
 function getDayKey(timestamp: number): string {
-  return new Date(timestamp).toISOString().slice(0, 10);
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
 
-function readJson<TValue>(key: string, fallback: TValue): TValue {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isProgressEntry(value: unknown): value is ProgressEntry {
+  return (
+    isRecord(value) &&
+    typeof value.stepId === "string" &&
+    typeof value.completed === "boolean" &&
+    typeof value.timestamp === "number" &&
+    Number.isFinite(value.timestamp) &&
+    value.timestamp > 0
+  );
+}
+
+function isHistoryEntry(value: unknown): value is HistoryEntry {
+  return (
+    isRecord(value) &&
+    isProgressEntry(value) &&
+    typeof value.dayKey === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(value.dayKey)
+  );
+}
+
+function readJson<TValue>(
+  key: string,
+  fallback: TValue,
+  guard: (value: unknown) => value is TValue
+): TValue {
   if (!canUseStorage()) {
     return fallback;
   }
@@ -44,7 +77,9 @@ function readJson<TValue>(key: string, fallback: TValue): TValue {
   }
 
   try {
-    return JSON.parse(value) as TValue;
+    const parsedValue = JSON.parse(value);
+
+    return guard(parsedValue) ? parsedValue : fallback;
   } catch {
     return fallback;
   }
@@ -66,7 +101,7 @@ function readLastResetAt(): number {
   const value = window.localStorage.getItem(LAST_RESET_KEY);
   const parsedValue = value ? Number(value) : NaN;
 
-  return Number.isFinite(parsedValue) ? parsedValue : Date.now();
+  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : Date.now();
 }
 
 function writeLastResetAt(timestamp: number): void {
@@ -84,7 +119,11 @@ function appendCompletedProgressToHistory(progress: ProgressEntry[]): void {
     return;
   }
 
-  const history = readJson<HistoryEntry[]>(HISTORY_LOG_KEY, []);
+  const history = readJson<HistoryEntry[]>(
+    HISTORY_LOG_KEY,
+    [],
+    (value): value is HistoryEntry[] => Array.isArray(value) && value.every(isHistoryEntry)
+  );
   const nextHistory = [...history];
 
   for (const entry of completedProgress) {
@@ -102,7 +141,11 @@ function appendCompletedProgressToHistory(progress: ProgressEntry[]): void {
 }
 
 export function resetDailyProgress(): void {
-  const progress = readJson<ProgressEntry[]>(DAILY_PROGRESS_KEY, []);
+  const progress = readJson<ProgressEntry[]>(
+    DAILY_PROGRESS_KEY,
+    [],
+    (value): value is ProgressEntry[] => Array.isArray(value) && value.every(isProgressEntry)
+  );
 
   appendCompletedProgressToHistory(progress);
   writeJson<ProgressEntry[]>(DAILY_PROGRESS_KEY, []);
@@ -116,7 +159,7 @@ function ensureDailyProgressIsFresh(): void {
 
   const lastResetAt = readLastResetAt();
 
-  if (Date.now() - lastResetAt >= DAY_MS) {
+  if (getDayKey(Date.now()) !== getDayKey(lastResetAt) || Date.now() - lastResetAt >= DAY_MS * 2) {
     resetDailyProgress();
     return;
   }
@@ -129,16 +172,24 @@ function ensureDailyProgressIsFresh(): void {
 export function loadProgress(): ProgressEntry[] {
   ensureDailyProgressIsFresh();
 
-  return readJson<ProgressEntry[]>(DAILY_PROGRESS_KEY, []);
+  return readJson<ProgressEntry[]>(
+    DAILY_PROGRESS_KEY,
+    [],
+    (value): value is ProgressEntry[] => Array.isArray(value) && value.every(isProgressEntry)
+  );
 }
 
 export function saveProgress(progress: ProgressEntry[]): void {
   ensureDailyProgressIsFresh();
-  writeJson(DAILY_PROGRESS_KEY, progress);
+  writeJson(DAILY_PROGRESS_KEY, progress.filter(isProgressEntry));
 }
 
 export function loadHistoryLog(): HistoryEntry[] {
-  return readJson<HistoryEntry[]>(HISTORY_LOG_KEY, []);
+  return readJson<HistoryEntry[]>(
+    HISTORY_LOG_KEY,
+    [],
+    (value): value is HistoryEntry[] => Array.isArray(value) && value.every(isHistoryEntry)
+  );
 }
 
 export function getStreak(): StreakSummary {
@@ -162,7 +213,7 @@ export function getStreak(): StreakSummary {
   let previousTime: number | null = null;
 
   for (const dayKey of sortedDayKeys) {
-    const currentTime = new Date(`${dayKey}T00:00:00.000Z`).getTime();
+    const currentTime = new Date(`${dayKey}T00:00:00`).getTime();
     runningStreak =
       previousTime !== null && currentTime - previousTime === DAY_MS ? runningStreak + 1 : 1;
     bestStreak = Math.max(bestStreak, runningStreak);
@@ -171,7 +222,7 @@ export function getStreak(): StreakSummary {
 
   const todayKey = getDayKey(Date.now());
   let currentStreak = 0;
-  let cursorTime = new Date(`${todayKey}T00:00:00.000Z`).getTime();
+  let cursorTime = new Date(`${todayKey}T00:00:00`).getTime();
 
   while (completedDayKeys.has(getDayKey(cursorTime))) {
     currentStreak += 1;

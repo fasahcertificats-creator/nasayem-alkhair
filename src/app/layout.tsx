@@ -24,7 +24,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html dir="rtl" lang={APP_METADATA.defaultLocale} suppressHydrationWarning>
+    <html dir="rtl" lang={APP_METADATA.defaultLocale}>
       <body>
         <AppProviders>
           <AppShell>{children}</AppShell>

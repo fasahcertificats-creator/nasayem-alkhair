@@ -3,16 +3,33 @@
 import { RotateCcw } from "lucide-react";
 import { useState } from "react";
 
-import { AppButton, AppCard, spacing, typography } from "@/design-system";
-import type { AzkarItem } from "@/types";
+import { AppButton, AppCard, ReligiousText, spacing } from "@/design-system";
+import type { AzkarCategory, AzkarItem } from "@/types";
 
 interface AzkarReaderCardProps {
   item: AzkarItem;
 }
 
+function getContentKind(category: AzkarCategory, item: AzkarItem) {
+  if (category === "quran-duas") {
+    return "quran";
+  }
+
+  if (
+    category === "prophetic-duas" ||
+    item.authenticity === "sahih" ||
+    item.authenticity === "hasan"
+  ) {
+    return "hadith";
+  }
+
+  return "dua";
+}
+
 export function AzkarReaderCard({ item }: AzkarReaderCardProps) {
   const [counter, setCounter] = useState(0);
   const hasCounter = item.displayMode !== "reading" && item.count > 1;
+  const contentKind = getContentKind(item.category, item);
 
   function incrementCounter() {
     setCounter((currentCounter) => Math.min(currentCounter + 1, item.count));
@@ -24,24 +41,15 @@ export function AzkarReaderCard({ item }: AzkarReaderCardProps) {
 
   return (
     <AppCard className={`${spacing.inset.md} ${spacing.stack.md}`}>
-      {item.title ? (
-        <h2 className={`${typography.hierarchy.body} font-bold ${typography.tone.primary}`}>
-          {item.title}
-        </h2>
-      ) : null}
-
-      <p className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
+      <ReligiousText
+        authenticity={item.authenticity}
+        kind={contentKind}
+        source={item.source}
+        sourceReference={item.sourceReference}
+        title={item.title}
+      >
         {item.arabicText}
-      </p>
-
-      {item.source ? (
-        <div className={spacing.stack.xs}>
-          <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>المصدر</p>
-          <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-            {item.source}
-          </p>
-        </div>
-      ) : null}
+      </ReligiousText>
 
       {hasCounter ? (
         <div className="flex flex-wrap items-center gap-2">

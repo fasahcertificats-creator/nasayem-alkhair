@@ -2,7 +2,7 @@ import Link from "next/link";
 import { memo } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
-import { AppButton, spacing, typography } from "@/design-system";
+import { AppButton, PageHeading, spacing, typography } from "@/design-system";
 import type { AzkarCategory, AzkarItem } from "@/types";
 
 import { AzkarReaderCard } from "../AzkarReaderCard";
@@ -32,16 +32,9 @@ function AzkarCategoryContentComponent({
           <Link href={ROUTES.azkar}>العودة إلى الأذكار</Link>
         </AppButton>
         <div className={spacing.stack.xs}>
-          <h1
-            className={`${typography.hierarchy.heading} ${typography.tone.primary}`}
-            id="azkar-category-heading"
-          >
-            {title}
-          </h1>
+          <PageHeading id="azkar-category-heading">{title}</PageHeading>
           {description ? (
-            <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-              {description}
-            </p>
+            <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>{description}</p>
           ) : null}
         </div>
       </section>
@@ -51,10 +44,10 @@ function AzkarCategoryContentComponent({
           <div className="grid grid-cols-2 gap-2 pb-24 sm:grid-cols-3">
             {items.map((item) => (
               <div
-                className="rounded-2xl border border-border bg-white px-3 py-4 text-center shadow-soft"
+                className="border-border shadow-soft rounded-2xl border bg-white px-3 py-4 text-center"
                 key={item.id}
               >
-                <p className="text-lg font-bold leading-relaxed text-primary">{item.arabicText}</p>
+                <p className="text-primary text-lg leading-relaxed font-bold">{item.arabicText}</p>
               </div>
             ))}
           </div>
