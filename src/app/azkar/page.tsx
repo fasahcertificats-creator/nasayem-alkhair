@@ -126,7 +126,7 @@ export default function AzkarPage() {
             );
           })}
           <SurfaceCard
-            className="col-span-2 p-4"
+            className="col-span-2 p-3.5"
             decoration={
               <IslamicPattern
                 className="-top-5 end-2"
@@ -140,7 +140,7 @@ export default function AzkarPage() {
           >
             <Link
               aria-label="فتح التسبيح"
-              className="group relative flex min-h-[112px] min-w-0 items-center justify-between gap-4 rounded-[var(--radius-large)] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+              className="group relative flex min-h-[96px] min-w-0 items-center justify-between gap-4 rounded-[var(--radius-large)] no-underline focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
               href={ROUTES.tasbih}
             >
               <div className="flex min-w-0 items-center gap-3">

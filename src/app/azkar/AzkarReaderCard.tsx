@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import {
   AzkarRepetitionControl,
+  AzkarSourceMeta,
   IslamicPattern,
-  ReligiousSourceMeta,
   ReligiousText,
   SurfaceCard,
   spacing
@@ -14,6 +14,69 @@ import type { AzkarCategory, AzkarItem } from "@/types";
 
 interface AzkarReaderCardProps {
   item: AzkarItem;
+}
+
+const azkarRepetitionStorageKey = "nasayem-alkhair:azkarRepetitionCounts";
+const azkarRepetitionStorageEvent = "nasayem-alkhair:azkarRepetitionCountsChanged";
+
+function canUseStorage() {
+  return typeof window !== "undefined" && Boolean(window.localStorage);
+}
+
+function readStoredCounters() {
+  if (!canUseStorage()) {
+    return {};
+  }
+
+  try {
+    const parsedValue = JSON.parse(window.localStorage.getItem(azkarRepetitionStorageKey) ?? "{}");
+
+    return typeof parsedValue === "object" && parsedValue !== null && !Array.isArray(parsedValue)
+      ? (parsedValue as Record<string, unknown>)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+function readStoredCounter(itemId: string, target: number) {
+  const storedValue = readStoredCounters()[itemId];
+
+  return typeof storedValue === "number" && Number.isFinite(storedValue)
+    ? Math.min(Math.max(0, storedValue), target)
+    : 0;
+}
+
+function writeStoredCounter(itemId: string, count: number) {
+  if (!canUseStorage()) {
+    return;
+  }
+
+  window.localStorage.setItem(
+    azkarRepetitionStorageKey,
+    JSON.stringify({
+      ...readStoredCounters(),
+      [itemId]: count
+    })
+  );
+}
+
+function emitCounterChange() {
+  window.dispatchEvent(new Event(azkarRepetitionStorageEvent));
+}
+
+function subscribeToCounterChanges(callback: () => void) {
+  if (!canUseStorage()) {
+    return () => {};
+  }
+
+  window.addEventListener("storage", callback);
+  window.addEventListener(azkarRepetitionStorageEvent, callback);
+
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(azkarRepetitionStorageEvent, callback);
+  };
 }
 
 function getContentKind(category: AzkarCategory, item: AzkarItem) {
@@ -33,16 +96,25 @@ function getContentKind(category: AzkarCategory, item: AzkarItem) {
 }
 
 export function AzkarReaderCard({ item }: AzkarReaderCardProps) {
-  const [counter, setCounter] = useState(0);
-  const hasCounter = item.displayMode !== "reading" && item.count > 1;
+  const hasCounter = item.displayMode !== "reading" && item.count >= 1;
   const contentKind = getContentKind(item.category, item);
+  const counter = useSyncExternalStore(
+    subscribeToCounterChanges,
+    () => (hasCounter ? readStoredCounter(item.id, item.count) : 0),
+    () => 0
+  );
+
+  function updateCounter(nextCounter: number) {
+    writeStoredCounter(item.id, nextCounter);
+    emitCounterChange();
+  }
 
   function incrementCounter() {
-    setCounter((currentCounter) => Math.min(currentCounter + 1, item.count));
+    updateCounter(Math.min(counter + 1, item.count));
   }
 
   function resetCounter() {
-    setCounter(0);
+    updateCounter(0);
   }
 
   return (
@@ -74,8 +146,9 @@ export function AzkarReaderCard({ item }: AzkarReaderCardProps) {
         </ReligiousText>
       </div>
 
-      <ReligiousSourceMeta
+      <AzkarSourceMeta
         authenticity={item.authenticity}
+        kind={contentKind}
         source={item.source}
         sourceReference={item.sourceReference}
       />
