@@ -1,5 +1,9 @@
 import type { EntityId } from "./common";
-import type { ContentVerificationStatus } from "./dua";
+import type {
+  ContentVerificationStatus,
+  ReligiousContentClassification,
+  ReligiousEvidenceStatus
+} from "./dua";
 
 export type UmrahStagePhase =
   | "preparation"
@@ -15,6 +19,14 @@ export interface UmrahStageContentSection {
   bodyAr: string;
   verificationStatus: ContentVerificationStatus;
   sourceReference: string;
+  displayReferenceAr?: string;
+  evidenceStatus?: ReligiousEvidenceStatus;
+  kind?: ReligiousContentClassification;
+  ayahEnd?: number;
+  ayahStart?: number;
+  isExcerpt?: boolean;
+  surahNameAr?: string;
+  surahNumber?: number;
 }
 
 export interface UmrahStage {

@@ -29,7 +29,15 @@ const duaAuthenticityValues = new Set<DuaAuthenticity>([
   "needs-review"
 ]);
 
-const duaSourceTypes = new Set<DuaSourceType>(["", "Quran", "Hadith"]);
+const duaSourceTypes = new Set<DuaSourceType>([
+  "",
+  "Quran",
+  "Hadith",
+  "Dua",
+  "Dhikr",
+  "Athar",
+  "Guidance"
+]);
 
 const verificationStatusValues = new Set<ContentVerificationStatus>([
   "draft",
@@ -87,7 +95,14 @@ function isDua(value: unknown): value is Dua {
     (value.titleEn === undefined || typeof value.titleEn === "string") &&
     (value.translation === undefined || typeof value.translation === "string") &&
     (value.transliteration === undefined || typeof value.transliteration === "string") &&
-    (value.source === undefined || typeof value.source === "string");
+    (value.source === undefined || typeof value.source === "string") &&
+    (value.displayReferenceAr === undefined || typeof value.displayReferenceAr === "string") &&
+    (value.evidenceStatus === undefined || typeof value.evidenceStatus === "string") &&
+    (value.gradingAuthorityAr === undefined || typeof value.gradingAuthorityAr === "string") &&
+    (value.instructionAr === undefined || typeof value.instructionAr === "string") &&
+    (value.isExcerpt === undefined || typeof value.isExcerpt === "boolean") &&
+    (value.kind === undefined || typeof value.kind === "string") &&
+    (value.timingAr === undefined || typeof value.timingAr === "string");
 
   return hasRequiredFields && hasValidOptionalFields;
 }

@@ -1,6 +1,13 @@
 export type { Auditable, EntityId } from "./common";
 export type { AzkarCategory, AzkarItem } from "./azkar";
-export type { ContentVerificationStatus, Dua, DuaAuthenticity, DuaSourceType } from "./dua";
+export type {
+  ContentVerificationStatus,
+  Dua,
+  DuaAuthenticity,
+  DuaSourceType,
+  ReligiousContentClassification,
+  ReligiousEvidenceStatus
+} from "./dua";
 export type { PublicEnvironment } from "./environment";
 export type {
   FirestoreCollectionPath,

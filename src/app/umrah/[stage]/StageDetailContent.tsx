@@ -2,35 +2,31 @@
 
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { memo } from "react";
+import { memo, useId, useState } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
-import { AppButton, AppCard, PageHeading, spacing, typography } from "@/design-system";
+import {
+  AppButton,
+  AppCard,
+  IslamicPattern,
+  PageHeading,
+  ReligiousText,
+  spacing,
+  typography
+} from "@/design-system";
 import type { Dua, UmrahStage, UmrahStageContentSection } from "@/types";
 
 import { DuaBlock } from "../DuaBlock";
+import { UmrahSourceMeta } from "../UmrahSourceMeta";
 
 interface StageDetailContentProps {
   approvedDuas: Dua[];
   stage: UmrahStage;
 }
 
-function localizeSourceReference(source: string) {
-  return source
-    .replaceAll("Sahih Muslim", "صحيح مسلم")
-    .replaceAll("Sahih al-Bukhari", "صحيح البخاري")
-    .replaceAll("Sunan Abi Dawud", "سنن أبي داود");
-}
-
-function isReligiousReference(source: string) {
-  return /القرآن|صحيح|سنن|البخاري|مسلم|أبي داود/.test(source);
-}
-
-function getDisplayedSections(stage: UmrahStage) {
-  return (stage.contentSections ?? []).filter(
-    (section) => section.verificationStatus === "approved" && section.bodyAr.trim().length > 0
-  );
-}
+const arabicNumberFormatter = new Intl.NumberFormat("ar-u-nu-arab", {
+  useGrouping: false
+});
 
 function splitBodyLines(body: string) {
   return body
@@ -44,25 +40,14 @@ function StageSectionBody({ body }: { body: string }) {
 
   if (lines.length > 1 && lines.every((line) => line.startsWith("- "))) {
     return (
-      <ul className={`${spacing.stack.xs} list-disc pr-5`}>
+      <ul className={`${spacing.stack.xs} list-none space-y-2`}>
         {lines.map((line) => (
-          <li className={`${typography.hierarchy.body} ${typography.tone.muted}`} key={line}>
-            {line.slice(2)}
+          <li className="text-muted-foreground flex gap-2 text-[14px] leading-relaxed" key={line}>
+            <span aria-hidden="true" className="bg-gold mt-2 size-1.5 shrink-0 rounded-full" />
+            <span>{line.slice(2)}</span>
           </li>
         ))}
       </ul>
-    );
-  }
-
-  if (lines.length > 1 && lines.every((line) => /^\d+\.\s/.test(line))) {
-    return (
-      <ol className={`${spacing.stack.xs} list-decimal pr-5`}>
-        {lines.map((line) => (
-          <li className={`${typography.hierarchy.body} ${typography.tone.muted}`} key={line}>
-            {line.replace(/^\d+\.\s/, "")}
-          </li>
-        ))}
-      </ol>
     );
   }
 
@@ -77,95 +62,115 @@ function StageSectionBody({ body }: { body: string }) {
   );
 }
 
-function SectionReference({ source }: { source: string }) {
-  const trimmedSource = source.trim();
-
-  if (!trimmedSource) {
-    return null;
+function SectionCard({ section }: { section: UmrahStageContentSection }) {
+  if (section.kind === "quran") {
+    return (
+      <AppCard className={`${spacing.inset.md} ${spacing.stack.sm} border-gold/25 bg-[#fff8e8]`}>
+        <ReligiousText
+          kind="quran"
+          showSourceMeta={false}
+          title={section.titleAr}
+        >
+          {section.bodyAr}
+        </ReligiousText>
+        <UmrahSourceMeta displayReferenceAr={section.displayReferenceAr} />
+      </AppCard>
+    );
   }
 
-  const label = isReligiousReference(trimmedSource) ? "المصدر" : "التصنيف";
+  const isCaution = section.kind === "caution" || /تنبيه|لا /.test(section.titleAr);
 
   return (
-    <p className={`${typography.hierarchy.caption} ${typography.tone.muted}`}>
-      {label}: {localizeSourceReference(trimmedSource)}
-    </p>
-  );
-}
-
-function PrimarySectionCard({ section }: { section: UmrahStageContentSection }) {
-  return (
-    <AppCard className={`${spacing.inset.md} ${spacing.stack.sm}`}>
+    <AppCard
+      className={`${spacing.inset.md} ${spacing.stack.sm} ${
+        isCaution ? "border-gold/30 bg-[#fff8e8]/70" : "bg-secondary/65"
+      }`}
+    >
       <h2 className={`${typography.hierarchy.subheading} ${typography.tone.primary}`}>
         {section.titleAr}
       </h2>
       <StageSectionBody body={section.bodyAr} />
-      <SectionReference source={section.sourceReference} />
+      <UmrahSourceMeta displayReferenceAr={section.displayReferenceAr} />
     </AppCard>
   );
 }
 
 function DisclosureSectionCard({ section }: { section: UmrahStageContentSection }) {
+  const panelId = useId();
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <details className="group border-border shadow-soft open:shadow-card rounded-lg border bg-white transition duration-200">
-      <summary className="text-primary focus-visible:ring-gold focus-visible:ring-offset-background flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none [&::-webkit-details-marker]:hidden">
-        <span className="text-base leading-relaxed font-bold">{section.titleAr}</span>
+    <div className="border-border shadow-card rounded-[var(--radius-card)] border bg-card">
+      <button
+        aria-controls={panelId}
+        aria-expanded={isOpen}
+        className="text-primary focus-visible:ring-gold focus-visible:ring-offset-background flex min-h-12 w-full items-center justify-between gap-3 px-4 py-3 text-right focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+        onClick={() => setIsOpen((current) => !current)}
+        type="button"
+      >
+        <span className="text-[15px] leading-relaxed font-bold">{section.titleAr}</span>
         <ChevronDown
           aria-hidden="true"
-          className="text-gold size-4 shrink-0 transition duration-200 group-open:rotate-180"
+          className={`text-gold size-4 shrink-0 transition duration-200 motion-reduce:transition-none ${
+            isOpen ? "rotate-180" : ""
+          }`}
         />
-      </summary>
-      <div className={`${spacing.stack.sm} border-border border-t px-4 pt-3 pb-4`}>
+      </button>
+      <div
+        className={`${spacing.stack.sm} border-border border-t px-4 pt-3 pb-4`}
+        hidden={!isOpen}
+        id={panelId}
+      >
         <StageSectionBody body={section.bodyAr} />
-        <SectionReference source={section.sourceReference} />
+        <UmrahSourceMeta displayReferenceAr={section.displayReferenceAr} />
       </div>
-    </details>
+    </div>
   );
 }
 
-function getPrimarySections(
-  approvedDuas: Dua[],
-  sections: UmrahStageContentSection[],
-  stage: UmrahStage
-) {
-  if (stage.slug === "ihram") {
-    return sections.filter((section) => section.id === "ihram-intention-clarification");
-  }
-
-  if (approvedDuas.length === 0 && sections.length > 0) {
-    return [sections[0]];
-  }
-
-  return [];
+function getDisplayedSections(stage: UmrahStage) {
+  return (stage.contentSections ?? []).filter(
+    (section) => section.verificationStatus === "approved" && section.bodyAr.trim().length > 0
+  );
 }
 
 function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContentProps) {
   const sections = getDisplayedSections(stage);
-  const primarySections = getPrimarySections(approvedDuas, sections, stage);
-  const primarySectionIds = new Set(primarySections.map((section) => section.id));
-  const disclosureSections = sections.filter((section) => !primarySectionIds.has(section.id));
+  const disclosureSections = sections.filter((section) => /ماذا أفعل/.test(section.titleAr));
+  const regularSections = sections.filter((section) => !disclosureSections.includes(section));
 
   return (
     <main
-      className={`${spacing.inset.sm} ${spacing.stack.md} ${typography.fontFamily.arabic} ${typography.direction.arabic} pb-24`}
+      className={`${spacing.inset.sm} ${spacing.stack.md} ${typography.fontFamily.arabic} ${typography.direction.arabic} pb-28`}
       dir="rtl"
     >
-      <section className={spacing.stack.sm} aria-labelledby="stage-heading">
+      <section
+        className={`${spacing.stack.sm} relative min-w-0 overflow-hidden rounded-[var(--radius-card)]`}
+        aria-labelledby="stage-heading"
+      >
+        <IslamicPattern className="-top-6 end-1" opacity={0.035} size="medium" tone="gold" variant="header" />
         <AppButton asChild tone="ghost">
           <Link href={ROUTES.umrah}>العودة إلى دليل العمرة</Link>
         </AppButton>
         <div className={spacing.stack.xs}>
+          <p className="text-muted-foreground text-[12px] font-semibold">
+            المرحلة {arabicNumberFormatter.format(stage.order)} من {arabicNumberFormatter.format(8)}
+          </p>
           <PageHeading id="stage-heading">{stage.titleAr}</PageHeading>
           <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>{stage.summary}</p>
         </div>
       </section>
 
-      {primarySections.map((section) => (
-        <PrimarySectionCard key={section.id} section={section} />
-      ))}
+      {regularSections.length > 0 ? (
+        <section className={spacing.stack.sm} aria-label="إرشادات المرحلة">
+          {regularSections.map((section) => (
+            <SectionCard key={section.id} section={section} />
+          ))}
+        </section>
+      ) : null}
 
       {approvedDuas.length > 0 ? (
-        <section className={spacing.stack.sm} aria-label="الأذكار والأدعية الثابتة">
+        <section className={spacing.stack.sm} aria-label="النصوص الثابتة في المرحلة">
           {approvedDuas.map((dua) => (
             <DuaBlock dua={dua} key={dua.id} />
           ))}
@@ -173,7 +178,7 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
       ) : null}
 
       {disclosureSections.length > 0 ? (
-        <section className={spacing.stack.sm} aria-label="تفاصيل المرحلة">
+        <section className={spacing.stack.sm} aria-label="ماذا أفعل؟">
           {disclosureSections.map((section) => (
             <DisclosureSectionCard key={section.id} section={section} />
           ))}

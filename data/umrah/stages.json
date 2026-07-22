@@ -6,15 +6,26 @@
     "titleEn": "Travel",
     "order": 1,
     "phase": "travel",
-    "summary": "دعاء السفر ودعاء الرجوع منه فقط.",
-    "contentSections": [],
+    "summary": "دعاء السفر الثابت، ثم زيادة الرجوع عند العودة من السفر.",
+    "contentSections": [
+      {
+        "id": "travel-practical-takbir",
+        "titleAr": "ماذا أفعل؟",
+        "bodyAr": "- إذا ركب وسيلة السفر كبر ثلاثًا.\n- يقول دعاء السفر كاملًا بعد التكبير.\n- عند الرجوع يضيف الذكر الثابت للرجوع من السفر دون تكرار الدعاء كاملًا.",
+        "verificationStatus": "approved",
+        "sourceReference": "Sahih Muslim 1342",
+        "displayReferenceAr": "صحيح مسلم، رقم ١٣٤٢",
+        "kind": "practical-guidance",
+        "evidenceStatus": "sahih"
+      }
+    ],
     "instructions": [],
     "duas": [
       "travel-dua-travel",
       "travel-dua-returning-from-travel"
     ],
     "sources": [
-      "صحيح مسلم 1342"
+      "Sahih Muslim 1342"
     ],
     "verificationStatus": "approved"
   },
@@ -25,32 +36,54 @@
     "titleEn": "Ihram and Talbiyah",
     "order": 2,
     "phase": "ihram",
-    "summary": "النية أولا، ثم التلبية، ثم خطوات الإحرام الأساسية.",
+    "summary": "نية القلب، وتسمية النسك، ثم التلبية الثابتة.",
     "contentSections": [
       {
         "id": "ihram-intention-clarification",
         "titleAr": "النية",
-        "bodyAr": "النية محلها القلب، ولا تشرع عبارة مخصوصة للتلفظ بعقد نية الإحرام.",
+        "bodyAr": "النية محلها القلب، ولا تعرض هنا صيغة مخترعة على أنها دعاء نبوي. يدخل المعتمر في النسك بقلبه، ويجوز أن يسمي نسكه بقول مختصر مثل: لبيك عمرة.",
         "verificationStatus": "approved",
-        "sourceReference": "صحيح البخاري 1، صحيح مسلم 1907a"
+        "sourceReference": "Sahih al-Bukhari 1; Sahih Muslim 1907",
+        "displayReferenceAr": "صحيح البخاري، رقم ١؛ صحيح مسلم، رقم ١٩٠٧",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
+      },
+      {
+        "id": "ihram-quran-context",
+        "titleAr": "سياق قرآني",
+        "bodyAr": "وَأَتِمُّوا الْحَجَّ وَالْعُمْرَةَ لِلَّهِ",
+        "verificationStatus": "approved",
+        "sourceReference": "Quran 2:196 excerpt",
+        "displayReferenceAr": "سورة البقرة، الآية ١٩٦ — مقتطف",
+        "kind": "quran",
+        "evidenceStatus": "verified-quran",
+        "surahNumber": 2,
+        "surahNameAr": "البقرة",
+        "ayahStart": 196,
+        "ayahEnd": 196,
+        "isExcerpt": true
       },
       {
         "id": "ihram-practical-steps",
         "titleAr": "ماذا أفعل؟",
-        "bodyAr": "- اغتسل وتنظف إن تيسر قبل الإحرام.\n- يلبس الرجل إزارا ورداء، وتلبس المرأة لباسها الساتر المعتاد.\n- ادخل في النسك بقلبك ولا تجعل عبارة بعينها صيغة لازمة.\n- قل التلبية بعد الدخول في الإحرام.\n- اجتنب محظورات الإحرام حتى تتحلل.",
+        "bodyAr": "- اغتسل وتنظف إن تيسر قبل الإحرام.\n- يلبس الرجل إزارًا ورداءً، وتلبس المرأة لباسها الساتر المعتاد.\n- ادخل في النسك بقلبك ولا تجعل عبارة بعينها صيغة لازمة.\n- قل التلبية بعد الدخول في الإحرام.\n- اجتنب محظورات الإحرام حتى تتحلل.",
         "verificationStatus": "approved",
-        "sourceReference": "خطوات عملية"
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
       }
     ],
     "instructions": [],
     "duas": [
-      "talbiyah-text-placeholder"
+      "ihram-talbiyah"
     ],
     "sources": [
-      "صحيح البخاري 1",
-      "صحيح مسلم 1907a",
-      "صحيح البخاري 1549",
-      "صحيح مسلم 1184a"
+      "Quran 2:196",
+      "Sahih al-Bukhari 1",
+      "Sahih Muslim 1907",
+      "Sahih al-Bukhari 1549",
+      "Sahih Muslim 1184"
     ],
     "verificationStatus": "approved"
   },
@@ -61,33 +94,36 @@
     "titleEn": "Entering Makkah and Al-Masjid Al-Haram",
     "order": 3,
     "phase": "preparation",
-    "summary": "دعاء دخول المسجد والخروج منه، ثم خطوات الوصول المختصرة.",
+    "summary": "لا يثبت دعاء مخصوص لرؤية الكعبة، ويقال دعاء دخول المسجد وخروجه.",
     "contentSections": [
       {
-        "id": "entering-makkah-arrival-steps",
-        "titleAr": "ماذا أفعل عند الوصول؟",
-        "bodyAr": "- اغتسل قبل دخول مكة إن تيسر بلا مشقة.\n- حافظ على إحرامك وتلبيتك حتى تبدأ أعمال العمرة.\n- عند دخول المسجد قل دعاء دخول المسجد الثابت.\n- إذا كنت مستعدا فابدأ بالطواف بهدوء.",
+        "id": "entering-kaaba-no-fixed-dua",
+        "titleAr": "تنبيه مختصر",
+        "bodyAr": "لم يثبت دعاء مخصوص عند رؤية الكعبة، ويدعو المسلم بما شاء من خير.",
         "verificationStatus": "approved",
-        "sourceReference": "خطوات عملية"
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد معتمد للمراجعة",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
       },
       {
-        "id": "seeing-kaaba-no-specific-dua-note",
-        "titleAr": "تنبيه مختصر",
-        "bodyAr": "لا يثبت دعاء مخصوص عند رؤية الكعبة، ويدعو المسلم بما شاء من خير.",
+        "id": "entering-practical-steps",
+        "titleAr": "ماذا أفعل عند الوصول؟",
+        "bodyAr": "- حافظ على إحرامك وتلبيتك حتى تبدأ أعمال العمرة.\n- عند دخول المسجد قل دعاء دخول المسجد الثابت.\n- لا تزاحم ولا تؤذ الناس عند الدخول أو رؤية الكعبة.\n- إذا كنت مستعدًا فابدأ بالطواف بهدوء.",
         "verificationStatus": "approved",
-        "sourceReference": "إرشاد مختصر"
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
       }
     ],
     "instructions": [],
     "duas": [
-      "entering-al-masjid-al-haram-entry-placeholder",
-      "entering-al-masjid-al-haram-context-placeholder"
+      "masjid-entry-dua",
+      "masjid-exit-dua"
     ],
     "sources": [
-      "صحيح مسلم 713a",
-      "صحيح البخاري 1573",
-      "صحيح مسلم 1259a",
-      "صحيح البخاري 1614، 1615"
+      "Sahih Muslim 713"
     ],
     "verificationStatus": "approved"
   },
@@ -98,33 +134,55 @@
     "titleEn": "Tawaf",
     "order": 4,
     "phase": "tawaf",
-    "summary": "الذكر الثابت، ثم خطوات الطواف المختصرة.",
+    "summary": "التكبير عند الحجر الأسود، والدعاء الثابت بين الركنين، ثم ركعتا الطواف.",
     "contentSections": [
       {
-        "id": "tawaf-steps",
-        "titleAr": "خطوات الطواف",
-        "bodyAr": "- ابدأ من محاذاة الحجر الأسود وكبر.\n- اجعل الكعبة عن يسارك.\n- أتم سبعة أشواط كاملة.\n- ادع واذكر الله بما تيسر أثناء الطواف.\n- صل ركعتي الطواف بعده إن تيسر بلا مزاحمة.",
+        "id": "tawaf-no-round-duas",
+        "titleAr": "لا توجد أدعية ثابتة لكل شوط",
+        "bodyAr": "في بقية الطواف يذكر الله ويدعو بما تيسر من الدعاء المشروع.",
         "verificationStatus": "approved",
-        "sourceReference": "خطوات عملية"
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
       },
       {
-        "id": "tawaf-no-round-duas",
-        "titleAr": "تنبيه مهم",
-        "bodyAr": "لا تخصص لكل شوط دعاء معينا على أنه سنة إلا بدليل ثابت.",
+        "id": "tawaf-two-rakahs-guidance",
+        "titleAr": "ركعتا الطواف",
+        "bodyAr": "وَاتَّخِذُوا مِنْ مَقَامِ إِبْرَاهِيمَ مُصَلًّى\nيصلي المعتمر ركعتين بعد الطواف خلف مقام إبراهيم إن تيسر بلا مزاحمة، وإلا ففي أي موضع مناسب من المسجد.",
         "verificationStatus": "approved",
-        "sourceReference": "إرشاد مختصر"
+        "sourceReference": "Quran 2:125 excerpt; Sahih Muslim 1218",
+        "displayReferenceAr": "سورة البقرة، الآية ١٢٥ — مقتطف؛ صحيح مسلم، رقم ١٢١٨",
+        "kind": "practical-guidance",
+        "evidenceStatus": "sahih",
+        "surahNumber": 2,
+        "surahNameAr": "البقرة",
+        "ayahStart": 125,
+        "ayahEnd": 125,
+        "isExcerpt": true
+      },
+      {
+        "id": "tawaf-practical-steps",
+        "titleAr": "ماذا أفعل؟",
+        "bodyAr": "- ابدأ من محاذاة الحجر الأسود وكبر.\n- اجعل الكعبة عن يسارك.\n- أتم سبعة أشواط كاملة.\n- بين الركن اليماني والحجر الأسود قل الدعاء الثابت.\n- صل ركعتي الطواف بعده إن تيسر بلا مزاحمة.",
+        "verificationStatus": "approved",
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
       }
     ],
     "instructions": [],
     "duas": [
-      "tawaf-general-supplication-placeholder",
-      "tawaf-context-placeholder"
+      "tawaf-black-stone-takbir",
+      "tawaf-between-corners-dua"
     ],
     "sources": [
-      "صحيح البخاري 1613",
-      "سنن أبي داود 1892",
-      "صحيح البخاري 1614، 1615",
-      "صحيح مسلم 1218a"
+      "Sahih al-Bukhari 1613",
+      "Sunan Abi Dawud 1892",
+      "Quran 2:201",
+      "Quran 2:125",
+      "Sahih Muslim 1218"
     ],
     "verificationStatus": "approved"
   },
@@ -135,28 +193,35 @@
     "titleEn": "Zamzam",
     "order": 5,
     "phase": "tawaf",
-    "summary": "شرب زمزم باختصار، من غير صيغة دعاء لازمة.",
+    "summary": "يشرب من زمزم ويدعو بما شاء دون صيغة نبوية ثابتة مخصوصة.",
     "contentSections": [
       {
-        "id": "zamzam-verification",
-        "titleAr": "الشرب من ماء زمزم",
-        "bodyAr": "ثبت أن النبي صلى الله عليه وسلم شرب من زمزم. فاشرب منها إن تيسر لك، وادع بما شئت من خير من غير اعتقاد دعاء مخصوص لازم.",
+        "id": "zamzam-dua-guidance",
+        "titleAr": "الدعاء عند زمزم",
+        "bodyAr": "يشرب وينوي من خير الدنيا والآخرة، ويدعو بما شاء من الدعاء المشروع.",
         "verificationStatus": "approved",
-        "sourceReference": "صحيح البخاري 1637، صحيح مسلم 2027a"
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
       },
       {
         "id": "zamzam-practical-steps",
         "titleAr": "ماذا أفعل؟",
-        "bodyAr": "- اشرب من زمزم بهدوء إن تيسر.\n- ادع بدعاء عام مناسب لحاجتك.\n- توجه بعد ذلك إلى السعي عند الصفا.",
+        "bodyAr": "- اشرب من زمزم بهدوء إن تيسر.\n- ادع بدعاء عام مناسب لحاجتك دون اعتقاد صيغة لازمة.\n- توجه بعد ذلك إلى السعي عند الصفا.",
         "verificationStatus": "approved",
-        "sourceReference": "خطوات عملية"
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
       }
     ],
     "instructions": [],
-    "duas": [],
+    "duas": [
+      "zamzam-water-hadith"
+    ],
     "sources": [
-      "صحيح البخاري 1637",
-      "صحيح مسلم 2027a"
+      "Sunan Ibn Majah 3062"
     ],
     "verificationStatus": "approved"
   },
@@ -167,24 +232,38 @@
     "titleEn": "Sa'i",
     "order": 6,
     "phase": "sai",
-    "summary": "الصفا والمروة، ثم خطوات السعي الخمس.",
+    "summary": "الصفا والمروة، ثم الذكر الثابت والدعاء بين التكرارات.",
     "contentSections": [
       {
-        "id": "sai-steps",
-        "titleAr": "خطوات السعي",
-        "bodyAr": "- ابدأ من الصفا.\n- اتجه إلى المروة، ويحسب الذهاب شوطا.\n- أكمل سبعة أشواط وتنتهي عند المروة.\n- للرجال: أسرع في الموضع المحدد إن تيسر بلا أذى.\n- اذكر الله وادع بما تيسر دون تخصيص دعاء لكل شوط.",
+        "id": "sai-no-fixed-passage-duas",
+        "titleAr": "لا دعاء ثابت لكل مسافة",
+        "bodyAr": "أثناء السعي يذكر المعتمر الله ويدعو بما شاء من الدعاء المشروع دون تخصيص دعاء لكل شوط.",
         "verificationStatus": "approved",
-        "sourceReference": "خطوات عملية"
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
+      },
+      {
+        "id": "sai-practical-steps",
+        "titleAr": "ماذا أفعل؟",
+        "bodyAr": "- ابدأ من الصفا.\n- اتجه إلى المروة، ويحسب الذهاب شوطًا.\n- أكمل سبعة أشواط وتنتهي عند المروة.\n- للرجال: أسرع في الموضع المحدد إن تيسر بلا أذى.\n- اذكر الله وادع بما تيسر دون تخصيص دعاء لكل شوط.",
+        "verificationStatus": "approved",
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
       }
     ],
     "instructions": [],
     "duas": [
-      "sai-supplication-placeholder",
-      "sai-context-placeholder"
+      "sai-safa-marwah-quran",
+      "sai-beginning-at-safa",
+      "sai-safa-marwah-dhikr"
     ],
     "sources": [
-      "القرآن 2:158",
-      "صحيح مسلم 1218a"
+      "Quran 2:158",
+      "Sahih Muslim 1218"
     ],
     "verificationStatus": "approved"
   },
@@ -198,21 +277,48 @@
     "summary": "الحلق أو التقصير بعد السعي، وبه يحصل التحلل.",
     "contentSections": [
       {
-        "id": "shaving-practical-steps",
-        "titleAr": "ما الذي أفعله؟",
+        "id": "hair-quran-context",
+        "titleAr": "سياق قرآني",
+        "bodyAr": "مُحَلِّقِينَ رُءُوسَكُمْ وَمُقَصِّرِينَ",
+        "verificationStatus": "approved",
+        "sourceReference": "Quran 48:27 excerpt",
+        "displayReferenceAr": "سورة الفتح، الآية ٢٧ — مقتطف",
+        "kind": "quran",
+        "evidenceStatus": "verified-quran",
+        "surahNumber": 48,
+        "surahNameAr": "الفتح",
+        "ayahStart": 27,
+        "ayahEnd": 27,
+        "isExcerpt": true
+      },
+      {
+        "id": "hair-no-special-dua",
+        "titleAr": "لا دعاء خاص للحلق أو التقصير",
+        "bodyAr": "لا يثبت دعاء مخصوص يقال عند الحلق أو التقصير.",
+        "verificationStatus": "approved",
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
+      },
+      {
+        "id": "hair-practical-steps",
+        "titleAr": "ماذا أفعل؟",
         "bodyAr": "- يكون الحلق أو التقصير بعد إتمام السعي.\n- الحلق أفضل للرجل، ويجزئه التقصير.\n- المرأة تقصر من شعرها ولا تحلق.\n- بعد الحلق أو التقصير يتحلل المعتمر من إحرامه.",
         "verificationStatus": "approved",
-        "sourceReference": "خطوات عملية"
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
       }
     ],
     "instructions": [],
     "duas": [
-      "shaving-supplication-placeholder"
+      "hair-shaving-hadith"
     ],
     "sources": [
-      "صحيح البخاري 1727",
-      "صحيح مسلم 1301a",
-      "سنن أبي داود 1984"
+      "Sahih al-Bukhari 1727",
+      "Sahih Muslim 1301"
     ],
     "verificationStatus": "approved"
   },
@@ -223,21 +329,27 @@
     "titleEn": "Completion of Umrah",
     "order": 8,
     "phase": "completion",
-    "summary": "خاتمة قصيرة بعد تمام الطواف والسعي والتحلل.",
+    "summary": "خاتمة عملية بعد الطواف والسعي والتحلل، دون دعاء ثابت مخترع.",
     "contentSections": [
       {
         "id": "completion-overview",
         "titleAr": "تمت عمرتك بإذن الله",
-        "bodyAr": "بعد الطواف والسعي ثم الحلق أو التقصير، تكون قد أتممت أعمال العمرة بإذن الله.",
+        "bodyAr": "بعد الطواف والسعي ثم الحلق أو التقصير، تكون قد أتممت أعمال العمرة بإذن الله. اشكر الله وادعه بما شاء من الخير دون اعتقاد صيغة ثابتة مخصوصة لإتمام العمرة.",
         "verificationStatus": "approved",
-        "sourceReference": "إرشاد مختصر"
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
       },
       {
         "id": "completion-short-summary",
         "titleAr": "ملخص عملي",
         "bodyAr": "- تأكد بهدوء أنك أتممت الطواف.\n- تأكد أنك أتممت السعي.\n- تأكد أنك حلقت أو قصرت وتحللت من الإحرام.",
         "verificationStatus": "approved",
-        "sourceReference": "خطوات عملية"
+        "sourceReference": "reviewed guidance",
+        "displayReferenceAr": "إرشاد عملي",
+        "kind": "practical-guidance",
+        "evidenceStatus": "reviewed-guidance"
       }
     ],
     "instructions": [],
