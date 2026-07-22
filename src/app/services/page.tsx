@@ -219,7 +219,7 @@ function OfficeIdentityHero() {
             className="text-primary max-w-[22rem] text-[1.55rem] leading-[1.45] font-extrabold"
             id="services-heading"
           >
-            خدمات السفر والعمرة
+            الخدمات
           </h1>
           <p className="max-w-[28rem] text-sm leading-7 text-[#756757]">
             اختر الخدمة التي تحتاجها، وسنجهز لك رسالة استفسار مباشرة.
