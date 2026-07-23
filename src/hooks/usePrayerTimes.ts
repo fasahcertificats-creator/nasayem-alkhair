@@ -8,10 +8,18 @@ import {
   requestCurrentPosition,
   savePrayerLocation,
   type PrayerCalculationResult,
-  type PrayerLocation
+  type PrayerLocation,
+  PrayerLocationRequestError
 } from "@/services/prayer/prayer-times.service";
 
-type PrayerLocationStatus = "loading" | "missing" | "ready" | "requesting" | "denied" | "error";
+export type PrayerLocationStatus =
+  | "loading"
+  | "missing"
+  | "ready"
+  | "requesting"
+  | "denied"
+  | "unavailable"
+  | "error";
 
 export interface PrayerTimesState {
   calculation: PrayerCalculationResult | null;
@@ -22,7 +30,10 @@ export interface PrayerTimesState {
   status: PrayerLocationStatus;
 }
 
-const locationErrorMessage = "تعذر تحديد موقعك. يمكنك المحاولة مرة أخرى.";
+const permissionDeniedMessage =
+  "اسمح بالوصول إلى الموقع من إعدادات المتصفح، ثم أعد المحاولة.";
+const locationUnavailableMessage =
+  "تحقق من الاتصال أو خدمات الموقع، ثم حاول مرة أخرى.";
 const calculationErrorMessage = "تعذر تحديث أوقات الصلاة الآن.";
 
 export function usePrayerTimes(): PrayerTimesState {
@@ -87,9 +98,12 @@ export function usePrayerTimes(): PrayerTimesState {
       setLocation(nextLocation);
       setStatus("ready");
       setNow(new Date());
-    } catch {
-      setStatus("denied");
-      setErrorMessage(locationErrorMessage);
+    } catch (error) {
+      const permissionDenied =
+        error instanceof PrayerLocationRequestError && error.reason === "permission-denied";
+
+      setStatus(permissionDenied ? "denied" : "unavailable");
+      setErrorMessage(permissionDenied ? permissionDeniedMessage : locationUnavailableMessage);
     }
   }, []);
 

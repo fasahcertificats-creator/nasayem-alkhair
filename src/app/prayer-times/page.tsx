@@ -1,153 +1,173 @@
 "use client";
 
-import { AlertCircle, Clock, MapPin, RefreshCw } from "lucide-react";
+import {
+  CloudSun,
+  Clock,
+  MapPin,
+  Moon,
+  RefreshCw,
+  Sun,
+  Sunrise,
+  Sunset,
+  type LucideIcon
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { AppButton, PageHeading } from "@/design-system";
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
-import { PRAYER_METHOD_DESCRIPTION } from "@/services/prayer/prayer-times.service";
+import {
+  PRAYER_METHOD_DESCRIPTION,
+  type PrayerId
+} from "@/services/prayer/prayer-times.service";
+
+import { NextPrayerHero } from "./NextPrayerHero";
+import { getArabicDateParts, getPrayerLocationLabel } from "./prayer-presentation";
+
+const prayerIcons: Record<PrayerId, LucideIcon> = {
+  fajr: Sunrise,
+  sunrise: Sun,
+  dhuhr: CloudSun,
+  asr: Sun,
+  maghrib: Sunset,
+  isha: Moon
+};
+
+function getMillisecondsUntilNextLocalMidnight() {
+  const now = new Date();
+  const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+  return Math.max(1000, nextMidnight.getTime() - now.getTime() + 1500);
+}
 
 export default function PrayerTimesPage() {
-  const { calculation, errorMessage, requestLocation, status } = usePrayerTimes();
+  const prayerTimes = usePrayerTimes();
+  const { calculation, location, requestLocation, status } = prayerTimes;
+  const [dateParts, setDateParts] = useState<{ gregorian: string; hijri: string } | null>(null);
   const isRequesting = status === "requesting";
-  const hasCalculatedData = Boolean(calculation);
-  const message = isRequesting
-    ? "جار حساب أوقات الصلاة..."
-    : errorMessage || "حدد موقعك لعرض أوقات الصلاة بدقة";
+
+  useEffect(() => {
+    let active = true;
+    let timer = 0;
+
+    function refreshDate() {
+      setDateParts(getArabicDateParts());
+    }
+
+    function scheduleNextDate() {
+      timer = window.setTimeout(() => {
+        if (!active) {
+          return;
+        }
+
+        refreshDate();
+        scheduleNextDate();
+      }, getMillisecondsUntilNextLocalMidnight());
+    }
+
+    refreshDate();
+    scheduleNextDate();
+
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+  const locationHeading = calculation
+    ? getPrayerLocationLabel(location)
+    : status === "loading" || status === "requesting"
+      ? "جارٍ تحديد المدينة..."
+      : "فعّل موقعك لعرض المواقيت";
 
   return (
-    <main className="space-y-4 px-5 pt-5 pb-12 text-right" dir="rtl">
-      <section className="space-y-1.5 text-center" aria-labelledby="prayer-times-heading">
-        <PageHeading id="prayer-times-heading">أوقات الصلاة</PageHeading>
-        <p className="text-body-premium text-muted-foreground">
-          {hasCalculatedData ? "حسب موقعك الحالي" : "حدد موقعك لعرض أوقات الصلاة بدقة"}
-        </p>
-      </section>
+    <main className="space-y-4 overflow-x-hidden px-5 pt-4 pb-8 text-right" dir="rtl">
+      <section className="space-y-2 text-center" aria-labelledby="prayer-times-heading">
+        <PageHeading className="text-[21px]" id="prayer-times-heading">
+          أوقات الصلاة
+        </PageHeading>
 
-      <section className="border-primary bg-primary shadow-card relative overflow-hidden rounded-2xl border p-5 text-white">
-        <div className="pointer-events-none absolute -bottom-10 -left-10 size-28 rounded-full bg-white/5" />
-        <div className="bg-gold/10 pointer-events-none absolute -top-8 -right-8 size-20 rounded-full" />
-
-        <div className="relative z-10 space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="space-y-1">
-              <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/80">
-                <Clock className="text-gold size-3.5" strokeWidth={1.7} />
-                {hasCalculatedData ? "الصلاة القادمة" : "أوقات الصلاة"}
-              </span>
-              <h2 className="text-background text-[22px] leading-tight font-extrabold">
-                {calculation ? `صلاة ${calculation.nextPrayer.name}` : "حدد موقعك"}
-              </h2>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-center">
-              <p className="text-[10px] font-bold text-white/70">
-                {calculation ? "الأذان" : "الحالة"}
-              </p>
-              <p className="text-gold font-mono text-2xl font-extrabold">
-                {calculation ? calculation.nextPrayer.displayTime : "--:--"}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between border-t border-white/10 pt-3 text-xs text-white/85">
-            <span className="flex items-center gap-1">
-              {calculation ? (
-                <MapPin className="text-gold size-3.5" strokeWidth={1.7} />
-              ) : (
-                <AlertCircle className="text-gold size-3.5" strokeWidth={1.7} />
-              )}
-              {calculation
-                ? calculation.dataFreshness === "stale"
-                  ? "موقع محفوظ يحتاج تحديثا"
-                  : "حسب موقعك الحالي"
-                : message}
-            </span>
-            {calculation ? <span>{calculation.remainingLabel}</span> : null}
-          </div>
+        <div className="flex flex-col items-center gap-1">
+          <p className="text-primary flex items-center gap-1.5 text-sm font-bold">
+            <MapPin aria-hidden="true" className="text-gold size-4" strokeWidth={1.7} />
+            <span>{locationHeading}</span>
+          </p>
+          <p className="text-muted-foreground text-[11px] leading-relaxed">
+            {dateParts ? `${dateParts.hijri} • ${dateParts.gregorian}` : "تاريخ اليوم"}
+          </p>
         </div>
       </section>
+
+      <NextPrayerHero prayerTimes={prayerTimes} showLocation={false} variant="page" />
 
       {calculation ? (
         <>
           <section className="space-y-2.5" aria-label="مواقيت اليوم">
-            {calculation.rows
-              .filter((prayer) => prayer.id !== "sunrise")
-              .map((prayer) => {
-                const isNext = prayer.id === calculation.nextPrayer.id;
+            {calculation.rows.map((prayer) => {
+              const PrayerIcon = prayerIcons[prayer.id] ?? Clock;
+              const isNext = prayer.id === calculation.nextPrayer.id;
+              const isNextDayPrayer =
+                isNext && prayer.time.getTime() !== calculation.nextPrayer.time.getTime();
+              const displayTime = isNextDayPrayer
+                ? calculation.nextPrayer.displayTime
+                : prayer.displayTime;
 
-                return (
-                  <div
-                    className={`shadow-soft flex items-center justify-between rounded-2xl border p-3.5 ${
-                      isNext
-                        ? "border-gold bg-background ring-gold/20 ring-1"
-                        : "border-border bg-white"
-                    }`}
-                    key={prayer.id}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`flex size-9 items-center justify-center rounded-xl ${
-                          isNext ? "bg-gold/10 text-gold" : "bg-secondary text-muted-foreground"
-                        }`}
-                      >
-                        <Clock className="size-4.5" strokeWidth={1.7} />
-                      </div>
-                      <div>
-                        <h2 className="text-primary text-base font-bold">{prayer.name}</h2>
-                        {isNext ? (
-                          <p className="text-gold text-[10px] font-bold">الصلاة القادمة</p>
-                        ) : null}
-                      </div>
+              return (
+                <div
+                  className={`shadow-soft flex min-h-[68px] items-center justify-between rounded-2xl border px-3.5 py-3 ${
+                    isNext
+                      ? "border-gold bg-background ring-gold/15 ring-1"
+                      : "border-border bg-white"
+                  }`}
+                  key={prayer.id}
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div
+                      aria-hidden="true"
+                      className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${
+                        isNext
+                          ? "bg-gold/10 text-gold"
+                          : "bg-secondary text-muted-foreground"
+                      }`}
+                    >
+                      <PrayerIcon className="size-4.5" strokeWidth={1.7} />
                     </div>
-                    <span className="text-primary font-mono text-base font-extrabold">
-                      {prayer.displayTime}
-                    </span>
+                    <div className="min-w-0">
+                      <h2 className="text-primary text-[15px] font-bold">{prayer.name}</h2>
+                      {isNext ? (
+                        <p className="text-gold text-[10px] font-bold">
+                          الصلاة القادمة{isNextDayPrayer ? " • فجر الغد" : ""}
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
-                );
-              })}
+                  <span className="text-primary shrink-0 font-mono text-base font-extrabold">
+                    {displayTime}
+                  </span>
+                </div>
+              );
+            })}
           </section>
 
-          <section className="border-border shadow-soft rounded-2xl border bg-white p-4">
-            <div className="flex items-start gap-3">
-              <div className="bg-secondary text-gold flex size-9 shrink-0 items-center justify-center rounded-xl">
-                <RefreshCw className="size-4.5" strokeWidth={1.7} />
-              </div>
-              <div className="min-w-0 flex-1 space-y-2">
-                <h2 className="text-primary text-center text-sm font-bold">تحديث الموقع</h2>
-                <p className="text-muted-foreground text-xs leading-relaxed">
-                  {calculation.dataFreshness === "stale"
-                    ? "تم حفظ موقعك سابقا. يمكنك تحديثه عند الحاجة."
-                    : "يتم حساب أوقات الصلاة محليا من موقعك المحفوظ على هذا الجهاز."}
-                </p>
-                <p className="text-muted-foreground text-xs font-bold">
-                  {PRAYER_METHOD_DESCRIPTION}
-                </p>
-                <AppButton className="min-h-11 w-full" onClick={requestLocation} tone="outline">
-                  {isRequesting ? "جار التحديد" : "تحديث الموقع"}
-                </AppButton>
-              </div>
-            </div>
-          </section>
+          <AppButton
+            aria-label="تحديث المدينة باستخدام موقعك"
+            className="min-h-11 w-full"
+            disabled={isRequesting}
+            onClick={requestLocation}
+            tone="outline"
+          >
+            <RefreshCw
+              aria-hidden="true"
+              className={`size-4 ${isRequesting ? "animate-spin motion-reduce:animate-none" : ""}`}
+              strokeWidth={1.7}
+            />
+            {isRequesting ? "جارٍ تحديد المدينة" : "تحديث المدينة"}
+          </AppButton>
+
+          <p className="text-muted-foreground text-center text-[11px] leading-relaxed font-medium">
+            {PRAYER_METHOD_DESCRIPTION}
+          </p>
         </>
-      ) : (
-        <section className="border-border shadow-soft rounded-2xl border bg-white p-4">
-          <div className="flex items-start gap-3">
-            <div className="bg-secondary text-gold flex size-9 shrink-0 items-center justify-center rounded-xl">
-              <MapPin className="size-4.5" strokeWidth={1.7} />
-            </div>
-            <div className="min-w-0 flex-1 space-y-3">
-              <h2 className="text-primary text-center text-sm font-bold">حدد موقعك</h2>
-              <p className="text-muted-foreground text-xs leading-relaxed">{message}</p>
-              <AppButton
-                className="min-h-11 w-full"
-                disabled={isRequesting}
-                onClick={requestLocation}
-              >
-                {isRequesting ? "جار التحديد" : "استخدام موقعي"}
-              </AppButton>
-            </div>
-          </div>
-        </section>
-      )}
+      ) : null}
     </main>
   );
 }

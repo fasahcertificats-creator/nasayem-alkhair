@@ -12,6 +12,7 @@ export interface PrayerLocation {
   latitude: number;
   longitude: number;
   acquiredAt: number;
+  cityLabel?: string;
 }
 
 export interface PrayerTimeRow {
@@ -32,6 +33,18 @@ export interface PrayerCalculationResult {
   remainingMs: number;
   rows: PrayerTimeRow[];
   sunrise: PrayerTimeRow;
+}
+
+export type PrayerLocationRequestErrorReason =
+  | "permission-denied"
+  | "unavailable"
+  | "timeout";
+
+export class PrayerLocationRequestError extends Error {
+  constructor(public readonly reason: PrayerLocationRequestErrorReason) {
+    super(reason);
+    this.name = "PrayerLocationRequestError";
+  }
 }
 
 const prayerNames: Record<PrayerId, string> = {
@@ -70,10 +83,16 @@ export function validatePrayerLocation(value: unknown): PrayerLocation | null {
     return null;
   }
 
+  const cityLabel =
+    typeof value.cityLabel === "string" && value.cityLabel.trim()
+      ? value.cityLabel.trim().slice(0, 120)
+      : undefined;
+
   return {
     latitude: value.latitude,
     longitude: value.longitude,
-    acquiredAt: value.acquiredAt
+    acquiredAt: value.acquiredAt,
+    ...(cityLabel ? { cityLabel } : {})
   };
 }
 
@@ -189,7 +208,7 @@ export function calculatePrayerTimes(
 export function requestCurrentPosition(): Promise<PrayerLocation> {
   return new Promise((resolve, reject) => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      reject(new Error("geolocation-unavailable"));
+      reject(new PrayerLocationRequestError("unavailable"));
       return;
     }
 
@@ -208,7 +227,19 @@ export function requestCurrentPosition(): Promise<PrayerLocation> {
 
         resolve(location);
       },
-      () => reject(new Error("geolocation-denied")),
+      (error) => {
+        if (error.code === error.PERMISSION_DENIED) {
+          reject(new PrayerLocationRequestError("permission-denied"));
+          return;
+        }
+
+        if (error.code === error.TIMEOUT) {
+          reject(new PrayerLocationRequestError("timeout"));
+          return;
+        }
+
+        reject(new PrayerLocationRequestError("unavailable"));
+      },
       {
         enableHighAccuracy: false,
         maximumAge: 10 * 60 * 1000,
