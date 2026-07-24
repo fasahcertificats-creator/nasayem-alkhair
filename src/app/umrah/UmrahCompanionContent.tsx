@@ -15,6 +15,9 @@ const arabicNumberFormatter = new Intl.NumberFormat("ar-u-nu-arab", {
   useGrouping: false
 });
 
+const approvedUmrahIntroduction =
+  "في رحلةٍ هي من أعظم رحلات المسلم، تتجرد القلوب من الشواغل، وترتفع الأكف إلى الله رجاء القبول والمغفرة. فالعمرة ليست مناسك تُؤدّى فحسب، بل لحظات قربٍ وخشوعٍ ورحمة، تكون فيها الأدعية زادًا للروح ولسانًا يناجي به العبد ربَّه في أشرف البقاع.";
+
 function UmrahCompanionContentComponent({ stages }: UmrahCompanionContentProps) {
   return (
     <main
@@ -27,8 +30,10 @@ function UmrahCompanionContentComponent({ stages }: UmrahCompanionContentProps) 
       >
         <IslamicPattern className="-top-6 end-1" opacity={0.04} size="medium" tone="gold" variant="header" />
         <PageHeading id="umrah-page-heading">دليل العمرة</PageHeading>
-        <p className={`${typography.hierarchy.body} ${typography.tone.muted}`}>
-          رحلة هادئة لخطوات العمرة وما ثبت فيها من ذكر ودعاء وإرشاد عملي.
+        <p
+          className={`${typography.hierarchy.body} ${typography.tone.muted} max-w-[46ch] text-right leading-[1.9]`}
+        >
+          {approvedUmrahIntroduction}
         </p>
       </section>
 

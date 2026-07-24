@@ -33,4 +33,10 @@ export type {
 export type { CompletedAzkarEntry, ProductProgress } from "./product-progress";
 export type { ThemeMode } from "./theme";
 export type { UmrahContent } from "./umrah";
+export type {
+  ReligiousContentScope,
+  ReligiousSourceKind,
+  UmrahContext,
+  UmrahDuaItem
+} from "./umrah-companion";
 export type { UmrahStage, UmrahStageContentSection, UmrahStagePhase } from "./umrah-stage";

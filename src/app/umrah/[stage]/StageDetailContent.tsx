@@ -14,13 +14,15 @@ import {
   spacing,
   typography
 } from "@/design-system";
-import type { Dua, UmrahStage, UmrahStageContentSection } from "@/types";
+import type { Dua, UmrahDuaItem, UmrahStage, UmrahStageContentSection } from "@/types";
 
+import { UmrahRoundCompanion } from "@/components/umrah/UmrahRoundCompanion";
 import { DuaBlock } from "../DuaBlock";
 import { UmrahSourceMeta } from "../UmrahSourceMeta";
 
 interface StageDetailContentProps {
   approvedDuas: Dua[];
+  companionDuas: UmrahDuaItem[];
   stage: UmrahStage;
 }
 
@@ -134,7 +136,11 @@ function getDisplayedSections(stage: UmrahStage) {
   );
 }
 
-function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContentProps) {
+function StageDetailContentComponent({
+  approvedDuas,
+  companionDuas,
+  stage
+}: StageDetailContentProps) {
   const sections = getDisplayedSections(stage);
   const disclosureSections = sections.filter((section) => /ماذا أفعل/.test(section.titleAr));
   const regularSections = sections.filter((section) => !disclosureSections.includes(section));
@@ -175,6 +181,10 @@ function StageDetailContentComponent({ approvedDuas, stage }: StageDetailContent
             <DuaBlock dua={dua} key={dua.id} />
           ))}
         </section>
+      ) : null}
+
+      {(stage.slug === "tawaf" || stage.slug === "sai") && companionDuas.length > 0 ? (
+        <UmrahRoundCompanion context={stage.slug} duas={companionDuas} />
       ) : null}
 
       {disclosureSections.length > 0 ? (

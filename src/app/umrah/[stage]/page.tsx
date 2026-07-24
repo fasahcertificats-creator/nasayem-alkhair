@@ -2,7 +2,11 @@ import { notFound, permanentRedirect } from "next/navigation";
 import type { Route } from "next";
 
 import { ROUTES } from "@/constants/routes.constants";
-import { getDuasByStageId, getUmrahStages } from "@/services/content";
+import {
+  getDuasByStageId,
+  getUmrahCompanionDuas,
+  getUmrahStages
+} from "@/services/content";
 
 import { StageDetailContent } from "./StageDetailContent";
 
@@ -41,6 +45,10 @@ export default async function UmrahStagePage({ params }: StagePageProps) {
   }
 
   const approvedDuas = getDuasByStageId(stage.slug);
+  const companionDuas =
+    stage.slug === "tawaf" || stage.slug === "sai" ? getUmrahCompanionDuas(stage.slug) : [];
 
-  return <StageDetailContent approvedDuas={approvedDuas} stage={stage} />;
+  return (
+    <StageDetailContent approvedDuas={approvedDuas} companionDuas={companionDuas} stage={stage} />
+  );
 }
