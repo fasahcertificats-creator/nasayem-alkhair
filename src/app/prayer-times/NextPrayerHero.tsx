@@ -7,7 +7,7 @@ import { ROUTES } from "@/constants/routes.constants";
 import type { PrayerTimesState } from "@/hooks/usePrayerTimes";
 import { cn } from "@/lib/utils";
 
-import { getPrayerLocationLabel } from "./prayer-presentation";
+import { getReliablePrayerLocationLabel } from "./prayer-presentation";
 
 interface NextPrayerHeroProps {
   className?: string;
@@ -27,12 +27,13 @@ export function NextPrayerHero({
 }: NextPrayerHeroProps) {
   const { calculation, errorMessage, location, requestLocation, status } = prayerTimes;
   const isLoading = status === "loading" || status === "requesting";
+  const cityLabel = getReliablePrayerLocationLabel(location);
 
   return (
     <section
       aria-label="ملخص الصلاة القادمة"
       className={cn(
-        "border-primary bg-primary shadow-card relative min-h-[168px] overflow-hidden rounded-[22px] border px-4 py-4 text-white",
+        "border-primary bg-primary shadow-card relative min-h-[168px] overflow-hidden rounded-[22px] border px-4 py-4 text-white max-[279px]:min-h-0 max-[279px]:rounded-[18px] max-[279px]:px-3",
         className
       )}
     >
@@ -46,34 +47,63 @@ export function NextPrayerHero({
       />
 
       {calculation ? (
-        <div className="relative z-10 flex min-h-[134px] flex-col">
+        <div className="relative z-10 flex min-h-[134px] flex-col max-[279px]:min-h-0">
           {showLocation ? (
-            <p className="mb-2 flex items-center gap-1.5 text-xs font-bold text-white/80">
-              <MapPin aria-hidden="true" className="text-gold size-3.5" strokeWidth={1.7} />
-              <span>{getPrayerLocationLabel(location)}</span>
-            </p>
+            cityLabel ? (
+              <p
+                aria-live="polite"
+                className="mb-2 flex min-h-5 items-center gap-1.5 text-xs font-bold text-white/80"
+              >
+                <MapPin aria-hidden="true" className="text-gold size-3.5 shrink-0" strokeWidth={1.7} />
+                <span className="min-w-0 break-words">{cityLabel}</span>
+              </p>
+            ) : (
+              <div
+                aria-live="polite"
+                className="mb-2 flex min-h-5 flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[11px] font-bold max-[279px]:flex-col max-[279px]:items-stretch"
+              >
+                <span className="flex min-w-0 items-center gap-1.5 text-white/80">
+                  <AlertCircle
+                    aria-hidden="true"
+                    className="text-gold size-3.5 shrink-0"
+                    strokeWidth={1.7}
+                  />
+                  <span>تعذر تحديد اسم المدينة</span>
+                </span>
+                <Link
+                  aria-label="تحديث اسم المدينة من صفحة أوقات الصلاة"
+                  className="focus-visible:ring-gold focus-visible:ring-offset-primary min-h-11 rounded-lg px-1.5 py-2 text-gold underline decoration-gold/50 underline-offset-4 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                  href={ROUTES.prayerTimes}
+                >
+                  تحديث المدينة
+                </Link>
+              </div>
+            )
           ) : null}
 
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start justify-between gap-4 max-[279px]:flex-col max-[279px]:gap-2">
             <div className="min-w-0">
               <p className="text-[11px] font-bold text-white/65">الصلاة القادمة</p>
               <h2 className="text-background mt-0.5 text-[22px] leading-tight font-extrabold">
                 صلاة {calculation.nextPrayer.name}
               </h2>
             </div>
-            <p className="text-gold shrink-0 font-mono text-[24px] leading-none font-extrabold">
+            <p
+              className="text-gold shrink-0 text-[24px] leading-none font-extrabold [unicode-bidi:isolate] max-[279px]:w-full max-[279px]:text-start"
+              dir="ltr"
+            >
               {calculation.nextPrayer.displayTime}
             </p>
           </div>
 
-          <div className="mt-auto flex items-end justify-between gap-3 border-t border-white/10 pt-3">
-            <p className="min-w-0 text-[11px] leading-relaxed font-semibold text-white/80">
+          <div className="mt-auto flex items-end justify-between gap-3 border-t border-white/10 pt-3 max-[279px]:mt-3 max-[279px]:flex-col max-[279px]:items-stretch max-[279px]:gap-2 max-[279px]:pt-2">
+            <p className="min-w-0 break-words text-[11px] leading-relaxed font-semibold text-white/80">
               {calculation.remainingLabel}
             </p>
             {variant === "home" ? (
               <Link
                 aria-label="عرض جميع أوقات الصلاة"
-                className="focus-visible:ring-gold focus-visible:ring-offset-primary flex min-h-11 shrink-0 items-center gap-1 rounded-xl px-2.5 py-2 text-[11px] font-bold text-white transition hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                className="focus-visible:ring-gold focus-visible:ring-offset-primary flex min-h-11 shrink-0 items-center gap-1 rounded-xl px-2.5 py-2 text-[11px] font-bold text-white transition hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none max-[279px]:w-full max-[279px]:justify-center max-[279px]:whitespace-normal max-[279px]:text-center max-[279px]:leading-relaxed"
                 href={ROUTES.prayerTimes}
               >
                 <span>عرض جميع المواقيت</span>
@@ -140,9 +170,8 @@ function PrayerLocationState({
 
   return (
     <div
-      aria-live={denied || unavailable ? "assertive" : "polite"}
+      aria-live="polite"
       className="relative z-10 flex min-h-[134px] flex-col justify-center"
-      role={denied || unavailable ? "alert" : undefined}
     >
       <div className="flex items-start gap-2.5">
         {denied || unavailable ? (

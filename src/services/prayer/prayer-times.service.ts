@@ -1,5 +1,10 @@
 import { CalculationMethod, Coordinates, Madhab, PrayerTimes } from "adhan";
 
+import {
+  formatArabicPrayerTime,
+  formatArabicRemainingDuration
+} from "@/lib/home-presentation";
+
 export const PRAYER_LOCATION_STORAGE_KEY = "nasayem_prayer_location";
 export const PRAYER_METHOD_LABEL = "رابطة العالم الإسلامي";
 export const PRAYER_METHOD_DESCRIPTION = "طريقة الحساب: رابطة العالم الإسلامي";
@@ -130,30 +135,6 @@ export function getLocalDayKey(date = new Date()): string {
   return `${year}-${month}-${day}`;
 }
 
-function formatPrayerTime(date: Date): string {
-  return new Intl.DateTimeFormat("ar-SA", {
-    hour: "2-digit",
-    minute: "2-digit"
-  }).format(date);
-}
-
-function formatRemainingDuration(durationMs: number): string {
-  const safeDurationMs = Math.max(0, durationMs);
-  const totalMinutes = Math.ceil(safeDurationMs / 60000);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-
-  if (hours <= 0) {
-    return `متبق ${minutes} دقيقة`;
-  }
-
-  if (minutes === 0) {
-    return `متبق ${hours} ساعة`;
-  }
-
-  return `متبق ${hours} ساعة و ${minutes} دقيقة`;
-}
-
 function buildRows(prayerTimes: PrayerTimes): PrayerTimeRow[] {
   const rows: Array<Omit<PrayerTimeRow, "displayTime">> = [
     { id: "fajr", name: prayerNames.fajr, time: prayerTimes.fajr },
@@ -166,7 +147,7 @@ function buildRows(prayerTimes: PrayerTimes): PrayerTimeRow[] {
 
   return rows.map((row) => ({
     ...row,
-    displayTime: formatPrayerTime(row.time)
+    displayTime: formatArabicPrayerTime(row.time)
   }));
 }
 
@@ -198,7 +179,7 @@ export function calculatePrayerTimes(
     method: "MuslimWorldLeague",
     methodLabel: PRAYER_METHOD_LABEL,
     nextPrayer,
-    remainingLabel: formatRemainingDuration(remainingMs),
+    remainingLabel: formatArabicRemainingDuration(remainingMs),
     remainingMs,
     rows,
     sunrise: rows.find((row) => row.id === "sunrise") ?? rows[0]
