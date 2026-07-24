@@ -11,6 +11,7 @@ import { getReliablePrayerLocationLabel } from "./prayer-presentation";
 
 interface NextPrayerHeroProps {
   className?: string;
+  onManualSelect?: () => void;
   prayerTimes: PrayerTimesState;
   showLocation?: boolean;
   variant?: "home" | "page";
@@ -21,6 +22,7 @@ const actionClassName =
 
 export function NextPrayerHero({
   className,
+  onManualSelect,
   prayerTimes,
   showLocation = true,
   variant = "home"
@@ -116,6 +118,7 @@ export function NextPrayerHero({
         <PrayerLocationState
           errorMessage={errorMessage}
           isLoading={isLoading}
+          onManualSelect={onManualSelect}
           onRequestLocation={requestLocation}
           status={status}
           variant={variant}
@@ -128,12 +131,14 @@ export function NextPrayerHero({
 function PrayerLocationState({
   errorMessage,
   isLoading,
+  onManualSelect,
   onRequestLocation,
   status,
   variant
 }: {
   errorMessage: string | null;
   isLoading: boolean;
+  onManualSelect?: () => void;
   onRequestLocation: () => Promise<void>;
   status: PrayerTimesState["status"];
   variant: "home" | "page";
@@ -149,24 +154,29 @@ function PrayerLocationState({
           className="text-gold size-5 animate-spin motion-reduce:animate-none"
           strokeWidth={1.7}
         />
-        <p className="text-sm font-bold text-white/90">جارٍ تحديد المدينة...</p>
+        <p className="text-sm font-bold text-white/90">جارٍ تحديد موقعك...</p>
       </div>
     );
   }
 
   const denied = status === "denied";
+  const offline = status === "offline";
   const unavailable = status === "unavailable" || status === "error";
   const title = denied
-    ? "تعذر الوصول إلى الموقع"
+    ? "تعذر الوصول إلى الموقع."
+    : offline
+      ? "تعذر تحديث موقعك الآن لعدم توفر الاتصال."
     : unavailable
-      ? "تعذر تحديد المدينة الآن"
-      : "فعّل موقعك لعرض أوقات الصلاة";
+      ? "تعذر تحديد موقعك الآن."
+      : "فعّل موقعك أو اختر مدينتك لعرض المواقيت.";
   const supportingText = denied
-    ? "اسمح بالوصول إلى الموقع من إعدادات المتصفح، ثم أعد المحاولة."
+    ? "اسمح بالوصول من إعدادات الجهاز أو اختر المدينة يدويًا."
+    : offline
+      ? "يمكنك اختيار المدينة يدويًا وحساب المواقيت دون اتصال."
     : unavailable
-      ? "تحقق من الاتصال أو خدمات الموقع، ثم حاول مرة أخرى."
-      : "نستخدم موقعك لحساب المواقيت بدقة.";
-  const actionLabel = denied || unavailable ? "إعادة المحاولة" : "استخدام موقعي";
+      ? "حاول مرة أخرى أو اختر المدينة يدويًا."
+      : "لن نطلب الموقع إلا بعد ضغطك على الزر.";
+  const actionLabel = denied || offline || unavailable ? "إعادة المحاولة" : "استخدام موقعي";
 
   return (
     <div
@@ -180,25 +190,36 @@ function PrayerLocationState({
           <MapPin aria-hidden="true" className="text-gold mt-0.5 size-5 shrink-0" strokeWidth={1.7} />
         )}
         <div className="min-w-0">
-          {variant === "home" || denied || unavailable ? (
-            <h2 className="text-background text-base leading-relaxed font-extrabold">{title}</h2>
-          ) : null}
+          <h2 className="text-background text-base leading-relaxed font-extrabold">{title}</h2>
           <p className="mt-1 text-xs leading-relaxed font-medium text-white/75">
             {errorMessage || supportingText}
           </p>
         </div>
       </div>
 
-      <button
-        aria-label={actionLabel}
-        className={cn(actionClassName, "mt-3 self-start")}
-        disabled={isLoading}
-        onClick={onRequestLocation}
-        type="button"
-      >
-        <Clock aria-hidden="true" className="size-3.5" strokeWidth={1.7} />
-        {actionLabel}
-      </button>
+      <div className="mt-3 flex flex-wrap gap-2 max-[279px]:flex-col">
+        <button
+          aria-label={actionLabel}
+          className={actionClassName}
+          disabled={isLoading}
+          onClick={onRequestLocation}
+          type="button"
+        >
+          <Clock aria-hidden="true" className="size-3.5" strokeWidth={1.7} />
+          {actionLabel}
+        </button>
+        {variant === "page" && onManualSelect ? (
+          <button
+            aria-label="اختيار المدينة يدويًا"
+            className={cn(actionClassName, "text-gold")}
+            onClick={onManualSelect}
+            type="button"
+          >
+            <MapPin aria-hidden="true" className="size-3.5" strokeWidth={1.7} />
+            اختيار المدينة يدويًا
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }

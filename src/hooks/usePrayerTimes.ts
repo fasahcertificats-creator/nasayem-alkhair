@@ -2,13 +2,19 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import type { PrayerCity } from "@/data/prayer-cities";
 import {
   calculatePrayerTimes,
+  createManualPrayerLocation,
+  DEFAULT_PRAYER_SETTINGS,
   readStoredPrayerLocation,
-  requestCurrentPosition,
+  readStoredPrayerSettings,
+  requestGeolocatedPrayerLocation,
   savePrayerLocation,
+  savePrayerSettings,
   type PrayerCalculationResult,
   type PrayerLocation,
+  type PrayerSettings,
   PrayerLocationRequestError
 } from "@/services/prayer/prayer-times.service";
 
@@ -18,6 +24,7 @@ export type PrayerLocationStatus =
   | "ready"
   | "requesting"
   | "denied"
+  | "offline"
   | "unavailable"
   | "error";
 
@@ -27,13 +34,18 @@ export interface PrayerTimesState {
   isMounted: boolean;
   location: PrayerLocation | null;
   requestLocation: () => Promise<void>;
+  selectManualCity: (city: PrayerCity) => void;
+  settings: PrayerSettings;
   status: PrayerLocationStatus;
+  updateSettings: (settings: Partial<PrayerSettings>) => void;
 }
 
 const permissionDeniedMessage =
-  "اسمح بالوصول إلى الموقع من إعدادات المتصفح، ثم أعد المحاولة.";
+  "اسمح بالوصول من إعدادات الجهاز أو اختر المدينة يدويًا.";
 const locationUnavailableMessage =
-  "تحقق من الاتصال أو خدمات الموقع، ثم حاول مرة أخرى.";
+  "حاول مرة أخرى أو اختر المدينة يدويًا.";
+const offlineMessage =
+  "تعذر تحديث موقعك الآن لعدم توفر الاتصال.";
 const calculationErrorMessage = "تعذر تحديث أوقات الصلاة الآن.";
 
 export function usePrayerTimes(): PrayerTimesState {
@@ -42,12 +54,15 @@ export function usePrayerTimes(): PrayerTimesState {
   const [status, setStatus] = useState<PrayerLocationStatus>("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
+  const [settings, setSettings] = useState<PrayerSettings>(DEFAULT_PRAYER_SETTINGS);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       const storedLocation = readStoredPrayerLocation();
+      const storedSettings = readStoredPrayerSettings();
       setIsMounted(true);
       setLocation(storedLocation);
+      setSettings(storedSettings);
       setStatus(storedLocation ? "ready" : "missing");
     }, 0);
 
@@ -59,18 +74,30 @@ export function usePrayerTimes(): PrayerTimesState {
       return;
     }
 
-    const intervalId = window.setInterval(() => setNow(new Date()), 30000);
+    let timer = 0;
+
+    function refreshAndSchedule() {
+      const nextNow = new Date();
+      const millisecondsToNextMinute =
+        60000 - (nextNow.getSeconds() * 1000 + nextNow.getMilliseconds()) + 250;
+
+      window.clearTimeout(timer);
+      setNow(nextNow);
+      timer = window.setTimeout(refreshAndSchedule, millisecondsToNextMinute);
+    }
+
     const onVisibilityChange = () => {
       if (!document.hidden) {
-        setNow(new Date());
+        refreshAndSchedule();
       }
     };
 
+    refreshAndSchedule();
     window.addEventListener("focus", onVisibilityChange);
     document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
-      window.clearInterval(intervalId);
+      window.clearTimeout(timer);
       window.removeEventListener("focus", onVisibilityChange);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
@@ -82,18 +109,18 @@ export function usePrayerTimes(): PrayerTimesState {
     }
 
     try {
-      return calculatePrayerTimes(location, now);
+      return calculatePrayerTimes(location, now, settings);
     } catch {
       return null;
     }
-  }, [location, now]);
+  }, [location, now, settings]);
 
   const requestLocation = useCallback(async () => {
     setStatus("requesting");
     setErrorMessage(null);
 
     try {
-      const nextLocation = await requestCurrentPosition();
+      const nextLocation = await requestGeolocatedPrayerLocation();
       savePrayerLocation(nextLocation);
       setLocation(nextLocation);
       setStatus("ready");
@@ -101,10 +128,40 @@ export function usePrayerTimes(): PrayerTimesState {
     } catch (error) {
       const permissionDenied =
         error instanceof PrayerLocationRequestError && error.reason === "permission-denied";
+      const offline =
+        error instanceof PrayerLocationRequestError && error.reason === "offline";
 
-      setStatus(permissionDenied ? "denied" : "unavailable");
-      setErrorMessage(permissionDenied ? permissionDeniedMessage : locationUnavailableMessage);
+      setStatus(permissionDenied ? "denied" : offline ? "offline" : "unavailable");
+      setErrorMessage(
+        permissionDenied
+          ? permissionDeniedMessage
+          : offline
+            ? offlineMessage
+            : locationUnavailableMessage
+      );
     }
+  }, []);
+
+  const selectManualCity = useCallback((city: PrayerCity) => {
+    const nextLocation = createManualPrayerLocation(city);
+
+    savePrayerLocation(nextLocation);
+    setErrorMessage(null);
+    setLocation(nextLocation);
+    setStatus("ready");
+    setNow(new Date());
+  }, []);
+
+  const updateSettings = useCallback((nextSettings: Partial<PrayerSettings>) => {
+    setSettings((currentSettings) => {
+      const updatedSettings: PrayerSettings = {
+        ...currentSettings,
+        ...nextSettings
+      };
+
+      savePrayerSettings(updatedSettings);
+      return updatedSettings;
+    });
   }, []);
 
   const hasCalculationError = Boolean(location && !calculation && status === "ready");
@@ -117,6 +174,9 @@ export function usePrayerTimes(): PrayerTimesState {
     isMounted,
     location,
     requestLocation,
-    status: effectiveStatus
+    selectManualCity,
+    settings,
+    status: effectiveStatus,
+    updateSettings
   };
 }

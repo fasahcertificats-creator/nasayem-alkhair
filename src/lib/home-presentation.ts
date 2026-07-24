@@ -27,6 +27,7 @@ const arabicPrayerTimeFormatter = new Intl.DateTimeFormat("ar-SA-u-nu-arab", {
   minute: "2-digit",
   hour12: true
 });
+const arabicPrayerTimeFormatters = new Map<string, Intl.DateTimeFormat>();
 
 const invalidCityLabelPattern =
   /^(?:unknown|undefined|null|near\b.*|غير معروف|مدينة غير معروفة|حسب موقعك الحالي|موقعك الحالي|تم تحديد الموقع|تعذر تحديد (?:اسم )?المدينة)$/i;
@@ -86,8 +87,30 @@ export function parseSafeTasbihTotal(value: unknown, maximum = 999999): number {
   );
 }
 
-export function formatArabicPrayerTime(date: Date): string {
-  return arabicPrayerTimeFormatter.format(date).replace(/\s+/g, " ").trim();
+export function formatArabicPrayerTime(date: Date, timezone?: string): string {
+  let formatter = arabicPrayerTimeFormatter;
+
+  if (timezone) {
+    const cachedFormatter = arabicPrayerTimeFormatters.get(timezone);
+
+    if (cachedFormatter) {
+      formatter = cachedFormatter;
+    } else {
+      try {
+        formatter = new Intl.DateTimeFormat("ar-SA-u-nu-arab", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+          timeZone: timezone
+        });
+        arabicPrayerTimeFormatters.set(timezone, formatter);
+      } catch {
+        formatter = arabicPrayerTimeFormatter;
+      }
+    }
+  }
+
+  return formatter.format(date).replace(/\s+/g, " ").trim();
 }
 
 function formatArabicDurationUnit(value: number, unit: "hour" | "minute"): string {
