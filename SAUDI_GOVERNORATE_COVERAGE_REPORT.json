@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "source": "https://ncar.gov.sa/regions-coding",
+  "geonamesSource": "https://download.geonames.org/export/dump/SA.zip",
+  "regionsExpected": 13,
+  "regionsImported": 13,
+  "officialGovernoratesExpected": 140,
+  "governoratesImported": 140,
+  "governoratesPerRegion": [
+    {
+      "regionCode": "0001",
+      "regionName": "منطقة الرياض",
+      "expected": 22,
+      "imported": 22,
+      "missing": []
+    },
+    {
+      "regionCode": "0002",
+      "regionName": "منطقة مكة المكرمة",
+      "expected": 16,
+      "imported": 16,
+      "missing": []
+    },
+    {
+      "regionCode": "0003",
+      "regionName": "منطقة المدينة المنورة",
+      "expected": 8,
+      "imported": 8,
+      "missing": []
+    },
+    {
+      "regionCode": "0004",
+      "regionName": "منطقة القصيم",
+      "expected": 13,
+      "imported": 13,
+      "missing": []
+    },
+    {
+      "regionCode": "0005",
+      "regionName": "المنطقة الشرقية",
+      "expected": 12,
+      "imported": 12,
+      "missing": []
+    },
+    {
+      "regionCode": "0006",
+      "regionName": "منطقة عسير",
+      "expected": 17,
+      "imported": 17,
+      "missing": []
+    },
+    {
+      "regionCode": "0007",
+      "regionName": "منطقة تبوك",
+      "expected": 6,
+      "imported": 6,
+      "missing": []
+    },
+    {
+      "regionCode": "0008",
+      "regionName": "منطقة حائل",
+      "expected": 8,
+      "imported": 8,
+      "missing": []
+    },
+    {
+      "regionCode": "0009",
+      "regionName": "منطقة الحدود الشمالية",
+      "expected": 3,
+      "imported": 3,
+      "missing": []
+    },
+    {
+      "regionCode": "0010",
+      "regionName": "منطقة جازان",
+      "expected": 16,
+      "imported": 16,
+      "missing": []
+    },
+    {
+      "regionCode": "0011",
+      "regionName": "منطقة نجران",
+      "expected": 6,
+      "imported": 6,
+      "missing": []
+    },
+    {
+      "regionCode": "0012",
+      "regionName": "منطقة الباحة",
+      "expected": 9,
+      "imported": 9,
+      "missing": []
+    },
+    {
+      "regionCode": "0013",
+      "regionName": "منطقة الجوف",
+      "expected": 4,
+      "imported": 4,
+      "missing": []
+    }
+  ],
+  "missingGovernorates": [],
+  "parentRegionMismatches": [],
+  "recordsMissingCoordinates": [],
+  "recordsMissingTimezone": []
+}

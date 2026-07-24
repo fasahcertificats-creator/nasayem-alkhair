@@ -20,7 +20,13 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { searchPrayerCities, type PrayerCity } from "@/data/prayer-cities";
+import {
+  getPrayerGovernorates,
+  getYemenGovernorateChildren,
+  SAUDI_PRAYER_REGIONS,
+  searchPrayerCities,
+  type PrayerCity
+} from "@/data/prayer-cities";
 import { AppButton, PageHeading } from "@/design-system";
 import { usePrayerTimes, type PrayerLocationStatus } from "@/hooks/usePrayerTimes";
 import { cn } from "@/lib/utils";
@@ -341,7 +347,41 @@ function ManualCitySelector({
   setQuery: (query: string) => void;
 }) {
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const cities = useMemo(() => searchPrayerCities(query), [query]);
+  const [countryCode, setCountryCode] = useState<"" | "SA" | "YE" | "OTHER">("");
+  const [regionCode, setRegionCode] = useState("");
+  const [governorateCode, setGovernorateCode] = useState("");
+  const hierarchyCities = useMemo(() => {
+    if (countryCode === "SA" && regionCode) {
+      return getPrayerGovernorates("SA", regionCode);
+    }
+
+    if (countryCode === "YE") {
+      const governorates = getPrayerGovernorates("YE");
+      if (!governorateCode) {
+        return governorates;
+      }
+
+      const selectedGovernorate = governorates.find(
+        (city) => city.governorateCode === governorateCode
+      );
+      return [
+        ...(selectedGovernorate ? [selectedGovernorate] : []),
+        ...getYemenGovernorateChildren(governorateCode)
+      ];
+    }
+
+    if (countryCode === "OTHER") {
+      return searchPrayerCities("").filter(
+        (city) => city.countryCode !== "SA" && city.countryCode !== "YE"
+      );
+    }
+
+    return [];
+  }, [countryCode, governorateCode, regionCode]);
+  const cities = useMemo(
+    () => (query.trim() ? searchPrayerCities(query).slice(0, 80) : hierarchyCities),
+    [hierarchyCities, query]
+  );
 
   useEffect(() => {
     searchInputRef.current?.focus();
@@ -390,19 +430,83 @@ function ManualCitySelector({
         />
       </label>
 
+      <div className="grid gap-2">
+        <label className="space-y-1 text-xs font-bold text-primary">
+          <span>اختر الدولة</span>
+          <select
+            className="border-border focus:border-gold focus:ring-gold/20 h-11 w-full rounded-xl border bg-white px-3 text-sm outline-none focus:ring-2"
+            onChange={(event) => {
+              setCountryCode(event.target.value as typeof countryCode);
+              setRegionCode("");
+              setGovernorateCode("");
+              setQuery("");
+            }}
+            value={countryCode}
+          >
+            <option value="">اختر الدولة</option>
+            <option value="SA">السعودية</option>
+            <option value="YE">اليمن</option>
+            <option value="OTHER">دول أخرى</option>
+          </select>
+        </label>
+
+        {countryCode === "SA" ? (
+          <label className="space-y-1 text-xs font-bold text-primary">
+            <span>اختر المنطقة</span>
+            <select
+              className="border-border focus:border-gold focus:ring-gold/20 h-11 w-full rounded-xl border bg-white px-3 text-sm outline-none focus:ring-2"
+              onChange={(event) => setRegionCode(event.target.value)}
+              value={regionCode}
+            >
+              <option value="">اختر المنطقة</option>
+              {SAUDI_PRAYER_REGIONS.map((region) => (
+                <option key={region.code} value={region.code}>
+                  {region.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+
+        {countryCode === "YE" ? (
+          <label className="space-y-1 text-xs font-bold text-primary">
+            <span>اختر المحافظة</span>
+            <select
+              className="border-border focus:border-gold focus:ring-gold/20 h-11 w-full rounded-xl border bg-white px-3 text-sm outline-none focus:ring-2"
+              onChange={(event) => setGovernorateCode(event.target.value)}
+              value={governorateCode}
+            >
+              <option value="">اختر المحافظة</option>
+              {getPrayerGovernorates("YE").map((governorate) => (
+                <option key={governorate.id} value={governorate.governorateCode}>
+                  {governorate.cityName}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+      </div>
+
       <div className="max-h-72 overflow-y-auto overscroll-contain rounded-xl" tabIndex={-1}>
         {cities.length ? (
-          <ul className="space-y-1.5" aria-label="نتائج المدن">
+          <ul className="space-y-1.5" aria-label="نتائج المواقع">
             {cities.map((city) => (
               <li key={city.id}>
                 <button
-                  aria-label={`اختيار ${city.cityName}، ${city.countryName}`}
-                  className="border-border hover:border-gold/40 focus-visible:ring-gold flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border bg-white px-3 py-2 text-right focus-visible:ring-2 focus-visible:outline-none"
+                  aria-label={`اختيار ${city.cityName}، ${city.parentLabel ?? city.countryName}`}
+                  className="border-border hover:border-gold/40 focus-visible:ring-gold flex min-h-11 w-full items-start justify-between gap-3 rounded-xl border bg-white px-3 py-2 text-right focus-visible:ring-2 focus-visible:outline-none"
                   onClick={() => onSelect(city)}
                   type="button"
                 >
-                  <span className="text-primary min-w-0 break-words text-sm font-bold">
-                    {city.cityName}
+                  <span className="min-w-0">
+                    <span className="text-primary block break-words text-sm font-bold">
+                      {city.cityName}
+                    </span>
+                    {city.parentLabel ? (
+                      <span className="text-muted-foreground mt-0.5 block break-words text-[10px]">
+                        {city.parentLabel}
+                      </span>
+                    ) : null}
                   </span>
                   <span className="text-muted-foreground shrink-0 text-[11px] font-medium">
                     {city.countryName}
@@ -416,7 +520,13 @@ function ManualCitySelector({
             aria-live="polite"
             className="text-muted-foreground rounded-xl border border-dashed bg-white px-3 py-5 text-center text-sm"
           >
-            لا توجد مدينة مطابقة. جرّب اسم المدينة أو الدولة.
+            {query.trim()
+              ? "لا يوجد موقع مطابق. جرّب اسم المحافظة أو المديرية أو المدينة."
+              : countryCode === "SA"
+                ? "اختر المنطقة لعرض جميع محافظاتها."
+                : countryCode
+                  ? "اختر محافظة أو ابحث عن موقع."
+                  : "اختر الدولة أو استخدم البحث الشامل."}
           </p>
         )}
       </div>

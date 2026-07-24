@@ -1,14 +1,28 @@
+import generatedPrayerLocations from "./prayer-locations.generated.json";
+
+export type PrayerLocationLevel = "city" | "district" | "governorate";
+
 export interface PrayerCity {
+  administrativeClass?: string;
+  aliases?: readonly string[];
   cityName: string;
+  coordinateSource?: string;
   countryCode: string;
   countryName: string;
+  governorateCode?: string;
+  governorateName?: string;
   id: string;
   latitude: number;
+  level?: PrayerLocationLevel;
   longitude: number;
+  officialCode?: string;
+  parentLabel?: string;
+  regionCode?: string;
+  regionName?: string;
   timezone: string;
 }
 
-export const PRAYER_CITIES: readonly PrayerCity[] = [
+const LEGACY_PRAYER_CITIES: readonly PrayerCity[] = [
   { id: "ye-sanaa", cityName: "صنعاء", countryName: "اليمن", countryCode: "YE", latitude: 15.3694, longitude: 44.191, timezone: "Asia/Aden" },
   { id: "ye-aden", cityName: "عدن", countryName: "اليمن", countryCode: "YE", latitude: 12.7855, longitude: 45.0187, timezone: "Asia/Aden" },
   { id: "ye-taiz", cityName: "تعز", countryName: "اليمن", countryCode: "YE", latitude: 13.5789, longitude: 44.0219, timezone: "Asia/Aden" },
@@ -75,6 +89,51 @@ export const PRAYER_CITIES: readonly PrayerCity[] = [
   { id: "pk-lahore", cityName: "لاهور", countryName: "باكستان", countryCode: "PK", latitude: 31.5204, longitude: 74.3587, timezone: "Asia/Karachi" }
 ];
 
+const primaryMarketLocations =
+  generatedPrayerLocations.locations as readonly PrayerCity[];
+
+export const PRAYER_CITIES: readonly PrayerCity[] = [
+  ...primaryMarketLocations,
+  ...LEGACY_PRAYER_CITIES.filter(
+    (city) => city.countryCode !== "SA" && city.countryCode !== "YE"
+  )
+];
+
+export const SAUDI_PRAYER_REGIONS = Object.values(
+  primaryMarketLocations
+    .filter((city) => city.countryCode === "SA" && city.regionCode && city.regionName)
+    .reduce<Record<string, { code: string; name: string }>>((regions, city) => {
+      regions[city.regionCode!] = {
+        code: city.regionCode!,
+        name: city.regionName!
+      };
+      return regions;
+    }, {})
+).sort((left, right) => left.code.localeCompare(right.code));
+
+export function getPrayerGovernorates(
+  countryCode: "SA" | "YE",
+  regionCode?: string
+): readonly PrayerCity[] {
+  return primaryMarketLocations.filter(
+    (city) =>
+      city.countryCode === countryCode &&
+      city.level === "governorate" &&
+      (!regionCode || city.regionCode === regionCode)
+  );
+}
+
+export function getYemenGovernorateChildren(
+  governorateCode: string
+): readonly PrayerCity[] {
+  return primaryMarketLocations.filter(
+    (city) =>
+      city.countryCode === "YE" &&
+      city.governorateCode === governorateCode &&
+      city.level !== "governorate"
+  );
+}
+
 export function normalizePrayerCitySearch(value: string): string {
   return value
     .normalize("NFKD")
@@ -90,7 +149,15 @@ export function normalizePrayerCitySearch(value: string): string {
 const searchableCities = PRAYER_CITIES.map((city) => ({
   city,
   searchText: normalizePrayerCitySearch(
-    `${city.cityName} ${city.countryName} ${city.countryCode}`
+    [
+      city.cityName,
+      city.countryName,
+      city.countryCode,
+      city.regionName,
+      city.governorateName,
+      city.parentLabel,
+      ...(city.aliases ?? [])
+    ].filter(Boolean).join(" ")
   )
 }));
 

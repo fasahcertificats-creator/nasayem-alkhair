@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "geonamesSource": "https://download.geonames.org/export/dump/YE.zip",
+  "topLevelUnitsExpected": 22,
+  "governoratesImported": 22,
+  "missingGovernorates": [],
+  "districtsImported": 333,
+  "recordsMissingCoordinates": [],
+  "recordsMissingTimezone": []
+}
