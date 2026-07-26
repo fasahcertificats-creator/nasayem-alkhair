@@ -1,5 +1,11 @@
 export type { Auditable, EntityId } from "./common";
-export type { AzkarCategory, AzkarItem } from "./azkar";
+export {
+  AZKAR_CATEGORY_IDS,
+  type AzkarCategory,
+  type AzkarCategoryDefinition,
+  type AzkarIconId,
+  type AzkarItem
+} from "./azkar";
 export type {
   ContentVerificationStatus,
   Dua,

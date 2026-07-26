@@ -1,91 +1,27 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
-
 import {
   AzkarRepetitionControl,
   AzkarSourceMeta,
   IslamicPattern,
   ReligiousText,
-  SurfaceCard,
-  spacing
+  SurfaceCard
 } from "@/design-system";
-import type { AzkarCategory, AzkarItem } from "@/types";
+import type { AzkarItem } from "@/types";
 
 interface AzkarReaderCardProps {
+  count: number;
   item: AzkarItem;
+  onIncrement: () => void;
 }
 
-const azkarRepetitionStorageKey = "nasayem-alkhair:azkarRepetitionCounts";
-const azkarRepetitionStorageEvent = "nasayem-alkhair:azkarRepetitionCountsChanged";
-
-function canUseStorage() {
-  return typeof window !== "undefined" && Boolean(window.localStorage);
-}
-
-function readStoredCounters() {
-  if (!canUseStorage()) {
-    return {};
-  }
-
-  try {
-    const parsedValue = JSON.parse(window.localStorage.getItem(azkarRepetitionStorageKey) ?? "{}");
-
-    return typeof parsedValue === "object" && parsedValue !== null && !Array.isArray(parsedValue)
-      ? (parsedValue as Record<string, unknown>)
-      : {};
-  } catch {
-    return {};
-  }
-}
-
-function readStoredCounter(itemId: string, target: number) {
-  const storedValue = readStoredCounters()[itemId];
-
-  return typeof storedValue === "number" && Number.isFinite(storedValue)
-    ? Math.min(Math.max(0, storedValue), target)
-    : 0;
-}
-
-function writeStoredCounter(itemId: string, count: number) {
-  if (!canUseStorage()) {
-    return;
-  }
-
-  window.localStorage.setItem(
-    azkarRepetitionStorageKey,
-    JSON.stringify({
-      ...readStoredCounters(),
-      [itemId]: count
-    })
-  );
-}
-
-function emitCounterChange() {
-  window.dispatchEvent(new Event(azkarRepetitionStorageEvent));
-}
-
-function subscribeToCounterChanges(callback: () => void) {
-  if (!canUseStorage()) {
-    return () => {};
-  }
-
-  window.addEventListener("storage", callback);
-  window.addEventListener(azkarRepetitionStorageEvent, callback);
-
-  return () => {
-    window.removeEventListener("storage", callback);
-    window.removeEventListener(azkarRepetitionStorageEvent, callback);
-  };
-}
-
-function getContentKind(category: AzkarCategory, item: AzkarItem) {
-  if (category === "quran-duas") {
+function getContentKind(item: AzkarItem) {
+  if (item.categoryId === "quran-duas") {
     return "quran";
   }
 
   if (
-    category === "prophetic-duas" ||
+    item.categoryId === "prophetic-duas" ||
     item.authenticity === "sahih" ||
     item.authenticity === "hasan"
   ) {
@@ -95,31 +31,17 @@ function getContentKind(category: AzkarCategory, item: AzkarItem) {
   return "dua";
 }
 
-export function AzkarReaderCard({ item }: AzkarReaderCardProps) {
-  const hasCounter = item.displayMode !== "reading" && item.count >= 1;
-  const contentKind = getContentKind(item.category, item);
-  const counter = useSyncExternalStore(
-    subscribeToCounterChanges,
-    () => (hasCounter ? readStoredCounter(item.id, item.count) : 0),
-    () => 0
-  );
-
-  function updateCounter(nextCounter: number) {
-    writeStoredCounter(item.id, nextCounter);
-    emitCounterChange();
-  }
-
-  function incrementCounter() {
-    updateCounter(Math.min(counter + 1, item.count));
-  }
-
-  function resetCounter() {
-    updateCounter(0);
-  }
+export function AzkarReaderCard({
+  count,
+  item,
+  onIncrement
+}: AzkarReaderCardProps) {
+  const contentKind = getContentKind(item);
+  const isReadingItem = item.displayMetadata?.mode === "reading";
 
   return (
     <SurfaceCard
-      className={`${spacing.inset.md} ${spacing.stack.md}`}
+      className="min-w-0 space-y-5 overflow-hidden p-4 max-[219px]:p-3 sm:p-5"
       decoration={
         contentKind === "quran" ? null : (
           <IslamicPattern
@@ -136,13 +58,14 @@ export function AzkarReaderCard({ item }: AzkarReaderCardProps) {
       <div className="relative min-w-0">
         <ReligiousText
           authenticity={item.authenticity}
+          className="[&_p]:text-[20px] [&_p]:leading-[2.05] max-[219px]:[&_p]:text-[18px]"
           kind={contentKind}
           showSourceMeta={false}
           source={item.source}
           sourceReference={item.sourceReference}
           title={item.title}
         >
-          {item.arabicText}
+          {item.text}
         </ReligiousText>
       </div>
 
@@ -153,14 +76,12 @@ export function AzkarReaderCard({ item }: AzkarReaderCardProps) {
         sourceReference={item.sourceReference}
       />
 
-      {hasCounter ? (
-        <AzkarRepetitionControl
-          count={counter}
-          onIncrement={incrementCounter}
-          onReset={resetCounter}
-          target={item.count}
-        />
-      ) : null}
+      <AzkarRepetitionControl
+        actionLabel={isReadingItem ? "تمت القراءة" : "تسجيل التكرار"}
+        count={count}
+        onIncrement={onIncrement}
+        target={item.targetCount}
+      />
     </SurfaceCard>
   );
 }

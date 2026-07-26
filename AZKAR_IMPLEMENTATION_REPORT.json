@@ -1,0 +1,96 @@
+{
+  "reportVersion": 1,
+  "generatedAt": "2026-07-26T21:42:35.403Z",
+  "status": "PASS",
+  "routes": [
+    "/azkar",
+    "/azkar/[category]"
+  ],
+  "categoryCount": 10,
+  "itemCount": 289,
+  "categoryItemCounts": {
+    "morning": 31,
+    "evening": 30,
+    "prayer": 11,
+    "sleep": 15,
+    "wakeup": 3,
+    "after-prayer": 11,
+    "quran-duas": 26,
+    "prophetic-duas": 29,
+    "names-of-allah": 99,
+    "comprehensive-duas": 34
+  },
+  "storage": {
+    "version": 2,
+    "key": "nasayem-alkhair:azkarProgress:v2",
+    "legacyKey": "nasayem-alkhair:azkarRepetitionCounts"
+  },
+  "checks": {
+    "exactlyTenApprovedCategories": {
+      "status": "PASS",
+      "detail": "10 approved categories found"
+    },
+    "uniqueCategoryIds": {
+      "status": "PASS",
+      "detail": "All category IDs are unique"
+    },
+    "uniqueItemIds": {
+      "status": "PASS",
+      "detail": "All item IDs are unique"
+    },
+    "everyCategoryHasItems": {
+      "status": "PASS",
+      "detail": "Every approved category resolves at least one item"
+    },
+    "validArabicText": {
+      "status": "PASS",
+      "detail": "Every item contains non-empty Arabic text"
+    },
+    "positiveSafeIntegerTargets": {
+      "status": "PASS",
+      "detail": "Every target count is a positive safe integer"
+    },
+    "noZeroTargets": {
+      "status": "PASS",
+      "detail": "No target count is zero"
+    },
+    "noReplacementCharacters": {
+      "status": "PASS",
+      "detail": "No religious text contains the Unicode replacement character"
+    },
+    "noUnsafeHtml": {
+      "status": "PASS",
+      "detail": "Religious text contains no HTML or scriptable URL content"
+    },
+    "categoryTotalsDerivedFromData": {
+      "status": "PASS",
+      "detail": "Every displayed total is sourced from the normalized catalog"
+    },
+    "everyRouteResolvesCategory": {
+      "status": "PASS",
+      "detail": "Every generated /azkar/[category] route resolves its category and items"
+    },
+    "validLegacyMigration": {
+      "status": "PASS",
+      "detail": "Valid legacy counter data migrates to the versioned category model"
+    },
+    "invalidStoredCountsSanitized": {
+      "status": "PASS",
+      "detail": "Above-target counts clamp; negative, string, and unknown-item counts are rejected"
+    },
+    "unknownIdsDoNotCrash": {
+      "status": "PASS",
+      "detail": "Unknown category and item IDs are ignored without discarding valid categories"
+    },
+    "duplicateRecordsMerged": {
+      "status": "PASS",
+      "detail": "Duplicate legacy category records merge safely using valid bounded counts"
+    },
+    "religiousContentAudit": {
+      "status": "PASS",
+      "detail": "No religious-content item requires review"
+    }
+  },
+  "failedChecks": [],
+  "religiousContentAuditStatus": "PASS"
+}

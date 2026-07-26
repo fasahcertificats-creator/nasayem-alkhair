@@ -1,14 +1,14 @@
 "use client";
 
-import { Check, RotateCcw } from "lucide-react";
+import { Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 export interface AzkarRepetitionControlProps {
+  actionLabel?: string;
   className?: string;
   count: number;
   onIncrement: () => void;
-  onReset: () => void;
   target: number;
 }
 
@@ -28,7 +28,10 @@ function getProgressPercent(count: number, target: number) {
   return Math.min(100, Math.max(0, Math.round((count / target) * 100)));
 }
 
-function BeadProgress({ count, target }: Pick<AzkarRepetitionControlProps, "count" | "target">) {
+function BeadProgress({
+  count,
+  target
+}: Pick<AzkarRepetitionControlProps, "count" | "target">) {
   return (
     <div
       aria-label="تقدم التكرار"
@@ -47,7 +50,9 @@ function BeadProgress({ count, target }: Pick<AzkarRepetitionControlProps, "coun
             aria-hidden="true"
             className={cn(
               "h-2 min-w-4 flex-1 rounded-full border transition-colors duration-200 motion-reduce:transition-none",
-              isComplete ? "border-primary bg-primary" : "border-border bg-secondary"
+              isComplete
+                ? "border-primary bg-primary"
+                : "border-border bg-secondary"
             )}
             key={beadNumber}
           />
@@ -57,7 +62,10 @@ function BeadProgress({ count, target }: Pick<AzkarRepetitionControlProps, "coun
   );
 }
 
-function TrackProgress({ count, target }: Pick<AzkarRepetitionControlProps, "count" | "target">) {
+function TrackProgress({
+  count,
+  target
+}: Pick<AzkarRepetitionControlProps, "count" | "target">) {
   const percent = getProgressPercent(count, target);
 
   return (
@@ -79,63 +87,62 @@ function TrackProgress({ count, target }: Pick<AzkarRepetitionControlProps, "cou
 }
 
 export function AzkarRepetitionControl({
+  actionLabel = "تسجيل التكرار",
   className,
   count,
   onIncrement,
-  onReset,
   target
 }: AzkarRepetitionControlProps) {
-  const completed = count >= target;
-  const countText = `${formatCount(count)} من ${formatCount(target)}`;
+  const safeTarget = Number.isSafeInteger(target) && target > 0 ? target : 1;
+  const safeCount =
+    Number.isSafeInteger(count) && count >= 0
+      ? Math.min(count, safeTarget)
+      : 0;
+  const completed = safeCount >= safeTarget;
+  const countText = `${formatCount(safeCount)} من ${formatCount(safeTarget)}`;
 
   return (
     <section
       aria-label="التكرار"
       className={cn(
-        "space-y-2.5 rounded-[var(--radius-medium)] border border-border bg-secondary/70 p-2.5",
-        completed ? "border-primary/20 bg-[var(--nasayem-green-050)]" : null,
+        "space-y-3 rounded-[var(--radius-medium)] border border-border bg-secondary/70 p-3",
+        completed
+          ? "border-primary/20 bg-[var(--nasayem-green-050)]"
+          : null,
         className
       )}
     >
-      <div className="flex min-w-0 items-center justify-between gap-3">
-        <p className="text-primary text-sm font-bold">التكرار</p>
-        <p className="text-primary text-sm font-bold" aria-live="polite">
-          {countText}
-        </p>
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-bold text-primary">التكرار</p>
+        <p className="text-sm font-bold text-primary">{countText}</p>
       </div>
 
       {completed ? (
-        <div className="inline-flex w-fit items-center gap-1.5 rounded-full bg-white/75 px-2.5 py-1 text-xs font-bold text-primary">
+        <div className="inline-flex min-h-8 w-fit items-center gap-1.5 rounded-full border border-primary/10 bg-white/80 px-2.5 py-1 text-xs font-bold text-primary">
           <Check aria-hidden="true" className="size-3.5" />
-          تمّ التكرار
+          تمّ إتمام الذكر
         </div>
       ) : null}
 
-      {target <= 7 ? (
-        <BeadProgress count={count} target={target} />
+      {safeTarget <= 7 ? (
+        <BeadProgress count={safeCount} target={safeTarget} />
       ) : (
-        <TrackProgress count={count} target={target} />
+        <TrackProgress count={safeCount} target={safeTarget} />
       )}
 
-      <div className="flex min-w-0 items-center gap-2">
-        <button
-          aria-label="تسجيل التكرار"
-          className="min-h-12 min-w-0 flex-1 rounded-[var(--radius-medium)] bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition duration-200 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[var(--nasayem-sage-600)] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none motion-reduce:transition-none motion-reduce:active:scale-100"
-          disabled={completed}
-          onClick={onIncrement}
-          type="button"
-        >
-          {completed ? "تمّ التكرار" : "تسجيل التكرار"}
-        </button>
-        <button
-          aria-label="إعادة تعيين التكرار"
-          className="flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-medium)] border border-border bg-card text-primary transition duration-200 hover:border-gold focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none motion-reduce:transition-none"
-          onClick={onReset}
-          type="button"
-        >
-          <RotateCcw aria-hidden="true" className="size-4" />
-        </button>
-      </div>
+      <button
+        aria-label={
+          completed
+            ? `اكتمل الذكر، العدد ${countText}`
+            : `${actionLabel}، العدد الحالي ${countText}`
+        }
+        className="min-h-14 w-full rounded-[var(--radius-medium)] bg-primary px-4 py-3 text-[15px] font-bold text-primary-foreground transition duration-200 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[var(--nasayem-sage-600)] focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none motion-reduce:transition-none motion-reduce:active:scale-100"
+        disabled={completed}
+        onClick={onIncrement}
+        type="button"
+      >
+        {completed ? "تمّ إتمام الذكر" : actionLabel}
+      </button>
     </section>
   );
 }

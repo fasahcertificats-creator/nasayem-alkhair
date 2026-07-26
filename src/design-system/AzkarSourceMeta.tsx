@@ -79,19 +79,38 @@ function getAuthenticityLabel(authenticity?: string) {
 export function AzkarSourceMeta({
   authenticity,
   kind,
-  source
+  source,
+  sourceReference
 }: AzkarSourceMetaProps) {
   const sourceText = normalizeSource(source);
   const displayedSource = kind === "quran" ? formatQuranSource(sourceText) : sourceText;
   const authenticityLabel = kind === "quran" ? "" : getAuthenticityLabel(authenticity);
+  const safeReference = sourceReference?.trim();
+  const isSafeReference = safeReference
+    ? /^https?:\/\/[^\s]+$/i.test(safeReference)
+    : false;
 
-  if (!displayedSource && !authenticityLabel) {
+  if (!displayedSource && !authenticityLabel && !isSafeReference) {
     return null;
   }
 
   return (
-    <div className="border-border/70 text-muted-foreground flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 border-t pt-3 text-[12px] leading-relaxed">
-      {displayedSource ? <p className="min-w-0 flex-1">{displayedSource}</p> : null}
+    <div className="border-border/70 text-muted-foreground flex min-w-0 flex-col items-start gap-1.5 border-t pt-3 text-[12px] leading-[1.8]">
+      {displayedSource ? (
+        <p className="min-w-0 break-words">المصدر: {displayedSource}</p>
+      ) : (
+        <p>لم يُذكر اسم المصدر في البيانات المعتمدة.</p>
+      )}
+      {isSafeReference ? (
+        <a
+          className="inline-flex min-h-11 items-center rounded-lg py-2 font-bold text-primary underline decoration-gold/60 underline-offset-4 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+          href={safeReference}
+          rel="noreferrer"
+          target="_blank"
+        >
+          مرجع النص
+        </a>
+      ) : null}
       {authenticityLabel ? (
         <span className="rounded-full border border-primary/15 bg-[var(--nasayem-green-050)] px-2 py-0.5 text-[11px] font-semibold text-primary">
           {authenticityLabel}
