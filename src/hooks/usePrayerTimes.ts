@@ -6,15 +6,11 @@ import type { PrayerCity } from "@/data/prayer-cities";
 import {
   calculatePrayerTimes,
   createManualPrayerLocation,
-  DEFAULT_PRAYER_SETTINGS,
   readStoredPrayerLocation,
-  readStoredPrayerSettings,
   requestGeolocatedPrayerLocation,
   savePrayerLocation,
-  savePrayerSettings,
   type PrayerCalculationResult,
   type PrayerLocation,
-  type PrayerSettings,
   PrayerLocationRequestError
 } from "@/services/prayer/prayer-times.service";
 
@@ -35,9 +31,7 @@ export interface PrayerTimesState {
   location: PrayerLocation | null;
   requestLocation: () => Promise<void>;
   selectManualCity: (city: PrayerCity) => void;
-  settings: PrayerSettings;
   status: PrayerLocationStatus;
-  updateSettings: (settings: Partial<PrayerSettings>) => void;
 }
 
 const permissionDeniedMessage =
@@ -54,15 +48,12 @@ export function usePrayerTimes(): PrayerTimesState {
   const [status, setStatus] = useState<PrayerLocationStatus>("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
-  const [settings, setSettings] = useState<PrayerSettings>(DEFAULT_PRAYER_SETTINGS);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       const storedLocation = readStoredPrayerLocation();
-      const storedSettings = readStoredPrayerSettings();
       setIsMounted(true);
       setLocation(storedLocation);
-      setSettings(storedSettings);
       setStatus(storedLocation ? "ready" : "missing");
     }, 0);
 
@@ -109,11 +100,11 @@ export function usePrayerTimes(): PrayerTimesState {
     }
 
     try {
-      return calculatePrayerTimes(location, now, settings);
+      return calculatePrayerTimes(location, now);
     } catch {
       return null;
     }
-  }, [location, now, settings]);
+  }, [location, now]);
 
   const requestLocation = useCallback(async () => {
     setStatus("requesting");
@@ -152,18 +143,6 @@ export function usePrayerTimes(): PrayerTimesState {
     setNow(new Date());
   }, []);
 
-  const updateSettings = useCallback((nextSettings: Partial<PrayerSettings>) => {
-    setSettings((currentSettings) => {
-      const updatedSettings: PrayerSettings = {
-        ...currentSettings,
-        ...nextSettings
-      };
-
-      savePrayerSettings(updatedSettings);
-      return updatedSettings;
-    });
-  }, []);
-
   const hasCalculationError = Boolean(location && !calculation && status === "ready");
   const effectiveStatus = hasCalculationError ? "error" : status;
   const effectiveErrorMessage = hasCalculationError ? calculationErrorMessage : errorMessage;
@@ -175,8 +154,6 @@ export function usePrayerTimes(): PrayerTimesState {
     location,
     requestLocation,
     selectManualCity,
-    settings,
-    status: effectiveStatus,
-    updateSettings
+    status: effectiveStatus
   };
 }

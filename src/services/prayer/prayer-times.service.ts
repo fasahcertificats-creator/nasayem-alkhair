@@ -1,9 +1,7 @@
 import {
   CalculationMethod,
   Coordinates,
-  Madhab,
-  PrayerTimes,
-  type CalculationParameters
+  PrayerTimes
 } from "adhan";
 
 import {
@@ -17,54 +15,12 @@ import {
 } from "@/lib/home-presentation";
 
 export const PRAYER_LOCATION_STORAGE_KEY = "nasayem_prayer_location";
-export const PRAYER_SETTINGS_STORAGE_KEY = "nasayem_prayer_settings";
-export const PRAYER_METHOD_LABEL = "رابطة العالم الإسلامي";
-export const PRAYER_METHOD_DESCRIPTION = "طريقة الحساب: رابطة العالم الإسلامي";
 
 const LOCATION_STALE_AFTER_MS = 30 * 24 * 60 * 60 * 1000;
 const REVERSE_GEOCODING_ENDPOINT = "https://nominatim.openstreetmap.org/reverse";
 
 export type PrayerId = "fajr" | "sunrise" | "dhuhr" | "asr" | "maghrib" | "isha";
 export type PrayerSelectionSource = "geolocation" | "manual";
-export type PrayerMadhabId = "shafi" | "hanafi";
-export type PrayerMethodId =
-  | "MuslimWorldLeague"
-  | "Egyptian"
-  | "Karachi"
-  | "UmmAlQura"
-  | "Dubai"
-  | "Kuwait"
-  | "Qatar"
-  | "Singapore"
-  | "Turkey";
-export type PrayerMethodPreference = "automatic" | PrayerMethodId;
-
-export interface PrayerSettings {
-  madhab: PrayerMadhabId;
-  methodPreference: PrayerMethodPreference;
-}
-
-export interface PrayerMethodOption {
-  id: PrayerMethodId;
-  label: string;
-}
-
-export const PRAYER_METHOD_OPTIONS: readonly PrayerMethodOption[] = [
-  { id: "MuslimWorldLeague", label: "رابطة العالم الإسلامي" },
-  { id: "Egyptian", label: "الهيئة المصرية العامة للمساحة" },
-  { id: "Karachi", label: "جامعة العلوم الإسلامية بكراتشي" },
-  { id: "UmmAlQura", label: "تقويم أم القرى" },
-  { id: "Dubai", label: "طريقة دبي" },
-  { id: "Kuwait", label: "طريقة الكويت" },
-  { id: "Qatar", label: "طريقة قطر" },
-  { id: "Singapore", label: "طريقة سنغافورة" },
-  { id: "Turkey", label: "رئاسة الشؤون الدينية التركية" }
-];
-
-export const DEFAULT_PRAYER_SETTINGS: PrayerSettings = {
-  madhab: "shafi",
-  methodPreference: "automatic"
-};
 
 export interface PrayerLocation {
   acquiredAt: number;
@@ -90,11 +46,6 @@ export interface PrayerCalculationResult {
   coordinates: PrayerLocation;
   currentPrayerId: PrayerId | null;
   dataFreshness: "fresh" | "stale";
-  madhab: PrayerMadhabId;
-  madhabLabel: string;
-  method: PrayerMethodId;
-  methodLabel: string;
-  methodSource: "automatic" | "manual";
   nextPrayer: PrayerTimeRow;
   remainingLabel: string;
   remainingMs: number;
@@ -219,21 +170,6 @@ export function validatePrayerLocation(value: unknown): PrayerLocation | null {
   };
 }
 
-export function validatePrayerSettings(value: unknown): PrayerSettings {
-  if (!isRecord(value)) {
-    return DEFAULT_PRAYER_SETTINGS;
-  }
-
-  const methodPreference = PRAYER_METHOD_OPTIONS.some(
-    (option) => option.id === value.methodPreference
-  )
-    ? (value.methodPreference as PrayerMethodId)
-    : "automatic";
-  const madhab: PrayerMadhabId = value.madhab === "hanafi" ? "hanafi" : "shafi";
-
-  return { madhab, methodPreference };
-}
-
 export function readStoredPrayerLocation(): PrayerLocation | null {
   if (typeof window === "undefined") {
     return null;
@@ -260,31 +196,6 @@ export function savePrayerLocation(location: PrayerLocation): void {
   window.localStorage.setItem(PRAYER_LOCATION_STORAGE_KEY, JSON.stringify(location));
 }
 
-export function readStoredPrayerSettings(): PrayerSettings {
-  if (typeof window === "undefined") {
-    return DEFAULT_PRAYER_SETTINGS;
-  }
-
-  try {
-    const value = window.localStorage.getItem(PRAYER_SETTINGS_STORAGE_KEY);
-
-    return value ? validatePrayerSettings(JSON.parse(value)) : DEFAULT_PRAYER_SETTINGS;
-  } catch {
-    return DEFAULT_PRAYER_SETTINGS;
-  }
-}
-
-export function savePrayerSettings(settings: PrayerSettings): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(
-    PRAYER_SETTINGS_STORAGE_KEY,
-    JSON.stringify(validatePrayerSettings(settings))
-  );
-}
-
 export function createManualPrayerLocation(city: PrayerCity): PrayerLocation {
   const updatedAt = Date.now();
 
@@ -307,48 +218,6 @@ export function getLocalDayKey(date = new Date()): string {
   const day = String(date.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
-}
-
-const methodFactories: Record<PrayerMethodId, () => CalculationParameters> = {
-  MuslimWorldLeague: CalculationMethod.MuslimWorldLeague,
-  Egyptian: CalculationMethod.Egyptian,
-  Karachi: CalculationMethod.Karachi,
-  UmmAlQura: CalculationMethod.UmmAlQura,
-  Dubai: CalculationMethod.Dubai,
-  Kuwait: CalculationMethod.Kuwait,
-  Qatar: CalculationMethod.Qatar,
-  Singapore: CalculationMethod.Singapore,
-  Turkey: CalculationMethod.Turkey
-};
-
-const recommendedMethodsByCountry: Partial<Record<string, PrayerMethodId>> = {
-  AE: "Dubai",
-  BH: "UmmAlQura",
-  EG: "Egyptian",
-  ID: "Singapore",
-  IN: "Karachi",
-  KW: "Kuwait",
-  MY: "Singapore",
-  OM: "UmmAlQura",
-  PK: "Karachi",
-  QA: "Qatar",
-  SA: "UmmAlQura",
-  SG: "Singapore",
-  TR: "Turkey"
-};
-
-export function getRecommendedPrayerMethod(countryCode?: string): PrayerMethodId {
-  return (
-    recommendedMethodsByCountry[countryCode?.trim().toUpperCase() ?? ""] ??
-    "MuslimWorldLeague"
-  );
-}
-
-export function getPrayerMethodLabel(method: PrayerMethodId): string {
-  return (
-    PRAYER_METHOD_OPTIONS.find((option) => option.id === method)?.label ??
-    PRAYER_METHOD_LABEL
-  );
 }
 
 function getCalculationDate(now: Date, timezone?: string): Date {
@@ -397,18 +266,10 @@ function buildRows(prayerTimes: PrayerTimes, timezone?: string): PrayerTimeRow[]
 
 export function calculatePrayerTimes(
   location: PrayerLocation,
-  now = new Date(),
-  settings = DEFAULT_PRAYER_SETTINGS
+  now = new Date()
 ): PrayerCalculationResult {
   const coordinates = new Coordinates(location.latitude, location.longitude);
-  const safeSettings = validatePrayerSettings(settings);
-  const method =
-    safeSettings.methodPreference === "automatic"
-      ? getRecommendedPrayerMethod(location.countryCode)
-      : safeSettings.methodPreference;
-  const parameters = methodFactories[method]();
-  parameters.madhab =
-    safeSettings.madhab === "hanafi" ? Madhab.Hanafi : Madhab.Shafi;
+  const parameters = CalculationMethod.MuslimWorldLeague();
 
   const today = getCalculationDate(now, location.timezone);
   const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
@@ -437,12 +298,6 @@ export function calculatePrayerTimes(
       Date.now() - (location.updatedAt ?? location.acquiredAt) > LOCATION_STALE_AFTER_MS
         ? "stale"
         : "fresh",
-    madhab: safeSettings.madhab,
-    madhabLabel: safeSettings.madhab === "hanafi" ? "الحنفي" : "الشافعي",
-    method,
-    methodLabel: getPrayerMethodLabel(method),
-    methodSource:
-      safeSettings.methodPreference === "automatic" ? "automatic" : "manual",
     nextPrayer,
     remainingLabel: formatArabicRemainingDuration(remainingMs),
     remainingMs,

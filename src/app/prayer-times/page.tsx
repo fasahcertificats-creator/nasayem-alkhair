@@ -3,7 +3,6 @@
 import {
   AlertCircle,
   CheckCircle2,
-  ChevronDown,
   CloudSun,
   Clock,
   LocateFixed,
@@ -11,7 +10,6 @@ import {
   Moon,
   RefreshCw,
   Search,
-  Settings2,
   Sun,
   Sunrise,
   Sunset,
@@ -31,10 +29,7 @@ import { AppButton, PageHeading } from "@/design-system";
 import { usePrayerTimes, type PrayerLocationStatus } from "@/hooks/usePrayerTimes";
 import { cn } from "@/lib/utils";
 import {
-  PRAYER_METHOD_OPTIONS,
   type PrayerId,
-  type PrayerMadhabId,
-  type PrayerMethodPreference,
   type PrayerLocation
 } from "@/services/prayer/prayer-times.service";
 
@@ -116,9 +111,7 @@ export default function PrayerTimesPage() {
     location,
     requestLocation,
     selectManualCity,
-    settings,
-    status,
-    updateSettings
+    status
   } = prayerTimes;
   const [dateParts, setDateParts] = useState<{ gregorian: string; hijri: string } | null>(
     null
@@ -262,14 +255,6 @@ export default function PrayerTimesPage() {
           </section>
         </>
       ) : null}
-
-      <CalculationSettings
-        calculation={calculation}
-        madhab={settings.madhab}
-        methodPreference={settings.methodPreference}
-        onMadhabChange={(madhab) => updateSettings({ madhab })}
-        onMethodChange={(methodPreference) => updateSettings({ methodPreference })}
-      />
 
       {location ? <LastUpdated location={location} /> : null}
     </main>
@@ -613,89 +598,6 @@ function PrayerList({
         })}
       </div>
     </section>
-  );
-}
-
-function CalculationSettings({
-  calculation,
-  madhab,
-  methodPreference,
-  onMadhabChange,
-  onMethodChange
-}: {
-  calculation: ReturnType<typeof usePrayerTimes>["calculation"];
-  madhab: PrayerMadhabId;
-  methodPreference: PrayerMethodPreference;
-  onMadhabChange: (madhab: PrayerMadhabId) => void;
-  onMethodChange: (method: PrayerMethodPreference) => void;
-}) {
-  return (
-    <details className="border-border shadow-soft group rounded-[20px] border bg-white">
-      <summary className="focus-visible:ring-gold flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-[20px] px-3.5 py-3 focus-visible:ring-2 focus-visible:outline-none">
-        <span className="flex min-w-0 items-center gap-2">
-          <Settings2 aria-hidden="true" className="text-gold size-4 shrink-0" strokeWidth={1.7} />
-          <span className="text-primary text-sm font-extrabold">
-            إعدادات الحساب والمصدر
-          </span>
-        </span>
-        <ChevronDown
-          aria-hidden="true"
-          className="text-muted-foreground size-4 shrink-0 transition-transform group-open:rotate-180"
-          strokeWidth={1.7}
-        />
-      </summary>
-
-      <div className="border-border space-y-3 border-t px-3.5 py-3">
-        <div className="grid gap-2 min-[390px]:grid-cols-2">
-          <label className="space-y-1 text-xs font-bold text-primary">
-            <span>طريقة الحساب</span>
-            <select
-              className="border-border focus:border-gold focus:ring-gold/20 h-11 w-full rounded-xl border bg-white px-2 text-xs outline-none focus:ring-2"
-              onChange={(event) =>
-                onMethodChange(event.target.value as PrayerMethodPreference)
-              }
-              value={methodPreference}
-            >
-              <option value="automatic">تلقائي — الطريقة الموصى بها</option>
-              {PRAYER_METHOD_OPTIONS.map((method) => (
-                <option key={method.id} value={method.id}>
-                  {method.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="space-y-1 text-xs font-bold text-primary">
-            <span>المذهب لحساب العصر</span>
-            <select
-              className="border-border focus:border-gold focus:ring-gold/20 h-11 w-full rounded-xl border bg-white px-2 text-xs outline-none focus:ring-2"
-              onChange={(event) =>
-                onMadhabChange(event.target.value as PrayerMadhabId)
-              }
-              value={madhab}
-            >
-              <option value="shafi">الشافعي</option>
-              <option value="hanafi">الحنفي</option>
-            </select>
-          </label>
-        </div>
-
-        <div className="bg-secondary/60 space-y-1 rounded-xl px-3 py-2.5">
-          <p className="text-primary text-xs font-bold">
-            الطريقة الحالية: {calculation?.methodLabel ?? "رابطة العالم الإسلامي"}
-          </p>
-          <p className="text-muted-foreground text-[11px] leading-relaxed">
-            المذهب الحالي: {calculation?.madhabLabel ?? (madhab === "hanafi" ? "الحنفي" : "الشافعي")}
-            {calculation?.methodSource === "automatic" ? " — اختيار تلقائي" : " — اختيار يدوي"}
-          </p>
-        </div>
-
-        <p className="text-muted-foreground text-[11px] leading-relaxed">
-          قد تختلف المواقيت دقائق قليلة بحسب التقويم المحلي وطريقة الحساب.
-          تُحسب المواقيت محليًا من إحداثيات المدينة ولا يلزم تنزيلها من الإنترنت.
-        </p>
-      </div>
-    </details>
   );
 }
 
