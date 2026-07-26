@@ -1,17 +1,11 @@
 "use client";
 
-import {
-  ArrowRight,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  RotateCcw
-} from "lucide-react";
+import { ArrowRight, Check, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { memo, useEffect, useRef, useState } from "react";
 
 import { ROUTES } from "@/constants/routes.constants";
-import { IslamicPattern, PageHeading } from "@/design-system";
+import { IslamicPattern, PageHeading, SurfaceCard } from "@/design-system";
 import {
   getAzkarCategorySummary,
   loadAzkarProgress,
@@ -22,10 +16,7 @@ import {
   type AzkarCatalog,
   type AzkarProgressState
 } from "@/lib/azkar-progress";
-import type {
-  AzkarCategoryDefinition,
-  AzkarItem
-} from "@/types";
+import type { AzkarCategoryDefinition, AzkarItem } from "@/types";
 
 import { AzkarReaderCard } from "../AzkarReaderCard";
 
@@ -55,6 +46,7 @@ function AzkarCategoryContentComponent({
   const [storageUnavailable, setStorageUnavailable] = useState(false);
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
   const progressStateRef = useRef<AzkarProgressState | null>(null);
+  const isNamesOfAllah = category.id === "names-of-allah";
 
   useEffect(() => {
     const initializationTimer = window.setTimeout(() => {
@@ -92,11 +84,64 @@ function AzkarCategoryContentComponent({
     }
   }
 
-  function scrollToPageTop() {
+  function incrementItem(item: AzkarItem) {
+    const currentState = progressStateRef.current;
+    const currentCount =
+      currentState?.categories[category.id]?.counts[item.id] ?? 0;
+
+    if (!currentState || currentCount >= item.targetCount) {
+      return;
+    }
+
+    const nextCount = Math.min(currentCount + 1, item.targetCount);
+    const nextState = setAzkarItemCount(
+      currentState,
+      category.id,
+      item.id,
+      nextCount,
+      catalog
+    );
+    commitProgress(nextState);
+
+    if (nextCount === item.targetCount) {
+      const nextSummary = getAzkarCategorySummary(
+        nextState,
+        category.id,
+        catalog
+      );
+      setStatusMessage(
+        nextSummary.isComplete
+          ? `اكتمل قسم ${category.title}.`
+          : "تم إتمام الذكر."
+      );
+    } else {
+      setStatusMessage(
+        `تم تسجيل ${formatNumber(nextCount)} من ${formatNumber(item.targetCount)}.`
+      );
+    }
+  }
+
+  function confirmReset() {
+    const currentState = progressStateRef.current;
+
+    if (!currentState) {
+      return;
+    }
+
+    const resetState = resetAzkarCategory(currentState, category.id);
+    const restartedState = touchAzkarCategory(
+      resetState,
+      category.id,
+      catalog,
+      items[0].id
+    );
+    commitProgress(restartedState);
+    setShowResetConfirmation(false);
+    setStatusMessage(`أُعيد قسم ${category.title} من البداية.`);
+
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-
     window.scrollTo({
       top: 0,
       behavior: reduceMotion ? "auto" : "smooth"
@@ -121,6 +166,18 @@ function AzkarCategoryContentComponent({
             العودة إلى الأذكار
           </Link>
         </section>
+      </main>
+    );
+  }
+
+  if (isNamesOfAllah) {
+    return (
+      <main
+        className="space-y-5 overflow-x-hidden px-4 pt-4 pb-8 font-arabic-studio text-right sm:px-5"
+        dir="rtl"
+      >
+        <CategoryHeader category={category} />
+        <NamesOfAllahGrid items={items} />
       </main>
     );
   }
@@ -150,107 +207,9 @@ function AzkarCategoryContentComponent({
     category.id,
     catalog
   );
-  const currentItemId =
-    categoryProgress?.currentItemId || summary.currentItemId || items[0].id;
-  const currentIndex = Math.max(
-    0,
-    items.findIndex((item) => item.id === currentItemId)
-  );
-  const currentItem = items[currentIndex] ?? items[0];
-  const currentCount = categoryProgress?.counts[currentItem.id] ?? 0;
-  const currentComplete = currentCount >= currentItem.targetCount;
-  const previousItem = items[currentIndex - 1];
-  const nextSequentialItem = items[currentIndex + 1];
-  const nextIncompleteItem =
-    items
-      .slice(currentIndex + 1)
-      .find(
-        (item) =>
-          (categoryProgress?.counts[item.id] ?? 0) < item.targetCount
-      ) ??
-    items.find(
-      (item) =>
-        item.id !== currentItem.id &&
-        (categoryProgress?.counts[item.id] ?? 0) < item.targetCount
-    );
   const overallPercent = Math.round(
     (summary.completedItems / summary.totalItems) * 100
   );
-
-  function moveToItem(itemId: string) {
-    const currentState = progressStateRef.current;
-
-    if (!currentState) {
-      return;
-    }
-
-    const nextState = touchAzkarCategory(
-      currentState,
-      category.id,
-      catalog,
-      itemId
-    );
-    commitProgress(nextState);
-    setStatusMessage(
-      `انتقلت إلى الذكر ${formatNumber(items.findIndex((item) => item.id === itemId) + 1)} من ${formatNumber(items.length)}.`
-    );
-    scrollToPageTop();
-  }
-
-  function incrementCurrentItem() {
-    const currentState = progressStateRef.current;
-
-    if (!currentState || currentCount >= currentItem.targetCount) {
-      return;
-    }
-
-    const nextCount = Math.min(currentCount + 1, currentItem.targetCount);
-    const nextState = setAzkarItemCount(
-      currentState,
-      category.id,
-      currentItem.id,
-      nextCount,
-      catalog
-    );
-    commitProgress(nextState);
-
-    if (nextCount === currentItem.targetCount) {
-      const nextSummary = getAzkarCategorySummary(
-        nextState,
-        category.id,
-        catalog
-      );
-      setStatusMessage(
-        nextSummary.isComplete
-          ? `اكتمل قسم ${category.title}.`
-          : "تم إتمام الذكر. اختر التالي للمتابعة."
-      );
-    } else {
-      setStatusMessage(
-        `تم تسجيل ${formatNumber(nextCount)} من ${formatNumber(currentItem.targetCount)}.`
-      );
-    }
-  }
-
-  function confirmReset() {
-    const currentState = progressStateRef.current;
-
-    if (!currentState) {
-      return;
-    }
-
-    const resetState = resetAzkarCategory(currentState, category.id);
-    const restartedState = touchAzkarCategory(
-      resetState,
-      category.id,
-      catalog,
-      items[0].id
-    );
-    commitProgress(restartedState);
-    setShowResetConfirmation(false);
-    setStatusMessage(`أُعيد قسم ${category.title} من البداية.`);
-    scrollToPageTop();
-  }
 
   return (
     <main
@@ -344,65 +303,44 @@ function AzkarCategoryContentComponent({
         </section>
       ) : null}
 
-      <section
-        className="space-y-3"
-        aria-label={`الذكر ${formatNumber(currentIndex + 1)} من ${formatNumber(items.length)}`}
-      >
-        <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
-          <p className="text-[13px] font-bold text-primary">
-            الذكر {formatNumber(currentIndex + 1)} من{" "}
-            {formatNumber(items.length)}
-          </p>
-          {currentComplete ? (
-            <span className="inline-flex min-h-8 items-center gap-1 rounded-full border border-primary/15 bg-[var(--nasayem-green-050)] px-2.5 text-[11px] font-bold text-primary">
-              <Check aria-hidden="true" className="size-3.5" />
-              مكتمل
-            </span>
-          ) : null}
-        </div>
+      <section className="space-y-4" aria-label={category.title}>
+        {items.map((item, index) => {
+          const count = categoryProgress?.counts[item.id] ?? 0;
+          const completed = count >= item.targetCount;
 
-        <AzkarReaderCard
-          count={currentCount}
-          item={currentItem}
-          onIncrement={incrementCurrentItem}
-        />
+          return (
+            <article
+              className="min-w-0 space-y-3"
+              id={`azkar-item-${item.id}`}
+              key={item.id}
+            >
+              <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 px-1">
+                <h2 className="text-[13px] font-bold text-primary">
+                  الذكر {formatNumber(index + 1)} من{" "}
+                  {formatNumber(items.length)}
+                </h2>
+                {completed ? (
+                  <span className="inline-flex min-h-8 items-center gap-1 rounded-full border border-primary/15 bg-[var(--nasayem-green-050)] px-2.5 text-[11px] font-bold text-primary">
+                    <Check aria-hidden="true" className="size-3.5" />
+                    مكتمل
+                  </span>
+                ) : null}
+              </div>
+
+              <AzkarReaderCard
+                count={count}
+                item={item}
+                onIncrement={() => incrementItem(item)}
+              />
+            </article>
+          );
+        })}
       </section>
 
-      <nav
-        aria-label="التنقل بين الأذكار"
-        className="grid min-w-0 grid-cols-2 gap-2 max-[259px]:grid-cols-1"
+      <section
+        className="border-t border-border pt-4"
+        aria-label="إعادة القسم"
       >
-        <button
-          className="inline-flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[var(--radius-medium)] border border-border bg-card px-3 py-2 text-[13px] font-bold text-primary disabled:cursor-not-allowed disabled:opacity-45 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
-          disabled={!previousItem}
-          onClick={() => previousItem && moveToItem(previousItem.id)}
-          type="button"
-        >
-          <ChevronRight aria-hidden="true" className="size-4" />
-          السابق
-        </button>
-        <button
-          className="inline-flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[var(--radius-medium)] border border-primary/20 bg-[var(--nasayem-green-050)] px-3 py-2 text-[13px] font-bold text-primary disabled:cursor-not-allowed disabled:opacity-45 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
-          disabled={
-            currentComplete ? !nextIncompleteItem : !nextSequentialItem
-          }
-          onClick={() => {
-            const destination = currentComplete
-              ? nextIncompleteItem
-              : nextSequentialItem;
-
-            if (destination) {
-              moveToItem(destination.id);
-            }
-          }}
-          type="button"
-        >
-          {currentComplete ? "التالي غير المكتمل" : "التالي"}
-          <ChevronLeft aria-hidden="true" className="size-4" />
-        </button>
-      </nav>
-
-      <section className="border-t border-border pt-4" aria-label="إعادة القسم">
         <button
           className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[var(--radius-medium)] border border-border bg-card px-3 py-2 text-[12px] font-bold text-primary focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
           onClick={() => setShowResetConfirmation(true)}
@@ -449,14 +387,31 @@ function AzkarCategoryContentComponent({
         ) : null}
       </section>
 
-      <p
-        aria-atomic="true"
-        aria-live="polite"
-        className="sr-only"
-      >
+      <p aria-atomic="true" aria-live="polite" className="sr-only">
         {statusMessage}
       </p>
     </main>
+  );
+}
+
+function NamesOfAllahGrid({ items }: { items: AzkarItem[] }) {
+  return (
+    <section aria-label="أسماء الله الحسنى">
+      <ol className="grid min-w-0 grid-cols-2 gap-2.5 min-[380px]:grid-cols-3 max-[259px]:grid-cols-1">
+        {items.map((item) => (
+          <li className="min-w-0" key={item.id}>
+            <SurfaceCard
+              className="flex min-h-20 min-w-0 items-center justify-center px-3 py-4 text-center max-[259px]:min-h-16"
+              variant="default"
+            >
+              <p className="min-w-0 break-words text-[19px] leading-[1.8] font-bold text-primary">
+                {item.text}
+              </p>
+            </SurfaceCard>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 
