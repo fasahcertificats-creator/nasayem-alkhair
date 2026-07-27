@@ -1,0 +1,216 @@
+{
+  "reportVersion": 1,
+  "generatedAt": "2026-07-27",
+  "baselineCommit": "d14f76debc39565f10939587e71c9a28ad824d0a",
+  "status": "PASS",
+  "scope": "Repository source audit before drafting privacy and legal pages",
+  "deviceLocalData": {
+    "localStorage": [
+      {
+        "key": "nasayem_prayer_location",
+        "purpose": "Selected or detected city, coordinates, timezone, selection source and update time",
+        "optional": true
+      },
+      {
+        "key": "nasayem-alkhair:azkarProgress:v2",
+        "purpose": "Versioned Azkar item counters and category progress",
+        "optional": false
+      },
+      {
+        "key": "nasayem-alkhair:azkarRepetitionCounts",
+        "purpose": "Legacy Azkar counters used only for safe migration",
+        "optional": false
+      },
+      {
+        "key": "nasayem_tasbih_counts",
+        "purpose": "Daily Tasbih counts",
+        "optional": false
+      },
+      {
+        "key": "nasayem_tasbih_active_phrase",
+        "purpose": "Selected Tasbih phrase",
+        "optional": false
+      },
+      {
+        "key": "nasayem_tasbih_day_key",
+        "purpose": "Local calendar day used to reset daily Tasbih counts",
+        "optional": false
+      },
+      {
+        "key": "nasayem-alkhair:dailyProgress",
+        "purpose": "General daily application progress",
+        "optional": false
+      },
+      {
+        "key": "nasayem-alkhair:historyLog",
+        "purpose": "Local progress history used for streak summaries",
+        "optional": false
+      },
+      {
+        "key": "nasayem-alkhair:lastResetAt",
+        "purpose": "Last local daily-progress reset timestamp",
+        "optional": false
+      }
+    ],
+    "sessionStorage": [
+      {
+        "key": "nasayem-alkhair:umrah:tawaf-round:v1",
+        "purpose": "Tawaf companion round progress for the browser session"
+      },
+      {
+        "key": "nasayem-alkhair:umrah:sai-round:v1",
+        "purpose": "Sai companion round progress for the browser session"
+      }
+    ],
+    "cookiesDetectedInApplicationCode": false,
+    "pwa": {
+      "serviceWorkerDetected": false,
+      "webAppManifestDetected": false,
+      "applicationManagedCacheDetected": false,
+      "note": "Normal browser and hosting caches may still operate outside application-managed storage."
+    }
+  },
+  "dataSentToOffice": {
+    "automaticTransmissionDetected": false,
+    "flows": [
+      {
+        "channel": "WhatsApp",
+        "trigger": "User opens a WhatsApp link and then chooses whether to send the prepared message",
+        "data": "Selected service or support category, plus anything the user adds"
+      },
+      {
+        "channel": "Telephone",
+        "trigger": "User opens a tel link and initiates the call",
+        "data": "Call metadata handled by the device and telecommunications provider"
+      }
+    ],
+    "contactFormDetected": false,
+    "emailCollectionDetected": false,
+    "nameCollectionDetected": false,
+    "uploadedFilesDetected": false
+  },
+  "externalProviders": [
+    {
+      "provider": "Nominatim / OpenStreetMap",
+      "purpose": "Reverse geocoding after deliberate geolocation action",
+      "data": [
+        "latitude",
+        "longitude",
+        "language preference",
+        "standard request metadata including IP address"
+      ],
+      "endpoint": "https://nominatim.openstreetmap.org/reverse"
+    },
+    {
+      "provider": "Google Fonts",
+      "purpose": "Load Cairo and Amiri font files",
+      "data": [
+        "standard request metadata potentially including IP address, browser and request time"
+      ],
+      "endpoint": "https://fonts.googleapis.com"
+    },
+    {
+      "provider": "WhatsApp",
+      "purpose": "User-initiated office messaging",
+      "data": [
+        "prepared message only if the user sends it",
+        "standard external-service request metadata"
+      ],
+      "endpoint": "https://wa.me"
+    },
+    {
+      "provider": "Telecommunications provider",
+      "purpose": "User-initiated telephone calls",
+      "data": [
+        "call metadata handled outside the application"
+      ]
+    }
+  ],
+  "referenceAndDatasetProviders": [
+    {
+      "provider": "GeoNames",
+      "purpose": "Offline source dataset for generated Saudi and Yemen location records",
+      "runtimeDataFlow": false
+    },
+    {
+      "provider": "Saudi National Center for Archives and Records",
+      "purpose": "Saudi region and governorate coding source used by the generator",
+      "runtimeDataFlow": false
+    },
+    {
+      "provider": "Islambook",
+      "purpose": "Reference links stored with Azkar source records",
+      "runtimeDataFlow": "Only when the user opens a displayed reference link"
+    }
+  ],
+  "hostingAndLogging": {
+    "hostingProviderDetected": false,
+    "deploymentConfigurationDetected": false,
+    "possibleStandardData": [
+      "IP address",
+      "browser type",
+      "device type",
+      "request time",
+      "requested page",
+      "security and diagnostic logs"
+    ],
+    "retention": "Unknown; depends on the future hosting provider configuration and policy."
+  },
+  "notCollectedByCurrentApplication": [
+    "user accounts",
+    "authentication credentials",
+    "email addresses",
+    "names through an application form",
+    "uploaded files",
+    "payment information",
+    "internal support form submissions",
+    "advertising identifiers"
+  ],
+  "applicationInterfaces": {
+    "apiRoutes": [],
+    "serverActions": [],
+    "forms": [],
+    "activeDatabaseUsage": false,
+    "note": "Firebase helper and Firestore scaffold files exist, but no current application route imports the Firestore content service, authentication, storage or messaging helpers."
+  },
+  "tracking": {
+    "analyticsDetected": false,
+    "advertisingTrackersDetected": false,
+    "errorMonitoringDetected": false,
+    "nonEssentialCookiesDetected": false,
+    "firebaseMeasurementEnvironmentExampleDetected": true,
+    "firebaseAnalyticsRuntimeDetected": false,
+    "actionTaken": "No tracker or cookie banner was added or removed because no active analytics or non-essential cookie implementation was detected."
+  },
+  "assetsAndScripts": {
+    "externalFonts": [
+      "Google Fonts: Cairo",
+      "Google Fonts: Amiri"
+    ],
+    "remoteImagesDetected": false,
+    "thirdPartyRuntimeScriptsDetected": false,
+    "localImages": [
+      "public/nasayem-logo.png",
+      "public/islamic_emblem_with_kaaba_and_mosque.pdf"
+    ]
+  },
+  "auditConclusion": {
+    "deviceOnly": [
+      "saved prayer location",
+      "Azkar progress",
+      "Tasbih state",
+      "Umrah round progress",
+      "daily progress and history"
+    ],
+    "officeReceivesOnlyAfterUserAction": [
+      "WhatsApp messages actually sent",
+      "telephone calls actually initiated"
+    ],
+    "externalDataFlows": [
+      "coordinates to Nominatim after geolocation action",
+      "font requests to Google Fonts",
+      "user-initiated WhatsApp and telephone actions",
+      "standard hosting requests when deployed"
+    ]
+  }
+}

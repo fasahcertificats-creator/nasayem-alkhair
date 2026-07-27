@@ -1,0 +1,129 @@
+{
+  "reportVersion": 1,
+  "generatedAt": "2026-07-27T00:28:16.742Z",
+  "status": "PASS",
+  "summary": {
+    "routeCount": 5,
+    "checkCount": 23,
+    "passedCount": 23,
+    "failedCount": 0
+  },
+  "checks": [
+    {
+      "name": "route-privacy-exists",
+      "status": "PASS",
+      "detail": "/privacy has a page source file"
+    },
+    {
+      "name": "route-privacy-metadata",
+      "status": "PASS",
+      "detail": "/privacy declares a distinct metadata title and description"
+    },
+    {
+      "name": "route-terms-exists",
+      "status": "PASS",
+      "detail": "/terms has a page source file"
+    },
+    {
+      "name": "route-terms-metadata",
+      "status": "PASS",
+      "detail": "/terms declares a distinct metadata title and description"
+    },
+    {
+      "name": "route-disclaimer-exists",
+      "status": "PASS",
+      "detail": "/disclaimer has a page source file"
+    },
+    {
+      "name": "route-disclaimer-metadata",
+      "status": "PASS",
+      "detail": "/disclaimer declares a distinct metadata title and description"
+    },
+    {
+      "name": "route-sources-exists",
+      "status": "PASS",
+      "detail": "/sources has a page source file"
+    },
+    {
+      "name": "route-sources-metadata",
+      "status": "PASS",
+      "detail": "/sources declares a distinct metadata title and description"
+    },
+    {
+      "name": "route-support-exists",
+      "status": "PASS",
+      "detail": "/support has a page source file"
+    },
+    {
+      "name": "route-support-metadata",
+      "status": "PASS",
+      "detail": "/support declares a distinct metadata title and description"
+    },
+    {
+      "name": "more-links-privacy",
+      "status": "PASS",
+      "detail": "/more links to /privacy"
+    },
+    {
+      "name": "more-links-terms",
+      "status": "PASS",
+      "detail": "/more links to /terms"
+    },
+    {
+      "name": "more-links-disclaimer",
+      "status": "PASS",
+      "detail": "/more links to /disclaimer"
+    },
+    {
+      "name": "more-links-sources",
+      "status": "PASS",
+      "detail": "/more links to /sources"
+    },
+    {
+      "name": "more-links-support",
+      "status": "PASS",
+      "detail": "/more links to /support"
+    },
+    {
+      "name": "prayer-location-privacy-link",
+      "status": "PASS",
+      "detail": "Prayer Times links to the stable privacy location section"
+    },
+    {
+      "name": "deletion-uses-allowlist",
+      "status": "PASS",
+      "detail": "Local-data deletion iterates explicit application-owned key allowlists"
+    },
+    {
+      "name": "no-localstorage-clear",
+      "status": "PASS",
+      "detail": "No localStorage.clear() call exists in the deletion implementation"
+    },
+    {
+      "name": "analytics-claim-matches-audit",
+      "status": "PASS",
+      "detail": "Privacy analytics and advertising statement matches the technical audit"
+    },
+    {
+      "name": "approved-office-data",
+      "status": "PASS",
+      "detail": "Legal office details match the approved office identity and service contact numbers"
+    },
+    {
+      "name": "no-unapproved-email",
+      "status": "PASS",
+      "detail": "No email address or mailto link was added"
+    },
+    {
+      "name": "no-madhab-wording",
+      "status": "PASS",
+      "detail": "No Madhab or jurisprudential-school wording appears on legal pages"
+    },
+    {
+      "name": "external-providers-audited",
+      "status": "PASS",
+      "detail": "Every linked external provider is present in the technical audit"
+    }
+  ],
+  "failedChecks": []
+}

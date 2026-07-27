@@ -16,6 +16,8 @@ import {
   X,
   type LucideIcon
 } from "lucide-react";
+import type { Route } from "next";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -172,6 +174,13 @@ export default function PrayerTimesPage() {
         location={location}
         onChangeCity={() => setIsManualSelectorOpen(true)}
       />
+
+      <Link
+        className="text-primary focus-visible:ring-gold inline-flex min-h-11 items-center rounded-lg px-1 text-xs font-bold underline decoration-gold/60 underline-offset-4 focus-visible:ring-2 focus-visible:outline-none"
+        href={"/privacy#location" as Route}
+      >
+        كيف نستخدم موقعك؟
+      </Link>
 
       {isManualSelectorOpen ? (
         <ManualCitySelector
