@@ -92,22 +92,22 @@
   "externalProviders": [
     {
       "provider": "Nominatim / OpenStreetMap",
-      "purpose": "Reverse geocoding after deliberate geolocation action",
+      "purpose": "Reverse geocoding only after a deliberate geolocation action",
       "data": [
         "latitude",
         "longitude",
         "language preference",
+        "application origin in the browser Referer",
         "standard request metadata including IP address"
       ],
-      "endpoint": "https://nominatim.openstreetmap.org/reverse"
-    },
-    {
-      "provider": "Google Fonts",
-      "purpose": "Load Cairo and Amiri font files",
-      "data": [
-        "standard request metadata potentially including IP address, browser and request time"
-      ],
-      "endpoint": "https://fonts.googleapis.com"
+      "endpoint": "https://nominatim.openstreetmap.org/reverse",
+      "automaticOnPageLoad": false,
+      "autocompleteUsage": false,
+      "minimumRequestIntervalMilliseconds": 1000,
+      "resultCaching": "In-memory coordinate cache plus reuse of the saved prayer location when coordinates match",
+      "identification": "Browser Referer retained with strict-origin-when-cross-origin",
+      "attributionVisible": true,
+      "replaceableProviderInterface": true
     },
     {
       "provider": "WhatsApp",
@@ -123,6 +123,17 @@
       "purpose": "User-initiated telephone calls",
       "data": [
         "call metadata handled outside the application"
+      ]
+    },
+    {
+      "provider": "Vercel",
+      "purpose": "Production application hosting and delivery, security and diagnostics",
+      "data": [
+        "IP address",
+        "browser and device information",
+        "request time",
+        "requested page",
+        "security and diagnostic logs"
       ]
     }
   ],
@@ -144,7 +155,9 @@
     }
   ],
   "hostingAndLogging": {
-    "hostingProviderDetected": false,
+    "hostingProviderDetectedInRepository": false,
+    "hostingProviderConfirmedByOwner": true,
+    "provider": "Vercel",
     "deploymentConfigurationDetected": false,
     "possibleStandardData": [
       "IP address",
@@ -154,7 +167,7 @@
       "requested page",
       "security and diagnostic logs"
     ],
-    "retention": "Unknown; depends on the future hosting provider configuration and policy."
+    "retention": "The exact retention period depends on the active Vercel plan and project settings; no fixed period was verified from a linked production project."
   },
   "notCollectedByCurrentApplication": [
     "user accounts",
@@ -183,10 +196,13 @@
     "actionTaken": "No tracker or cookie banner was added or removed because no active analytics or non-essential cookie implementation was detected."
   },
   "assetsAndScripts": {
-    "externalFonts": [
-      "Google Fonts: Cairo",
-      "Google Fonts: Amiri"
+    "externalFonts": [],
+    "selfHostedFonts": [
+      "Cairo via next/font/google build output",
+      "Amiri via next/font/google build output"
     ],
+    "googleFontsBrowserRuntimeFlowDetected": false,
+    "fontDelivery": "Font files are emitted by the Next.js build and served from the application deployment.",
     "remoteImagesDetected": false,
     "thirdPartyRuntimeScriptsDetected": false,
     "localImages": [
@@ -207,10 +223,20 @@
       "telephone calls actually initiated"
     ],
     "externalDataFlows": [
-      "coordinates to Nominatim after geolocation action",
-      "font requests to Google Fonts",
+      "coordinates to Nominatim only after a user-triggered geolocation action",
       "user-initiated WhatsApp and telephone actions",
-      "standard hosting requests when deployed"
+      "standard hosting requests processed by Vercel"
     ]
+  },
+  "whatsappRetentionDisclosure": {
+    "status": "ADDED",
+    "officeRetention": "Only as needed to respond and follow the service, subject to legal or accounting obligations",
+    "userRequest": "The user may request correction or deletion when legally and technically possible",
+    "providerCopies": "The office does not claim control over WhatsApp copies, backups or technical records"
+  },
+  "productionUrl": {
+    "confirmed": false,
+    "NEXT_PUBLIC_APP_URL": "Missing from .env.local; example configuration is localhost only",
+    "launchAction": "Set the confirmed production URL in the Vercel project before launch"
   }
 }

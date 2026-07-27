@@ -1,11 +1,11 @@
 {
   "reportVersion": 1,
-  "generatedAt": "2026-07-27T00:28:16.742Z",
+  "generatedAt": "2026-07-27T00:43:53.625Z",
   "status": "PASS",
   "summary": {
     "routeCount": 5,
-    "checkCount": 23,
-    "passedCount": 23,
+    "checkCount": 31,
+    "passedCount": 31,
     "failedCount": 0
   },
   "checks": [
@@ -90,6 +90,26 @@
       "detail": "Prayer Times links to the stable privacy location section"
     },
     {
+      "name": "fonts-self-hosted",
+      "status": "PASS",
+      "detail": "Cairo and Amiri use next/font build output with no browser-side Google Fonts URL"
+    },
+    {
+      "name": "nominatim-user-action-only",
+      "status": "PASS",
+      "detail": "Nominatim is reached only through the user-triggered requestLocation callback with no request loop"
+    },
+    {
+      "name": "nominatim-rate-cache-identification",
+      "status": "PASS",
+      "detail": "Nominatim has one-request-per-second throttling, result caching, browser Referer identification and a replaceable provider interface"
+    },
+    {
+      "name": "nominatim-visible-attribution",
+      "status": "PASS",
+      "detail": "Prayer Times visibly attributes OpenStreetMap and Nominatim"
+    },
+    {
       "name": "deletion-uses-allowlist",
       "status": "PASS",
       "detail": "Local-data deletion iterates explicit application-owned key allowlists"
@@ -103,6 +123,26 @@
       "name": "analytics-claim-matches-audit",
       "status": "PASS",
       "detail": "Privacy analytics and advertising statement matches the technical audit"
+    },
+    {
+      "name": "font-audit-updated",
+      "status": "PASS",
+      "detail": "Technical audit records self-hosted fonts and no Google Fonts browser flow"
+    },
+    {
+      "name": "vercel-disclosed",
+      "status": "PASS",
+      "detail": "Vercel hosting, technical processing and plan-dependent retention are disclosed"
+    },
+    {
+      "name": "whatsapp-retention-disclosed",
+      "status": "PASS",
+      "detail": "Approved office retention wording and limits on control over WhatsApp copies are present"
+    },
+    {
+      "name": "production-url-unconfirmed",
+      "status": "PASS",
+      "detail": "No production URL is invented and the Vercel launch action is recorded"
     },
     {
       "name": "approved-office-data",

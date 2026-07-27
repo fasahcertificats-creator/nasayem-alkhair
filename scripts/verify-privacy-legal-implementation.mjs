@@ -49,11 +49,57 @@ for (const route of routes) {
 }
 
 const prayerSource = read("src/app/prayer-times/page.tsx");
+const prayerServiceSource = read(
+  "src/services/prayer/prayer-times.service.ts"
+);
+const prayerHookSource = read("src/hooks/usePrayerTimes.ts");
+const layoutSource = read("src/app/layout.tsx");
+const globalStylesSource = read("src/app/globals.css");
 check(
   "prayer-location-privacy-link",
   /href=\{?"\/privacy#location"/.test(prayerSource) &&
     routeSources.privacy.includes('id="location"'),
   "Prayer Times links to the stable privacy location section"
+);
+check(
+  "fonts-self-hosted",
+  layoutSource.includes('from "next/font/google"') &&
+    layoutSource.includes("Cairo(") &&
+    layoutSource.includes("Amiri(") &&
+    !/fonts\.googleapis\.com|fonts\.gstatic\.com/.test(globalStylesSource) &&
+    globalStylesSource.includes("var(--font-cairo)") &&
+    globalStylesSource.includes("var(--font-amiri)"),
+  "Cairo and Amiri use next/font build output with no browser-side Google Fonts URL"
+);
+check(
+  "nominatim-user-action-only",
+  prayerHookSource.includes(
+    "const nextLocation = await requestGeolocatedPrayerLocation()"
+  ) &&
+    prayerHookSource.indexOf("requestGeolocatedPrayerLocation()") >
+      prayerHookSource.indexOf("const requestLocation = useCallback") &&
+    !prayerServiceSource.includes("setInterval("),
+  "Nominatim is reached only through the user-triggered requestLocation callback with no request loop"
+);
+check(
+  "nominatim-rate-cache-identification",
+  prayerServiceSource.includes(
+    "REVERSE_GEOCODING_MIN_INTERVAL_MS = 1000"
+  ) &&
+    prayerServiceSource.includes("reverseGeocodingCache") &&
+    prayerServiceSource.includes("getStoredReverseGeocodingResult") &&
+    prayerServiceSource.includes(
+      'referrerPolicy: "strict-origin-when-cross-origin"'
+    ) &&
+    prayerServiceSource.includes("ReverseGeocodingProvider"),
+  "Nominatim has one-request-per-second throttling, result caching, browser Referer identification and a replaceable provider interface"
+);
+check(
+  "nominatim-visible-attribution",
+  prayerSource.includes("OpenStreetMap") &&
+    prayerSource.includes("Nominatim") &&
+    prayerSource.includes("https://www.openstreetmap.org/copyright"),
+  "Prayer Times visibly attributes OpenStreetMap and Nominatim"
 );
 
 const storageSource = read("src/lib/app-storage.ts");
@@ -83,6 +129,37 @@ check(
     ),
   "Privacy analytics and advertising statement matches the technical audit"
 );
+check(
+  "font-audit-updated",
+  audit.assetsAndScripts.googleFontsBrowserRuntimeFlowDetected === false &&
+    audit.assetsAndScripts.externalFonts.length === 0 &&
+    audit.assetsAndScripts.selfHostedFonts.length === 2,
+  "Technical audit records self-hosted fonts and no Google Fonts browser flow"
+);
+check(
+  "vercel-disclosed",
+  audit.hostingAndLogging.provider === "Vercel" &&
+    routeSources.privacy.includes("تستضيف Vercel التطبيق") &&
+    routeSources.sources.includes("Vercel: تستضيف التطبيق"),
+  "Vercel hosting, technical processing and plan-dependent retention are disclosed"
+);
+check(
+  "whatsapp-retention-disclosed",
+  audit.whatsappRetentionDisclosure.status === "ADDED" &&
+    routeSources.privacy.includes(
+      "يحتفظ المكتب بالمراسلات التي يرسلها المستخدم عبر واتساب بالقدر اللازم"
+    ) &&
+    routeSources.privacy.includes(
+      "لا يتحكم المكتب في نسخة WhatsApp الخاصة بالخدمة أو نسخها الاحتياطية أو"
+    ),
+  "Approved office retention wording and limits on control over WhatsApp copies are present"
+);
+check(
+  "production-url-unconfirmed",
+  audit.productionUrl.confirmed === false &&
+    audit.productionUrl.launchAction.includes("Vercel"),
+  "No production URL is invented and the Vercel launch action is recorded"
+);
 
 const legalContent = read("src/components/legal/legal-content.ts");
 const servicesSource = read("src/app/services/page.tsx");
@@ -107,7 +184,8 @@ const allLegalSource = [
   moreSource,
   legalContent,
   read("src/components/legal/OfficeContactDetails.tsx"),
-  read("src/components/legal/SupportContact.tsx")
+  read("src/components/legal/SupportContact.tsx"),
+  prayerSource
 ].join("\n");
 check(
   "no-unapproved-email",
@@ -125,9 +203,10 @@ const externalHosts = [
 ].map((match) => match[1].toLowerCase());
 const allowedExternalHosts = new Set([
   "operations.osmfoundation.org",
-  "policies.google.com",
+  "www.openstreetmap.org",
   "www.geonames.org",
   "www.whatsapp.com",
+  "vercel.com",
   "wa.me"
 ]);
 check(

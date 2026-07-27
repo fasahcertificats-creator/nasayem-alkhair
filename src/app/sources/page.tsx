@@ -97,7 +97,11 @@ export default function SourcesPage() {
       <LegalSection title="6. البرمجيات والخدمات الخارجية">
         <LegalList>
           <li>
-            Nominatim / OpenStreetMap: للتعرف العكسي على المدينة بعد طلب الموقع.
+            Nominatim / OpenStreetMap: للتعرف العكسي على المدينة بعد ضغط المستخدم
+            على تحديد الموقع فقط. لا يستخدمه البحث اليدوي أو الإكمال التلقائي،
+            وتوجد مهلة لا تسمح بأكثر من طلب واحد في الثانية مع إعادة استخدام
+            النتائج المحفوظة. يرسل المتصفح أصل التطبيق كمرجع تقني مسموح للتعريف
+            بالتطبيق.
             {" "}
             <a
               aria-label="سياسة استخدام Nominatim الخارجية"
@@ -110,16 +114,22 @@ export default function SourcesPage() {
             </a>
           </li>
           <li>
-            Google Fonts: لتقديم خطي Cairo وAmiri عند توفر الاتصال.
+            خطا Cairo وAmiri: يُنزّلهما Next.js وقت البناء وتُقدَّم ملفاتهما ذاتيًا
+            من استضافة التطبيق، لذلك لا يتصل متصفح المستخدم بخدمة Google Fonts.
+          </li>
+          <li>
+            Vercel: تستضيف التطبيق وتقدمه، وقد تعالج بيانات الطلب التقنية المعتادة
+            للتقديم والأمان والتشخيص. تعتمد مدة السجلات على الخطة النشطة وإعدادات
+            المشروع.
             {" "}
             <a
-              aria-label="سياسة خصوصية Google الخارجية"
+              aria-label="سياسة خصوصية Vercel الخارجية"
               className="text-primary focus-visible:ring-gold break-words font-bold underline underline-offset-4 focus-visible:ring-2 focus-visible:outline-none"
-              href="https://policies.google.com/privacy"
+              href="https://vercel.com/legal/privacy-policy"
               rel="noopener noreferrer"
               target="_blank"
             >
-              سياسة خصوصية Google
+              سياسة خصوصية Vercel
             </a>
           </li>
           <li>

@@ -18,6 +18,12 @@ export const PRAYER_LOCATION_STORAGE_KEY = "nasayem_prayer_location";
 
 const LOCATION_STALE_AFTER_MS = 30 * 24 * 60 * 60 * 1000;
 const REVERSE_GEOCODING_ENDPOINT = "https://nominatim.openstreetmap.org/reverse";
+const REVERSE_GEOCODING_MIN_INTERVAL_MS = 1000;
+const REVERSE_GEOCODING_CACHE_PRECISION = 4;
+
+let lastReverseGeocodingRequestAt = 0;
+let reverseGeocodingQueue: Promise<void> = Promise.resolve();
+const reverseGeocodingCache = new Map<string, ReverseGeocodingResult>();
 
 export type PrayerId = "fajr" | "sunrise" | "dhuhr" | "asr" | "maghrib" | "isha";
 export type PrayerSelectionSource = "geolocation" | "manual";
@@ -318,6 +324,52 @@ interface ReverseGeocodingResult {
   timezone?: string;
 }
 
+interface ReverseGeocodingProvider {
+  id: string;
+  reverseGeocode: (
+    coordinates: PrayerCoordinates
+  ) => Promise<ReverseGeocodingResult>;
+}
+
+function getReverseGeocodingCacheKey(coordinates: PrayerCoordinates): string {
+  return [
+    coordinates.latitude.toFixed(REVERSE_GEOCODING_CACHE_PRECISION),
+    coordinates.longitude.toFixed(REVERSE_GEOCODING_CACHE_PRECISION)
+  ].join(",");
+}
+
+function getStoredReverseGeocodingResult(
+  coordinates: PrayerCoordinates
+): ReverseGeocodingResult | null {
+  const storedLocation = readStoredPrayerLocation();
+  const coordinateTolerance = 10 ** -REVERSE_GEOCODING_CACHE_PRECISION;
+
+  if (
+    !storedLocation ||
+    Math.abs(storedLocation.latitude - coordinates.latitude) >
+      coordinateTolerance ||
+    Math.abs(storedLocation.longitude - coordinates.longitude) >
+      coordinateTolerance
+  ) {
+    return null;
+  }
+
+  const result = {
+    ...(storedLocation.cityLabel
+      ? { cityLabel: storedLocation.cityLabel }
+      : {}),
+    ...(storedLocation.countryCode
+      ? { countryCode: storedLocation.countryCode }
+      : {}),
+    ...(storedLocation.countryLabel
+      ? { countryLabel: storedLocation.countryLabel }
+      : {}),
+    ...(storedLocation.timezone ? { timezone: storedLocation.timezone } : {})
+  };
+
+  return Object.keys(result).length > 0 ? result : null;
+}
+
 function requestCurrentPosition(): Promise<PrayerCoordinates> {
   return new Promise((resolve, reject) => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
@@ -365,6 +417,41 @@ function requestCurrentPosition(): Promise<PrayerCoordinates> {
 async function reverseGeocodePrayerLocation(
   coordinates: PrayerCoordinates
 ): Promise<ReverseGeocodingResult> {
+  const cacheKey = getReverseGeocodingCacheKey(coordinates);
+  const cachedResult =
+    reverseGeocodingCache.get(cacheKey) ??
+    getStoredReverseGeocodingResult(coordinates);
+
+  if (cachedResult) {
+    reverseGeocodingCache.set(cacheKey, cachedResult);
+    return cachedResult;
+  }
+
+  const previousRequest = reverseGeocodingQueue;
+  let releaseRequest = () => {};
+  reverseGeocodingQueue = new Promise<void>((resolve) => {
+    releaseRequest = resolve;
+  });
+  await previousRequest;
+
+  const queuedCachedResult = reverseGeocodingCache.get(cacheKey);
+
+  if (queuedCachedResult) {
+    releaseRequest();
+    return queuedCachedResult;
+  }
+
+  const waitTime = Math.max(
+    0,
+    REVERSE_GEOCODING_MIN_INTERVAL_MS -
+      (Date.now() - lastReverseGeocodingRequestAt)
+  );
+
+  if (waitTime > 0) {
+    await new Promise((resolve) => window.setTimeout(resolve, waitTime));
+  }
+
+  lastReverseGeocodingRequestAt = Date.now();
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), 10000);
 
@@ -377,7 +464,13 @@ async function reverseGeocodePrayerLocation(
     url.searchParams.set("addressdetails", "1");
     url.searchParams.set("accept-language", "ar");
     const response = await fetch(url, {
-      headers: { Accept: "application/json" },
+      cache: "no-store",
+      credentials: "omit",
+      headers: {
+        Accept: "application/json",
+        "Accept-Language": "ar"
+      },
+      referrerPolicy: "strict-origin-when-cross-origin",
       signal: controller.signal
     });
 
@@ -408,18 +501,33 @@ async function reverseGeocodePrayerLocation(
       countryCode
     );
 
-    return {
+    const result = {
       ...(cityLabel ? { cityLabel } : {}),
       ...(countryCode ? { countryCode } : {}),
       ...(countryLabel ? { countryLabel } : {}),
       ...(nearestCity ? { timezone: nearestCity.timezone } : {})
     };
+
+    if (Object.keys(result).length > 0) {
+      reverseGeocodingCache.set(cacheKey, result);
+    }
+
+    return result;
   } catch {
     return {};
   } finally {
     window.clearTimeout(timeoutId);
+    releaseRequest();
   }
 }
+
+const nominatimReverseGeocodingProvider: ReverseGeocodingProvider = {
+  id: "nominatim-openstreetmap",
+  reverseGeocode: reverseGeocodePrayerLocation
+};
+
+const reverseGeocodingProvider: ReverseGeocodingProvider =
+  nominatimReverseGeocodingProvider;
 
 export async function requestGeolocatedPrayerLocation(): Promise<PrayerLocation> {
   if (typeof navigator !== "undefined" && navigator.onLine === false) {
@@ -427,7 +535,8 @@ export async function requestGeolocatedPrayerLocation(): Promise<PrayerLocation>
   }
 
   const coordinates = await requestCurrentPosition();
-  const resolvedLocation = await reverseGeocodePrayerLocation(coordinates);
+  const resolvedLocation =
+    await reverseGeocodingProvider.reverseGeocode(coordinates);
   const updatedAt = Date.now();
   const location = validatePrayerLocation({
     ...coordinates,

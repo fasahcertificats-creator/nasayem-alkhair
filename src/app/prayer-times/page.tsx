@@ -181,6 +181,29 @@ export default function PrayerTimesPage() {
       >
         كيف نستخدم موقعك؟
       </Link>
+      <p className="text-muted-foreground min-w-0 text-[10px] leading-5 break-words">
+        التعرف على اسم المدينة بواسطة{" "}
+        <a
+          aria-label="إسناد بيانات OpenStreetMap الخارجي"
+          className="text-primary focus-visible:ring-gold rounded font-bold underline underline-offset-2 focus-visible:ring-2 focus-visible:outline-none"
+          href="https://www.openstreetmap.org/copyright"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          OpenStreetMap
+        </a>{" "}
+        عبر{" "}
+        <a
+          aria-label="سياسة استخدام Nominatim الخارجية"
+          className="text-primary focus-visible:ring-gold rounded font-bold underline underline-offset-2 focus-visible:ring-2 focus-visible:outline-none"
+          href="https://operations.osmfoundation.org/policies/nominatim/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Nominatim
+        </a>
+        .
+      </p>
 
       {isManualSelectorOpen ? (
         <ManualCitySelector
