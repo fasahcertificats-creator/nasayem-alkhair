@@ -1,0 +1,116 @@
+{
+  "reportVersion": 1,
+  "generatedAt": "2026-07-27",
+  "baselineCommit": "3c51a64a5ad4c33e878293b32aa9de0fcb3a3bdb",
+  "branch": "feature/pwa-offline-launch-v1",
+  "stackedOn": "feature/privacy-legal-launch-v1",
+  "status": "PASS",
+  "existingPwaComponents": {
+    "manifest": false,
+    "serviceWorker": false,
+    "serviceWorkerRegistration": false,
+    "cacheStorageUsage": false,
+    "installPromptUi": false,
+    "offlineFallback": false,
+    "connectionStatusUi": false,
+    "localFonts": true,
+    "staticAppRouterPages": true
+  },
+  "missingInstallabilityRequirements": [
+    "web app manifest",
+    "192x192 and 512x512 icons",
+    "maskable icon",
+    "Apple touch icon",
+    "favicon metadata",
+    "service worker with root scope",
+    "service worker registration",
+    "offline fallback route",
+    "installation and update user interface"
+  ],
+  "currentCacheBehavior": {
+    "applicationManagedCache": false,
+    "browserHttpCacheOnly": true,
+    "offlinePack": false
+  },
+  "staticallyAvailableRoutes": {
+    "requiredStaticRouteCountIncludingOffline": 15,
+    "azkarCategoryRouteCount": 10,
+    "umrahStageRouteCount": 8,
+    "totalOfflineRouteCount": 33,
+    "dynamicRoutesUseGenerateStaticParams": true
+  },
+  "networkRequiredFeatures": [
+    {
+      "feature": "Nominatim reverse geocoding",
+      "condition": "Only after the user presses the device-location action"
+    },
+    {
+      "feature": "WhatsApp",
+      "condition": "External messaging requires connectivity"
+    },
+    {
+      "feature": "external legal and provider links",
+      "condition": "External origins remain network-only"
+    },
+    {
+      "feature": "initial PWA installation and offline-pack preparation",
+      "condition": "Requires HTTPS production access and connectivity"
+    }
+  ],
+  "locallyOperableFeatures": [
+    "prayer calculations from saved coordinates or bundled manual city data",
+    "Azkar content, counters and progress",
+    "Tasbih and its saved count",
+    "Umrah guide and session progress",
+    "general progress tracking",
+    "office services and approved contact information",
+    "privacy, legal, sources and support content after caching"
+  ],
+  "officialIconSource": {
+    "path": "public/nasayem-logo.png",
+    "dimensions": "1254x1254",
+    "format": "PNG",
+    "suitable": true,
+    "decision": "Create deterministic resized derivatives only; preserve the official artwork and proportions."
+  },
+  "offlineContentScope": {
+    "routeDocuments": 33,
+    "bundledContentBytesObserved": 1293926,
+    "previousNextStaticBytesObserved": 2090477,
+    "estimate": "Approximately 4-10 MB depending on generated chunks, compression and browser cache accounting."
+  },
+  "localFontAssets": {
+    "families": [
+      "Cairo variable 200-1000 normal",
+      "Amiri 400 and 700 normal"
+    ],
+    "loader": "next/font/local",
+    "checkedIntoApplication": true,
+    "sameOriginDelivery": true,
+    "googleFontsBuildOrRuntimeRequests": false,
+    "offlineCacheEligible": true
+  },
+  "privacyImpact": {
+    "cacheStorageContent": [
+      "public application pages",
+      "same-origin scripts and styles",
+      "self-hosted fonts",
+      "official icons and local images"
+    ],
+    "separateFromUserProgress": true,
+    "coordinatesInPwaMetadata": false,
+    "externalResponsesIntentionallyCached": false,
+    "newLocalStorageKey": "nasayem-alkhair:pwa-offline-pack:v1"
+  },
+  "dependencyDecision": {
+    "newDependencyRequired": false,
+    "approach": "First-party dependency-free service worker, deterministic Node generator and React client controls.",
+    "reason": "The required cache strategies, offline pack, install prompt and update flow are implementable with browser standards and the current Next.js 16 App Router."
+  },
+  "deploymentAssumptions": {
+    "provider": "Vercel",
+    "httpsRequired": true,
+    "confirmedProductionUrlConfigured": false,
+    "note": "NEXT_PUBLIC_APP_URL must be set in Vercel before launch."
+  }
+}

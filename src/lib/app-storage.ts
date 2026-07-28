@@ -1,3 +1,5 @@
+import { PWA_OFFLINE_METADATA_KEY } from "@/pwa/pwa-constants";
+
 export const NASAYEM_LOCAL_STORAGE_KEYS = [
   "nasayem_prayer_location",
   "nasayem-alkhair:azkarProgress:v2",
@@ -11,7 +13,8 @@ export const NASAYEM_LOCAL_STORAGE_KEYS = [
   "nasayem_prayer_calculation_settings",
   "nasayem_prayer_calculation_method",
   "nasayem_prayer_madhab",
-  "nasayem_prayer_method_override"
+  "nasayem_prayer_method_override",
+  PWA_OFFLINE_METADATA_KEY
 ] as const;
 
 export const NASAYEM_SESSION_STORAGE_KEYS = [

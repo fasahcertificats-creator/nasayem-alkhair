@@ -63,13 +63,13 @@ check(
 );
 check(
   "fonts-self-hosted",
-  layoutSource.includes('from "next/font/google"') &&
-    layoutSource.includes("Cairo(") &&
-    layoutSource.includes("Amiri(") &&
-    !/fonts\.googleapis\.com|fonts\.gstatic\.com/.test(globalStylesSource) &&
+  layoutSource.includes('from "next/font/local"') &&
+    layoutSource.includes("../assets/fonts/cairo/Cairo-Variable.ttf") &&
+    layoutSource.includes("../assets/fonts/amiri/Amiri-Regular.ttf") &&
+    layoutSource.includes("../assets/fonts/amiri/Amiri-Bold.ttf") &&
     globalStylesSource.includes("var(--font-cairo)") &&
     globalStylesSource.includes("var(--font-amiri)"),
-  "Cairo and Amiri use next/font build output with no browser-side Google Fonts URL"
+  "Cairo and Amiri use checked-in next/font/local assets"
 );
 check(
   "nominatim-user-action-only",
@@ -132,9 +132,10 @@ check(
 check(
   "font-audit-updated",
   audit.assetsAndScripts.googleFontsBrowserRuntimeFlowDetected === false &&
+    audit.assetsAndScripts.googleFontsBuildTimeFlowDetected === false &&
     audit.assetsAndScripts.externalFonts.length === 0 &&
     audit.assetsAndScripts.selfHostedFonts.length === 2,
-  "Technical audit records self-hosted fonts and no Google Fonts browser flow"
+  "Technical audit records same-origin local fonts with no Google Fonts build or browser flow"
 );
 check(
   "vercel-disclosed",

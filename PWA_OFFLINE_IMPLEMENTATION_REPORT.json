@@ -1,0 +1,115 @@
+{
+  "reportVersion": 1,
+  "generatedAt": "2026-07-28T08:57:12.136Z",
+  "status": "PASS",
+  "execution": "STATIC_SOURCE_VERIFICATION",
+  "summary": {
+    "expectedOfflineRouteCount": 33,
+    "checkCount": 20,
+    "passedCount": 20,
+    "failedCount": 0
+  },
+  "checks": [
+    {
+      "name": "required-files",
+      "status": "PASS",
+      "detail": "Manifest, runtime, controls, offline route, local fonts, service worker sources and technical audit exist"
+    },
+    {
+      "name": "local-font-offline-assets",
+      "status": "PASS",
+      "detail": "Checked-in Cairo and Amiri assets use next/font/local and are eligible for same-origin offline caching"
+    },
+    {
+      "name": "manifest-and-layout",
+      "status": "PASS",
+      "detail": "The web app manifest is installable and linked once from root metadata"
+    },
+    {
+      "name": "pwa-icons",
+      "status": "PASS",
+      "detail": "All referenced PNG icons exist with the declared square dimensions"
+    },
+    {
+      "name": "service-worker-headers",
+      "status": "PASS",
+      "detail": "/sw.js has explicit JavaScript, no-cache and root-scope headers"
+    },
+    {
+      "name": "single-service-worker-registration",
+      "status": "PASS",
+      "detail": "Application source contains exactly one service worker registration call"
+    },
+    {
+      "name": "single-runtime-and-controls-mount",
+      "status": "PASS",
+      "detail": "PwaRuntime is mounted once globally and PwaControls once on /more"
+    },
+    {
+      "name": "offline-pack-controls",
+      "status": "PASS",
+      "detail": "Offline content can be prepared and its dedicated pack caches removed"
+    },
+    {
+      "name": "offline-page",
+      "status": "PASS",
+      "detail": "/offline provides a local fallback and retry action"
+    },
+    {
+      "name": "global-connection-state",
+      "status": "PASS",
+      "detail": "Online state and connection announcements are owned by the global PWA runtime"
+    },
+    {
+      "name": "installation-guidance",
+      "status": "PASS",
+      "detail": "Android install prompting and iOS home-screen instructions are implemented"
+    },
+    {
+      "name": "user-controlled-update-flow",
+      "status": "PASS",
+      "detail": "Waiting updates activate only after the user chooses the update action"
+    },
+    {
+      "name": "unified-offline-route-inventory",
+      "status": "PASS",
+      "detail": "Generated routes exactly match static pages plus the canonical Azkar and Umrah data"
+    },
+    {
+      "name": "generated-service-worker-current",
+      "status": "PASS",
+      "detail": "public/sw.js exactly matches its local template, release and route inventory"
+    },
+    {
+      "name": "same-origin-get-only-cache-policy",
+      "status": "PASS",
+      "detail": "Only unauthenticated same-origin GET requests enter cache strategies"
+    },
+    {
+      "name": "external-services-network-only",
+      "status": "PASS",
+      "detail": "Nominatim, WhatsApp, external origins and external worker imports are excluded"
+    },
+    {
+      "name": "filtered-cache-deletion",
+      "status": "PASS",
+      "detail": "Cache deletion is limited to owned obsolete caches or the offline-pack prefix"
+    },
+    {
+      "name": "no-automatic-skip-waiting",
+      "status": "PASS",
+      "detail": "skipWaiting exists only in the explicit client-message update branch"
+    },
+    {
+      "name": "no-storage-wide-clear",
+      "status": "PASS",
+      "detail": "Application source does not call localStorage.clear()"
+    },
+    {
+      "name": "cache-storage-disclosure",
+      "status": "PASS",
+      "detail": "Privacy and sources pages disclose Cache Storage and external-origin exclusions"
+    }
+  ],
+  "failedChecks": []
+}

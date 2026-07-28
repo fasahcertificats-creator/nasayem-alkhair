@@ -5,6 +5,7 @@ export const ROUTES = {
   azkar: "/azkar" as Route,
   miqat: "/miqat" as Route,
   more: "/more" as Route,
+  offline: "/offline" as Route,
   privacy: "/privacy" as Route,
   terms: "/terms" as Route,
   disclaimer: "/disclaimer" as Route,

@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "pwa:generate": "node scripts/generate-pwa-assets.mjs",
+    "pwa:verify": "node scripts/verify-pwa-offline-implementation.mjs",
+    "build": "npm run pwa:generate && next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

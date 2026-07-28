@@ -92,7 +92,7 @@
     {
       "name": "fonts-self-hosted",
       "status": "PASS",
-      "detail": "Cairo and Amiri use next/font build output with no browser-side Google Fonts URL"
+      "detail": "Cairo and Amiri use checked-in next/font/local assets with no build-time or browser-side Google Fonts request"
     },
     {
       "name": "nominatim-user-action-only",
@@ -127,7 +127,7 @@
     {
       "name": "font-audit-updated",
       "status": "PASS",
-      "detail": "Technical audit records self-hosted fonts and no Google Fonts browser flow"
+      "detail": "Technical audit records same-origin local fonts, no Google Fonts build or browser flow, and offline-cache eligibility"
     },
     {
       "name": "vercel-disclosed",

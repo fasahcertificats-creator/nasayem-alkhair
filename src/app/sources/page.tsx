@@ -114,8 +114,9 @@ export default function SourcesPage() {
             </a>
           </li>
           <li>
-            خطا Cairo وAmiri: يُنزّلهما Next.js وقت البناء وتُقدَّم ملفاتهما ذاتيًا
-            من استضافة التطبيق، لذلك لا يتصل متصفح المستخدم بخدمة Google Fonts.
+            خطا Cairo وAmiri: ملفاتهما الرسمية محفوظة محليًا داخل التطبيق ويقدمهما
+            Next.js من نطاق التطبيق نفسه؛ لذلك لا يحتاج البناء أو المتصفح إلى
+            Google Fonts.
           </li>
           <li>
             Vercel: تستضيف التطبيق وتقدمه، وقد تعالج بيانات الطلب التقنية المعتادة
@@ -146,6 +147,15 @@ export default function SourcesPage() {
             </a>
           </li>
         </LegalList>
+      </LegalSection>
+
+      <LegalSection title="7. التخزين المؤقت والعمل دون إنترنت">
+        <p>
+          يستخدم التطبيق Service Worker وواجهة Cache Storage القياسية في المتصفح
+          لحفظ صفحات التطبيق العامة والأصول المحلية ذات الأصل نفسه. تُستمد قائمة
+          مسارات الأذكار ومراحل العمرة من ملفات البيانات المحلية عند توليد أصول
+          PWA، ولا تُخزن استجابات Nominatim أو WhatsApp أو أي أصل خارجي.
+        </p>
       </LegalSection>
     </LegalPage>
   );

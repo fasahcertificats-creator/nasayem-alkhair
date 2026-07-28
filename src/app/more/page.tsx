@@ -9,6 +9,8 @@ import {
   ShieldCheck
 } from "lucide-react";
 
+import { PwaControls } from "@/pwa/PwaControls";
+
 export const metadata: Metadata = {
   title: "المزيد",
   description: "روابط الخصوصية والشروط والمصادر والدعم في تطبيق نسائم الخير."
@@ -64,6 +66,8 @@ export default function MorePage() {
           معلومات التطبيق وحقوق المستخدم ووسائل الدعم.
         </p>
       </header>
+
+      <PwaControls />
 
       <section
         aria-labelledby="legal-information-heading"

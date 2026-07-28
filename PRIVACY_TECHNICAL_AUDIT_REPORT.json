@@ -198,11 +198,12 @@
   "assetsAndScripts": {
     "externalFonts": [],
     "selfHostedFonts": [
-      "Cairo via next/font/google build output",
-      "Amiri via next/font/google build output"
+      "Cairo from src/assets/fonts/cairo/Cairo-Variable.ttf via next/font/local",
+      "Amiri Regular and Bold from src/assets/fonts/amiri via next/font/local"
     ],
     "googleFontsBrowserRuntimeFlowDetected": false,
-    "fontDelivery": "Font files are emitted by the Next.js build and served from the application deployment.",
+    "googleFontsBuildTimeFlowDetected": false,
+    "fontDelivery": "Checked-in font files are emitted by the Next.js build, served from the application origin and eligible for the same-origin offline cache.",
     "remoteImagesDetected": false,
     "thirdPartyRuntimeScriptsDetected": false,
     "localImages": [
