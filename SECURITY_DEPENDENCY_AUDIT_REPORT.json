@@ -1,0 +1,47 @@
+{
+  "reportVersion": 1,
+  "status": "REVIEWED_NOT_RESOLVED",
+  "summary": {
+    "critical": 0,
+    "high": 4,
+    "confirmedRuntimeLaunchBlockers": 0
+  },
+  "approvedApplicationVersions": {
+    "next": "16.2.12",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.12"
+  },
+  "productionFindings": [
+    {
+      "dependencyPath": "Next dependency path involving postcss 8.4.31",
+      "classification": "REVIEWED_CURRENTLY_NOT_REACHABLE",
+      "reachability": "Production PostCSS usage is limited to build-time trusted input under the audited application architecture."
+    },
+    {
+      "dependencyPath": "Next dependency path involving sharp 0.34.5",
+      "classification": "REVIEWED_CURRENTLY_NOT_REACHABLE",
+      "reachability": "Sharp is not reachable from attacker-controlled image input under the audited application architecture."
+    }
+  ],
+  "developmentFindings": [
+    {
+      "dependencyPath": "brace-expansion through ESLint and minimatch paths",
+      "classification": "DEVELOPMENT_ONLY",
+      "reachability": "The affected tooling does not execute in the deployed browser runtime."
+    },
+    {
+      "dependencyPath": "postcss 8.5.16 through Tailwind development tooling",
+      "classification": "DEVELOPMENT_ONLY",
+      "reachability": "The affected tooling does not execute in the deployed browser runtime."
+    }
+  ],
+  "remediationDecision": {
+    "compatibleAutomaticFixAccepted": false,
+    "npmAuditFixUsed": false,
+    "npmAuditFixForceUsed": false,
+    "advisoriesResolved": false,
+    "decision": "The findings remain open, reviewed, and currently not reachable under the audited application architecture. No confirmed runtime launch blocker remained."
+  }
+}

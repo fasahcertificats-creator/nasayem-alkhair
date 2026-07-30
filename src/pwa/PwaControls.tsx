@@ -21,6 +21,8 @@ import {
 } from "./pwa-constants";
 import { usePwaRuntime } from "./PwaRuntime";
 
+const OFFLINE_ROUTE_SET: ReadonlySet<string> = new Set(OFFLINE_ROUTES);
+
 interface OfflinePackMetadata {
   lastPreparedAt: number;
   routeCount: number;
@@ -32,7 +34,55 @@ interface PackProgress {
   total: number;
 }
 
-function readOfflinePackMetadata(): OfflinePackMetadata | null {
+interface PackCompleteMessage {
+  completed: number;
+  failedRoutes: string[];
+  requestId: string;
+  success: boolean;
+  total: number;
+  type: "PWA_PACK_COMPLETE";
+  version: string;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function hasOnlyKeys(
+  value: Record<string, unknown>,
+  allowedKeys: readonly string[]
+) {
+  const keys = Object.keys(value);
+
+  return (
+    keys.length === allowedKeys.length &&
+    keys.every((key) => allowedKeys.includes(key))
+  );
+}
+
+function isBoundedProgressValue(value: unknown): value is number {
+  return (
+    typeof value === "number" &&
+    Number.isFinite(value) &&
+    Number.isSafeInteger(value) &&
+    value >= 0 &&
+    value <= OFFLINE_ROUTE_COUNT
+  );
+}
+
+function isValidOfflineRouteCount(value: unknown): value is number {
+  return (
+    typeof value === "number" &&
+    Number.isFinite(value) &&
+    Number.isSafeInteger(value) &&
+    value >= 0 &&
+    value <= OFFLINE_ROUTES.length
+  );
+}
+
+function readOfflinePackMetadata(
+  expectedVersion: string
+): OfflinePackMetadata | null {
   try {
     const rawValue = localStorage.getItem(PWA_OFFLINE_METADATA_KEY);
 
@@ -40,22 +90,92 @@ function readOfflinePackMetadata(): OfflinePackMetadata | null {
       return null;
     }
 
-    const value = JSON.parse(rawValue) as Partial<OfflinePackMetadata>;
+    const value: unknown = JSON.parse(rawValue);
 
     if (
-      typeof value.version !== "string" ||
+      !isRecord(value) ||
+      !hasOnlyKeys(value, ["lastPreparedAt", "routeCount", "version"]) ||
+      value.version !== expectedVersion ||
       typeof value.lastPreparedAt !== "number" ||
       !Number.isFinite(value.lastPreparedAt) ||
-      typeof value.routeCount !== "number" ||
-      !Number.isSafeInteger(value.routeCount)
+      !Number.isSafeInteger(value.lastPreparedAt) ||
+      value.lastPreparedAt <= 0 ||
+      value.lastPreparedAt > Date.now() + 24 * 60 * 60 * 1000 ||
+      !isValidOfflineRouteCount(value.routeCount)
     ) {
       return null;
     }
 
-    return value as OfflinePackMetadata;
+    return {
+      lastPreparedAt: value.lastPreparedAt,
+      routeCount: value.routeCount,
+      version: value.version
+    };
   } catch {
     return null;
   }
+}
+
+function isPackProgressMessage(
+  value: unknown,
+  requestId: string
+): value is {
+  completed: number;
+  requestId: string;
+  total: number;
+  type: "PWA_PACK_PROGRESS";
+} {
+  return (
+    isRecord(value) &&
+    hasOnlyKeys(value, ["type", "requestId", "completed", "total"]) &&
+    value.type === "PWA_PACK_PROGRESS" &&
+    value.requestId === requestId &&
+    isBoundedProgressValue(value.completed) &&
+    value.total === OFFLINE_ROUTE_COUNT &&
+    value.completed <= value.total
+  );
+}
+
+function isPackCompleteMessage(
+  value: unknown,
+  requestId: string
+): value is PackCompleteMessage {
+  return (
+    isRecord(value) &&
+    hasOnlyKeys(value, [
+      "type",
+      "requestId",
+      "completed",
+      "failedRoutes",
+      "success",
+      "total",
+      "version"
+    ]) &&
+    value.type === "PWA_PACK_COMPLETE" &&
+    value.requestId === requestId &&
+    isBoundedProgressValue(value.completed) &&
+    value.total === OFFLINE_ROUTE_COUNT &&
+    value.completed <= value.total &&
+    typeof value.success === "boolean" &&
+    typeof value.version === "string" &&
+    value.version.length > 0 &&
+    value.version.length <= 100 &&
+    Array.isArray(value.failedRoutes) &&
+    value.failedRoutes.length <= OFFLINE_ROUTE_COUNT &&
+    value.failedRoutes.every(
+      (route) => typeof route === "string" && OFFLINE_ROUTE_SET.has(route)
+    )
+  );
+}
+
+function isRemovalCompleteMessage(value: unknown, requestId: string) {
+  return (
+    isRecord(value) &&
+    hasOnlyKeys(value, ["type", "requestId", "success"]) &&
+    value.type === "PWA_OFFLINE_CONTENT_REMOVED" &&
+    value.requestId === requestId &&
+    typeof value.success === "boolean"
+  );
 }
 
 function formatPreparationDate(timestamp: number) {
@@ -92,7 +212,7 @@ export function PwaControls() {
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
-      setMetadata(readOfflinePackMetadata());
+      setMetadata(readOfflinePackMetadata(currentVersion));
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
@@ -143,12 +263,7 @@ export function PwaControls() {
       }
 
       const requestId = createRequestId();
-      const result = await new Promise<{
-        completed: number;
-        success: boolean;
-        total: number;
-        version: string;
-      }>((resolve, reject) => {
+      const result = await new Promise<PackCompleteMessage>((resolve, reject) => {
         const channel = new MessageChannel();
         const timeoutId = window.setTimeout(
           () => reject(new Error("offline-pack-timeout")),
@@ -158,11 +273,7 @@ export function PwaControls() {
         channel.port1.onmessage = (event) => {
           const message = event.data;
 
-          if (!message || message.requestId !== requestId) {
-            return;
-          }
-
-          if (message.type === "PWA_PACK_PROGRESS") {
+          if (isPackProgressMessage(message, requestId)) {
             setProgress({
               completed: message.completed,
               total: message.total
@@ -170,7 +281,7 @@ export function PwaControls() {
             return;
           }
 
-          if (message.type === "PWA_PACK_COMPLETE") {
+          if (isPackCompleteMessage(message, requestId)) {
             window.clearTimeout(timeoutId);
             resolve(message);
           }
@@ -248,10 +359,7 @@ export function PwaControls() {
           );
 
           channel.port1.onmessage = (event) => {
-            if (
-              event.data?.type !== "PWA_OFFLINE_CONTENT_REMOVED" ||
-              event.data.requestId !== requestId
-            ) {
+            if (!isRemovalCompleteMessage(event.data, requestId)) {
               return;
             }
 

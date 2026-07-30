@@ -1,0 +1,84 @@
+{
+  "reportVersion": 1,
+  "status": "IMPLEMENTED_PENDING_FINAL_PRODUCTION_VERIFICATION",
+  "filesChangedBySecurityLaunchWork": [
+    "next.config.ts",
+    "package.json",
+    "package-lock.json",
+    "public/sw.js",
+    "src/app/services/page.tsx",
+    "src/app/tasbih/page.tsx",
+    "src/components/legal/OfficeContactDetails.tsx",
+    "src/components/legal/SupportContact.tsx",
+    "src/components/legal/legal-content.ts",
+    "src/design-system/AzkarSourceMeta.tsx",
+    "src/design-system/ReligiousText.tsx",
+    "src/lib/app-state.ts",
+    "src/lib/app-storage.ts",
+    "src/lib/azkar-progress.ts",
+    "src/lib/safe-external-url.ts",
+    "src/lib/umrah-companion-storage.ts",
+    "src/pwa/PwaControls.tsx",
+    "src/pwa/PwaRuntime.tsx",
+    "src/pwa/sw-template.js",
+    "src/services/prayer/prayer-times.service.ts",
+    "tatus -sb"
+  ],
+  "securityArtifactsCreated": [
+    "SECURITY_TECHNICAL_AUDIT_REPORT.json",
+    "SECURITY_DEPENDENCY_AUDIT_REPORT.json",
+    "SECURITY_IMPLEMENTATION_REPORT.json",
+    "scripts/verify-security-launch.mjs"
+  ],
+  "protectionsImplemented": [
+    "Application and service-worker security headers with CSP",
+    "HTTPS-only credential-free dynamic external references",
+    "Office-number allowlists for WhatsApp and telephone destinations",
+    "Strict persisted-state structure, count, enum, and timestamp validation",
+    "Application-owned local and session storage deletion allowlists",
+    "Nominatim coordinate, origin, timeout, rate, response-size, and shape validation",
+    "Service-worker client, message, route, origin, method, cache-name, and cache-bound validation",
+    "Non-fatal cache-write and quota-failure handling",
+    "Security and privacy support category"
+  ],
+  "checksExecutedDuringSecurityWork": [
+    {
+      "command": "npm.cmd run typecheck",
+      "result": "PASS"
+    },
+    {
+      "command": "npm.cmd run lint",
+      "result": "PASS"
+    },
+    {
+      "command": "git --no-pager diff --check",
+      "result": "PASS_WITH_LINE_ENDING_WARNINGS_ONLY"
+    },
+    {
+      "check": "source injection and unsafe-code scan",
+      "result": "PASS"
+    },
+    {
+      "check": "tracked and untracked secret and repository hygiene scan",
+      "result": "PASS_WITH_IGNORED_LOCAL_CLIENT_CONFIGURATION_AND_AUTHORIZED_TEMPORARY_ARTIFACT_CLEANUP"
+    }
+  ],
+  "knownAcceptedRisks": [
+    "Application CSP temporarily permits script-src 'unsafe-inline' for Next.js hydration.",
+    "Four high dependency advisories remain reviewed but unresolved and currently not reachable under the audited architecture.",
+    "Final production-header and representative-device PWA verification remain pending."
+  ],
+  "dependencyChanges": {
+    "next": "16.2.12",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.12"
+  },
+  "releaseActions": {
+    "pushPerformed": false,
+    "mergePerformed": false,
+    "deploymentPerformed": false,
+    "productionVerificationPending": true
+  }
+}

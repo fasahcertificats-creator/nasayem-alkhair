@@ -31,11 +31,19 @@ export function clearNasayemDeviceData(): void {
   }
 
   for (const key of NASAYEM_LOCAL_STORAGE_KEYS) {
-    window.localStorage.removeItem(key);
+    try {
+      window.localStorage.removeItem(key);
+    } catch {
+      // Continue through the explicit allowlist if one removal is denied.
+    }
   }
 
   for (const key of NASAYEM_SESSION_STORAGE_KEYS) {
-    window.sessionStorage.removeItem(key);
+    try {
+      window.sessionStorage.removeItem(key);
+    } catch {
+      // Continue through the explicit allowlist if one removal is denied.
+    }
   }
 
   window.dispatchEvent(new Event(NASAYEM_LOCAL_DATA_CLEARED_EVENT));

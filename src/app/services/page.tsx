@@ -15,6 +15,11 @@ import {
 import type { ReactNode } from "react";
 import { useState } from "react";
 
+import {
+  buildTelephoneUrl,
+  buildWhatsappUrl,
+  OFFICE_DETAILS
+} from "@/components/legal/legal-content";
 import { IslamicPattern, SectionHeading } from "@/design-system";
 
 type ServiceId = "umrah" | "family-visit" | "work-visa" | "transport";
@@ -28,8 +33,8 @@ type Service = {
   icon: typeof Plane;
 };
 
-const primaryWhatsappNumber = "967774360027";
-const secondaryWhatsappNumber = "967774383736";
+const primaryWhatsappNumber = OFFICE_DETAILS.primaryPhone;
+const secondaryWhatsappNumber = OFFICE_DETAILS.secondaryPhone;
 
 const services: Service[] = [
   {
@@ -78,12 +83,6 @@ const trustItems = [
 
 function buildMessage(service: Service) {
   return `السلام عليكم، أود الاستفسار عن خدمة ${service.title}.`;
-}
-
-function whatsappHref(phone: string, message?: string) {
-  const encodedMessage = message ? `?text=${encodeURIComponent(message)}` : "";
-
-  return `https://wa.me/${phone}${encodedMessage}`;
 }
 
 export default function ServicesPage() {
@@ -279,8 +278,8 @@ function ConsultationCard({ service }: { service: Service }) {
       <a
         aria-label={`الاستفسار عبر واتساب عن ${service.title}`}
         className="bg-primary text-primary-foreground focus-visible:ring-gold focus-visible:ring-offset-background flex min-h-12 w-full min-w-0 items-center justify-center gap-2 rounded-[15px] px-4 py-2.5 text-center text-sm font-bold transition-colors hover:bg-[var(--color-primary-hover)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-        href={whatsappHref(primaryWhatsappNumber, message)}
-        rel="noreferrer"
+        href={buildWhatsappUrl(primaryWhatsappNumber, message)}
+        rel="noopener noreferrer"
         target="_blank"
       >
         <MessageCircle aria-hidden="true" className="size-5" strokeWidth={1.7} />
@@ -432,7 +431,7 @@ function ContactNumberRow({
         <a
           aria-label={`الاتصال على الرقم ${display}`}
           className="border-primary/15 text-primary hover:bg-white focus-visible:ring-gold flex min-h-11 min-w-0 items-center justify-center gap-1 rounded-xl border bg-white/65 px-2 text-[11px] font-bold transition-colors focus-visible:ring-2 focus-visible:outline-none"
-          href={`tel:+${phone}`}
+          href={buildTelephoneUrl(phone)}
         >
           <Phone aria-hidden="true" className="size-3.5" strokeWidth={1.8} />
           اتصال
@@ -440,8 +439,8 @@ function ContactNumberRow({
         <a
           aria-label={`مراسلة الرقم ${display} عبر واتساب`}
           className="border-primary/10 text-primary hover:border-primary/25 focus-visible:ring-gold flex min-h-11 min-w-0 items-center justify-center gap-1 rounded-xl border bg-white/65 px-2 text-[11px] font-bold transition-colors focus-visible:ring-2 focus-visible:outline-none"
-          href={whatsappHref(phone)}
-          rel="noreferrer"
+          href={buildWhatsappUrl(phone)}
+          rel="noopener noreferrer"
           target="_blank"
         >
           <MessageCircle aria-hidden="true" className="size-3.5" strokeWidth={1.8} />

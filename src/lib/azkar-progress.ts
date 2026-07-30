@@ -5,6 +5,7 @@ export const AZKAR_LEGACY_COUNTERS_STORAGE_KEY =
   "nasayem-alkhair:azkarRepetitionCounts";
 export const AZKAR_PROGRESS_EVENT = "nasayem-alkhair:azkarProgressChanged";
 export const AZKAR_PROGRESS_VERSION = 2 as const;
+const AZKAR_TIMESTAMP_MAX_FUTURE_MS = 24 * 60 * 60 * 1000;
 
 export type AzkarCatalog = Record<
   AzkarCategory,
@@ -48,6 +49,19 @@ interface SanitizeResult {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isValidAzkarTimestamp(value: unknown): value is number {
+  if (
+    typeof value === "number" &&
+    Number.isFinite(value) &&
+    Number.isSafeInteger(value) &&
+    value > 0
+  ) {
+    return value <= Date.now() + AZKAR_TIMESTAMP_MAX_FUTURE_MS;
+  }
+
+  return false;
 }
 
 function isCategoryId(value: unknown): value is AzkarCategory {
@@ -165,12 +179,9 @@ function sanitizeCategoryRecord(
   const record = isRecord(rawRecord) ? rawRecord : {};
   const { counts, recovered: countsRecovered } = sanitizeCounts(record.counts, items);
   const rawLastOpenedAt = record.lastOpenedAt;
-  const lastOpenedAt =
-    typeof rawLastOpenedAt === "number" &&
-    Number.isSafeInteger(rawLastOpenedAt) &&
-    rawLastOpenedAt >= 0
-      ? rawLastOpenedAt
-      : 0;
+  const lastOpenedAt = isValidAzkarTimestamp(rawLastOpenedAt)
+    ? rawLastOpenedAt
+    : 0;
   const currentItemId = deriveCurrentItemId(record.currentItemId, counts, items);
   const completed =
     items.length > 0 && items.every((item) => isItemComplete(counts, item));
@@ -540,7 +551,7 @@ export function touchAzkarCategory(
         categoryId,
         currentItemId,
         counts,
-        lastOpenedAt: Number.isSafeInteger(now) && now >= 0 ? now : 0,
+        lastOpenedAt: isValidAzkarTimestamp(now) ? now : 0,
         completed:
           items.length > 0 && items.every((item) => isItemComplete(counts, item))
       }

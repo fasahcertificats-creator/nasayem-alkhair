@@ -81,9 +81,13 @@ function readStoredPhrase() {
     return dhikrOptions[0];
   }
 
-  return isApprovedDhikr(localStorage.getItem(activePhraseStorageKey))
-    ? localStorage.getItem(activePhraseStorageKey)!
-    : dhikrOptions[0];
+  try {
+    const storedPhrase = localStorage.getItem(activePhraseStorageKey);
+
+    return isApprovedDhikr(storedPhrase) ? storedPhrase : dhikrOptions[0];
+  } catch {
+    return dhikrOptions[0];
+  }
 }
 
 export default function TasbihPage() {
@@ -102,8 +106,16 @@ export default function TasbihPage() {
   function saveCounts(nextCounts: Record<string, number>) {
     const sanitizedCounts = sanitizeCounts(nextCounts);
     setCounts(sanitizedCounts);
-    localStorage.setItem(tasbihDayStorageKey, getLocalDayKey());
-    localStorage.setItem(tasbihCountsStorageKey, JSON.stringify(sanitizedCounts));
+
+    try {
+      localStorage.setItem(tasbihDayStorageKey, getLocalDayKey());
+      localStorage.setItem(
+        tasbihCountsStorageKey,
+        JSON.stringify(sanitizedCounts)
+      );
+    } catch {
+      // The in-memory counter remains usable when storage is unavailable.
+    }
   }
 
   function selectDhikr(dhikr: string) {
@@ -112,7 +124,12 @@ export default function TasbihPage() {
     }
 
     setSelectedDhikr(dhikr);
-    localStorage.setItem(activePhraseStorageKey, dhikr);
+
+    try {
+      localStorage.setItem(activePhraseStorageKey, dhikr);
+    } catch {
+      // The selected phrase remains usable for the current page session.
+    }
   }
 
   function increment() {

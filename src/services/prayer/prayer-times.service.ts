@@ -17,9 +17,12 @@ import {
 export const PRAYER_LOCATION_STORAGE_KEY = "nasayem_prayer_location";
 
 const LOCATION_STALE_AFTER_MS = 30 * 24 * 60 * 60 * 1000;
+const LOCATION_TIMESTAMP_MAX_FUTURE_MS = 24 * 60 * 60 * 1000;
 const REVERSE_GEOCODING_ENDPOINT = "https://nominatim.openstreetmap.org/reverse";
 const REVERSE_GEOCODING_MIN_INTERVAL_MS = 1000;
 const REVERSE_GEOCODING_CACHE_PRECISION = 4;
+const REVERSE_GEOCODING_CACHE_MAX_ENTRIES = 100;
+const REVERSE_GEOCODING_RESPONSE_MAX_BYTES = 64 * 1024;
 
 let lastReverseGeocodingRequestAt = 0;
 let reverseGeocodingQueue: Promise<void> = Promise.resolve();
@@ -85,8 +88,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isValidTimestamp(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value) && value > 0;
+function isValidTimestamp(value: unknown, now: number): value is number {
+  return (
+    typeof value === "number" &&
+    Number.isFinite(value) &&
+    Number.isSafeInteger(value) &&
+    value > 0 &&
+    value <= now + LOCATION_TIMESTAMP_MAX_FUTURE_MS
+  );
 }
 
 function normalizeCountryCode(value: unknown): string | undefined {
@@ -135,10 +144,20 @@ export function validatePrayerLocation(value: unknown): PrayerLocation | null {
     return null;
   }
 
-  const legacyTimestamp = isValidTimestamp(value.acquiredAt) ? value.acquiredAt : null;
-  const updatedAt = isValidTimestamp(value.updatedAt) ? value.updatedAt : legacyTimestamp;
+  const now = Date.now();
+  const hasAcquiredAt = value.acquiredAt !== undefined;
+  const hasUpdatedAt = value.updatedAt !== undefined;
+  const legacyTimestamp = isValidTimestamp(value.acquiredAt, now)
+    ? value.acquiredAt
+    : null;
+  const storedUpdatedAt = isValidTimestamp(value.updatedAt, now)
+    ? value.updatedAt
+    : null;
+  const updatedAt = storedUpdatedAt ?? legacyTimestamp;
 
   if (
+    (hasAcquiredAt && legacyTimestamp === null) ||
+    (hasUpdatedAt && storedUpdatedAt === null) ||
     !isValidLatitude(value.latitude) ||
     !isValidLongitude(value.longitude) ||
     !updatedAt
@@ -199,7 +218,20 @@ export function savePrayerLocation(location: PrayerLocation): void {
     return;
   }
 
-  window.localStorage.setItem(PRAYER_LOCATION_STORAGE_KEY, JSON.stringify(location));
+  const validatedLocation = validatePrayerLocation(location);
+
+  if (!validatedLocation) {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(
+      PRAYER_LOCATION_STORAGE_KEY,
+      JSON.stringify(validatedLocation)
+    );
+  } catch {
+    // A valid in-memory selection remains usable when storage is unavailable.
+  }
 }
 
 export function createManualPrayerLocation(city: PrayerCity): PrayerLocation {
@@ -331,6 +363,26 @@ interface ReverseGeocodingProvider {
   ) => Promise<ReverseGeocodingResult>;
 }
 
+function storeReverseGeocodingResult(
+  cacheKey: string,
+  result: ReverseGeocodingResult
+) {
+  reverseGeocodingCache.delete(cacheKey);
+  reverseGeocodingCache.set(cacheKey, result);
+
+  while (
+    reverseGeocodingCache.size > REVERSE_GEOCODING_CACHE_MAX_ENTRIES
+  ) {
+    const oldestKey = reverseGeocodingCache.keys().next().value;
+
+    if (typeof oldestKey !== "string") {
+      break;
+    }
+
+    reverseGeocodingCache.delete(oldestKey);
+  }
+}
+
 function getReverseGeocodingCacheKey(coordinates: PrayerCoordinates): string {
   return [
     coordinates.latitude.toFixed(REVERSE_GEOCODING_CACHE_PRECISION),
@@ -417,13 +469,20 @@ function requestCurrentPosition(): Promise<PrayerCoordinates> {
 async function reverseGeocodePrayerLocation(
   coordinates: PrayerCoordinates
 ): Promise<ReverseGeocodingResult> {
+  if (
+    !isValidLatitude(coordinates.latitude) ||
+    !isValidLongitude(coordinates.longitude)
+  ) {
+    return {};
+  }
+
   const cacheKey = getReverseGeocodingCacheKey(coordinates);
   const cachedResult =
     reverseGeocodingCache.get(cacheKey) ??
     getStoredReverseGeocodingResult(coordinates);
 
   if (cachedResult) {
-    reverseGeocodingCache.set(cacheKey, cachedResult);
+    storeReverseGeocodingResult(cacheKey, cachedResult);
     return cachedResult;
   }
 
@@ -474,11 +533,38 @@ async function reverseGeocodePrayerLocation(
       signal: controller.signal
     });
 
-    if (!response.ok) {
+    if (
+      !response.ok ||
+      new URL(response.url).origin !==
+        new URL(REVERSE_GEOCODING_ENDPOINT).origin
+    ) {
       return {};
     }
 
-    const payload = (await response.json()) as unknown;
+    const declaredContentLength = Number(
+      response.headers.get("content-length")
+    );
+
+    if (
+      Number.isFinite(declaredContentLength) &&
+      declaredContentLength > REVERSE_GEOCODING_RESPONSE_MAX_BYTES
+    ) {
+      return {};
+    }
+
+    const responseText = await response.text();
+
+    if (responseText.length > REVERSE_GEOCODING_RESPONSE_MAX_BYTES) {
+      return {};
+    }
+
+    let payload: unknown;
+
+    try {
+      payload = JSON.parse(responseText);
+    } catch {
+      return {};
+    }
 
     if (!isRecord(payload) || !isRecord(payload.address)) {
       return {};
@@ -509,7 +595,7 @@ async function reverseGeocodePrayerLocation(
     };
 
     if (Object.keys(result).length > 0) {
-      reverseGeocodingCache.set(cacheKey, result);
+      storeReverseGeocodingResult(cacheKey, result);
     }
 
     return result;

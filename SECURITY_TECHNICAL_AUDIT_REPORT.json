@@ -1,0 +1,164 @@
+{
+  "reportVersion": 1,
+  "status": "IMPLEMENTED_WITH_ACCEPTED_RISKS",
+  "securityHeaders": {
+    "status": "IMPLEMENTED",
+    "headers": [
+      "Content-Security-Policy",
+      "Strict-Transport-Security",
+      "X-Content-Type-Options",
+      "X-Frame-Options",
+      "Referrer-Policy",
+      "Permissions-Policy",
+      "X-DNS-Prefetch-Control",
+      "X-Permitted-Cross-Domain-Policies"
+    ],
+    "serviceWorkerHeaders": [
+      "Content-Type",
+      "Cache-Control",
+      "Service-Worker-Allowed",
+      "Content-Security-Policy"
+    ],
+    "contentSecurityPolicy": {
+      "applicationPolicyPresent": true,
+      "serviceWorkerPolicyPresent": true,
+      "objectSourcesDisabled": true,
+      "frameAncestorsDisabled": true,
+      "insecureRequestsUpgraded": true,
+      "temporaryScriptUnsafeInlineAccepted": true,
+      "temporaryAcceptanceReason": "Next.js hydration currently requires script-src 'unsafe-inline'; removal requires production nonce or hash integration verification."
+    }
+  },
+  "externalUrlsAndContacts": {
+    "dynamicCitationsRequireHttps": true,
+    "dynamicCitationsRejectCredentials": true,
+    "blankTargetLinksUseNoopenerNoreferrer": true,
+    "whatsappDestinationsUseApprovedOfficeAllowlist": true,
+    "telephoneDestinationsUseApprovedOfficeAllowlist": true,
+    "userControlledNavigationDestinationDetected": false
+  },
+  "storageValidation": {
+    "guardedLocalAndSessionStorageAccess": true,
+    "applicationOwnedDeletionAllowlists": true,
+    "storageWideClearCallsDetected": false,
+    "malformedStoredDataFailsClosed": true,
+    "structuresValidated": [
+      "application daily progress",
+      "Azkar progress",
+      "Tasbih progress",
+      "Umrah companion progress",
+      "prayer location",
+      "PWA offline-pack metadata",
+      "PWA update session state"
+    ]
+  },
+  "timestampBounds": {
+    "acceptedType": "finite safe-integer number",
+    "minimumExclusive": 0,
+    "maximum": "Date.now() plus 24 hours",
+    "protectedFields": [
+      "daily progress entry timestamp",
+      "last reset timestamp",
+      "Azkar lastOpenedAt",
+      "prayer location acquiredAt",
+      "prayer location updatedAt",
+      "offline-pack lastPreparedAt"
+    ],
+    "arbitraryHistoricalCutoffAdded": false
+  },
+  "nominatim": {
+    "userTriggeredOnly": true,
+    "fixedEndpoint": "https://nominatim.openstreetmap.org",
+    "coordinatesValidatedBeforeRequest": true,
+    "latitudeBounds": {
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitudeBounds": {
+      "minimum": -180,
+      "maximum": 180
+    },
+    "finalResponseOriginValidated": true,
+    "abortControllerTimeoutMilliseconds": 10000,
+    "minimumRequestIntervalMilliseconds": 1000,
+    "requestsSerialized": true,
+    "responseBytesBounded": true,
+    "returnedStringsRenderedAsHtml": false,
+    "networkAndStorageFailuresNonFatal": true
+  },
+  "serviceWorker": {
+    "acceptedMessageTypes": [
+      "GET_PWA_STATUS",
+      "CACHE_CURRENT_PAGE",
+      "PREPARE_OFFLINE_PACK",
+      "REMOVE_OFFLINE_CONTENT",
+      "SKIP_WAITING"
+    ],
+    "sameOriginClientRestriction": true,
+    "messageShapeValidation": true,
+    "approvedOfflineRouteInventoryOnly": true,
+    "arbitraryCacheNamesAccepted": false,
+    "dynamicCodeExecutionAdded": false,
+    "cachePolicy": {
+      "getOnly": true,
+      "sameOriginOnly": true,
+      "authorizedRequestsExcluded": true,
+      "externalOriginsCached": false,
+      "nominatimCached": false,
+      "whatsappCached": false,
+      "pageMaximumEntries": 40,
+      "staticAssetMaximumEntries": 120,
+      "runtimeMaximumEntries": 60,
+      "offlineShellArtificiallyLimited": false,
+      "cacheWriteFailuresNonFatal": true,
+      "successfulNetworkResponsePreservedOnCacheFailure": true,
+      "deletionLimitedToApplicationPrefixes": true
+    }
+  },
+  "injectionScan": {
+    "status": "PASS",
+    "executableFindings": 0,
+    "patternsReviewed": [
+      "dangerouslySetInnerHTML",
+      "innerHTML",
+      "outerHTML",
+      "insertAdjacentHTML",
+      "document.write",
+      "eval",
+      "new Function",
+      "string-based timers",
+      "javascript URLs",
+      "data:text/html URLs",
+      "dynamic imports from user input",
+      "window.open",
+      "postMessage handling",
+      "location navigation",
+      "target=_blank rel protection"
+    ]
+  },
+  "secretsAndRepositoryHygiene": {
+    "trackedSecretFilesDetected": false,
+    "trackedBuildOrCacheDirectoriesDetected": false,
+    "trackedBackupFilesDetected": false,
+    "ignoredLocalEnvironment": {
+      "path": ".env.local",
+      "classification": "Ignored local client configuration containing a real client API key; value not recorded.",
+      "tracked": false
+    },
+    "placeholderEnvironmentFiles": [
+      ".env.example",
+      ".env.local.example"
+    ],
+    "removedArtifacts": [
+      "tatus -sb",
+      "repair_nasayem_security_state.ps1"
+    ],
+    "requiredNewSource": "src/lib/safe-external-url.ts"
+  },
+  "remainingProductionAndDeviceVerification": [
+    "Verify response headers and CSP on the final production URL.",
+    "Verify install, update, offline navigation, offline-pack preparation, and removal on representative Android and iOS devices.",
+    "Verify Nominatim timeout, throttling, attribution, and offline behavior against the production origin.",
+    "Monitor CSP and service-worker failures after launch before tightening script-src."
+  ]
+}

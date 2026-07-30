@@ -171,13 +171,52 @@ const requiredOfficeValues = [
   "967774360027",
   "967774383736"
 ];
+const servicesContactPhoneBindings = [
+  ...servicesSource.matchAll(/\bphone=\{([^}]+)\}/g)
+].map((match) => match[1].trim());
+const servicesImportsCanonicalContactApi =
+  /import\s*\{[\s\S]*?\bbuildTelephoneUrl\b[\s\S]*?\bbuildWhatsappUrl\b[\s\S]*?\bOFFICE_DETAILS\b[\s\S]*?\}\s*from\s*"@\/components\/legal\/legal-content";/.test(
+    servicesSource
+  );
+const canonicalNumbersAreAllowlisted =
+  legalContent.includes("const OFFICE_PHONE_NUMBERS") &&
+  legalContent.includes("OFFICE_DETAILS.primaryPhone") &&
+  legalContent.includes("OFFICE_DETAILS.secondaryPhone") &&
+  legalContent.includes("OFFICE_PHONE_NUMBERS.has(phone)") &&
+  /export function buildTelephoneUrl\(phone: string\)\s*\{[^}]*requireTrustedOfficePhone\(phone\)/.test(
+    legalContent
+  ) &&
+  /export function buildWhatsappUrl\(phone: string, message\?: string\)\s*\{[\s\S]*?requireTrustedOfficePhone\(phone\)/.test(
+    legalContent
+  );
+const servicesUsesCanonicalNumbers =
+  servicesSource.includes(
+    "const primaryWhatsappNumber = OFFICE_DETAILS.primaryPhone"
+  ) &&
+  servicesSource.includes(
+    "const secondaryWhatsappNumber = OFFICE_DETAILS.secondaryPhone"
+  ) &&
+  servicesContactPhoneBindings.length === 2 &&
+  servicesContactPhoneBindings.every((binding) =>
+    ["primaryWhatsappNumber", "secondaryWhatsappNumber"].includes(binding)
+  );
+const servicesUsesAllowlistedBuildersOnly =
+  servicesSource.includes(
+    "href={buildWhatsappUrl(primaryWhatsappNumber, message)}"
+  ) &&
+  servicesSource.includes("href={buildTelephoneUrl(phone)}") &&
+  servicesSource.includes("href={buildWhatsappUrl(phone)}") &&
+  !/\bhref\s*=\s*["'{]?\s*(?:tel:|https:\/\/wa\.me\/)/i.test(
+    servicesSource
+  );
 check(
   "approved-office-data",
   requiredOfficeValues.every((value) => legalContent.includes(value)) &&
-    ["967774360027", "967774383736"].every((value) =>
-      servicesSource.includes(value)
-    ),
-  "Legal office details match the approved office identity and service contact numbers"
+    servicesImportsCanonicalContactApi &&
+    canonicalNumbersAreAllowlisted &&
+    servicesUsesCanonicalNumbers &&
+    servicesUsesAllowlistedBuildersOnly,
+  "Services consume canonical OFFICE_DETAILS numbers through allowlisted telephone and WhatsApp builders without duplicated destinations"
 );
 
 const allLegalSource = [

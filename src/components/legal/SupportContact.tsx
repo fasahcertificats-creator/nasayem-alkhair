@@ -5,12 +5,17 @@ import { useState } from "react";
 
 import { buildWhatsappUrl, OFFICE_DETAILS } from "./legal-content";
 
+const securityOrPrivacyCategory = "بلاغ أمني أو متعلق بالخصوصية";
+const securityOrPrivacyMessage =
+  "السلام عليكم، لدي بلاغ أمني أو متعلق بالخصوصية في تطبيق نسائم الخير:";
+
 const supportCategories = [
   "خطأ في نص أو مصدر",
   "مشكلة في أوقات الصلاة",
   "مدينة أو محافظة غير موجودة",
   "مشكلة فنية في التطبيق",
   "استفسار عن خدمة المكتب",
+  securityOrPrivacyCategory,
   "طلب متعلق بالخصوصية"
 ] as const;
 
@@ -18,7 +23,10 @@ export function SupportContact() {
   const [category, setCategory] = useState<(typeof supportCategories)[number]>(
     supportCategories[0]
   );
-  const message = `السلام عليكم، لدي ملاحظة بخصوص التطبيق:\n${category}`;
+  const message =
+    category === securityOrPrivacyCategory
+      ? securityOrPrivacyMessage
+      : `السلام عليكم، لدي ملاحظة بخصوص التطبيق:\n${category}`;
 
   return (
     <section className="space-y-3" aria-labelledby="support-category-heading">

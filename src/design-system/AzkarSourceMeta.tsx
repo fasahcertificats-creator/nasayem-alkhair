@@ -1,5 +1,7 @@
 import type { ReligiousContentKind } from "./ReligiousText";
 
+import { isSafeHttpsUrl } from "@/lib/safe-external-url";
+
 export interface AzkarSourceMetaProps {
   authenticity?: string;
   kind: ReligiousContentKind;
@@ -86,9 +88,7 @@ export function AzkarSourceMeta({
   const displayedSource = kind === "quran" ? formatQuranSource(sourceText) : sourceText;
   const authenticityLabel = kind === "quran" ? "" : getAuthenticityLabel(authenticity);
   const safeReference = sourceReference?.trim();
-  const isSafeReference = safeReference
-    ? /^https?:\/\/[^\s]+$/i.test(safeReference)
-    : false;
+  const isSafeReference = isSafeHttpsUrl(safeReference);
 
   if (!displayedSource && !authenticityLabel && !isSafeReference) {
     return null;
@@ -105,7 +105,7 @@ export function AzkarSourceMeta({
         <a
           className="inline-flex min-h-11 items-center rounded-lg py-2 font-bold text-primary underline decoration-gold/60 underline-offset-4 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
           href={safeReference}
-          rel="noreferrer"
+          rel="noopener noreferrer"
           target="_blank"
         >
           مرجع النص

@@ -1,6 +1,6 @@
 {
   "reportVersion": 1,
-  "generatedAt": "2026-07-27T00:43:53.625Z",
+  "generatedAt": "2026-07-30T18:17:04.251Z",
   "status": "PASS",
   "summary": {
     "routeCount": 5,
@@ -92,7 +92,7 @@
     {
       "name": "fonts-self-hosted",
       "status": "PASS",
-      "detail": "Cairo and Amiri use checked-in next/font/local assets with no build-time or browser-side Google Fonts request"
+      "detail": "Cairo and Amiri use checked-in next/font/local assets"
     },
     {
       "name": "nominatim-user-action-only",
@@ -127,7 +127,7 @@
     {
       "name": "font-audit-updated",
       "status": "PASS",
-      "detail": "Technical audit records same-origin local fonts, no Google Fonts build or browser flow, and offline-cache eligibility"
+      "detail": "Technical audit records same-origin local fonts with no Google Fonts build or browser flow"
     },
     {
       "name": "vercel-disclosed",
@@ -147,7 +147,7 @@
     {
       "name": "approved-office-data",
       "status": "PASS",
-      "detail": "Legal office details match the approved office identity and service contact numbers"
+      "detail": "Services consume canonical OFFICE_DETAILS numbers through allowlisted telephone and WhatsApp builders without duplicated destinations"
     },
     {
       "name": "no-unapproved-email",

@@ -12,7 +12,15 @@ interface StoredRoundProgress {
 }
 
 function canUseSessionStorage() {
-  return typeof window !== "undefined" && Boolean(window.sessionStorage);
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  try {
+    return Boolean(window.sessionStorage);
+  } catch {
+    return false;
+  }
 }
 
 function isValidRoundCount(value: unknown): value is number {
@@ -45,8 +53,15 @@ function writeProgress(context: UmrahContext, completedRoundCount: number) {
     completedRoundCount
   };
 
-  window.sessionStorage.setItem(UMRAH_COMPANION_STORAGE_KEYS[context], JSON.stringify(value));
-  window.dispatchEvent(new Event(`${STORAGE_EVENT_PREFIX}:${context}`));
+  try {
+    window.sessionStorage.setItem(
+      UMRAH_COMPANION_STORAGE_KEYS[context],
+      JSON.stringify(value)
+    );
+    window.dispatchEvent(new Event(`${STORAGE_EVENT_PREFIX}:${context}`));
+  } catch {
+    // Session progress remains safely bounded even when storage is unavailable.
+  }
 }
 
 export function loadUmrahRoundProgress(context: UmrahContext) {
@@ -82,7 +97,15 @@ export function repairMalformedUmrahRoundProgress(context: UmrahContext) {
     return;
   }
 
-  const rawValue = window.sessionStorage.getItem(UMRAH_COMPANION_STORAGE_KEYS[context]);
+  let rawValue: string | null;
+
+  try {
+    rawValue = window.sessionStorage.getItem(
+      UMRAH_COMPANION_STORAGE_KEYS[context]
+    );
+  } catch {
+    return;
+  }
 
   if (rawValue === null) {
     return;

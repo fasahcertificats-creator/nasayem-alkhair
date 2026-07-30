@@ -1,6 +1,10 @@
 import { Clock, MapPin, MessageCircle, Phone } from "lucide-react";
 
-import { buildWhatsappUrl, OFFICE_DETAILS } from "./legal-content";
+import {
+  buildTelephoneUrl,
+  buildWhatsappUrl,
+  OFFICE_DETAILS
+} from "./legal-content";
 
 export function OfficeContactDetails({ whatsappMessage }: { whatsappMessage?: string }) {
   return (
@@ -64,7 +68,7 @@ function PhoneActions({
         <a
           aria-label={`الاتصال بالمكتب على الرقم ${display}`}
           className="border-primary/15 text-primary focus-visible:ring-gold inline-flex min-h-11 min-w-0 items-center justify-center gap-1 rounded-lg border px-2 text-[11px] font-bold focus-visible:ring-2 focus-visible:outline-none"
-          href={`tel:+${phone}`}
+          href={buildTelephoneUrl(phone)}
         >
           <Phone aria-hidden="true" className="size-3.5" />
           اتصال

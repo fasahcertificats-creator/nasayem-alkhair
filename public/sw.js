@@ -2,12 +2,22 @@
 
 const CACHE_PREFIX = "nasayem-alkhair";
 const OFFLINE_PACK_CACHE_PREFIX = `${CACHE_PREFIX}-offline-pack-`;
-const RELEASE_VERSION = "git-3c51a64a5ad4-src-0d976162a3fe8058";
+const RELEASE_VERSION = "git-a26833d356fb-src-948091cd05abca51";
 const EXPECTED_OFFLINE_ROUTES = ["/","/prayer-times","/azkar","/tasbih","/progress","/umrah","/miqat","/services","/more","/privacy","/terms","/disclaimer","/sources","/support","/offline","/azkar/morning","/azkar/evening","/azkar/prayer","/azkar/sleep","/azkar/wakeup","/azkar/after-prayer","/azkar/quran-duas","/azkar/prophetic-duas","/azkar/names-of-allah","/azkar/comprehensive-duas","/umrah/travel","/umrah/ihram","/umrah/entering-makkah","/umrah/tawaf","/umrah/zamzam","/umrah/sai","/umrah/shaving-or-trimming-hair","/umrah/completion-of-umrah"];
 const EXPECTED_ROUTE_SET = new Set(EXPECTED_OFFLINE_ROUTES);
 const RUNTIME_CACHE_MAX_ENTRIES = 60;
+const PAGE_CACHE_MAX_ENTRIES = 40;
+const STATIC_ASSET_CACHE_MAX_ENTRIES = 120;
 const NAVIGATION_TIMEOUT_MS = 3000;
 const PACK_REQUEST_TIMEOUT_MS = 15000;
+const MAX_REQUEST_ID_LENGTH = 100;
+const ACCEPTED_MESSAGE_TYPES = new Set([
+  "GET_PWA_STATUS",
+  "CACHE_CURRENT_PAGE",
+  "PREPARE_OFFLINE_PACK",
+  "REMOVE_OFFLINE_CONTENT",
+  "SKIP_WAITING"
+]);
 const CACHE_NAMES = {
   shell: `${CACHE_PREFIX}-shell-${RELEASE_VERSION}`,
   pages: `${CACHE_PREFIX}-pages-${RELEASE_VERSION}`,
@@ -43,15 +53,52 @@ function reply(event, message) {
 }
 
 function isControlledSameOriginClient(event) {
-  if (!event.source || typeof event.source.url !== "string") {
+  const source = event.source;
+
+  if (
+    !source ||
+    source.type !== "window" ||
+    typeof source.id !== "string" ||
+    source.id.length === 0 ||
+    typeof source.url !== "string"
+  ) {
     return false;
   }
 
   try {
-    return new URL(event.source.url).origin === self.location.origin;
+    const sourceUrl = new URL(source.url);
+    const scopeUrl = new URL(self.registration.scope);
+
+    return (
+      sourceUrl.origin === self.location.origin &&
+      sourceUrl.origin === scopeUrl.origin &&
+      sourceUrl.pathname.startsWith(scopeUrl.pathname)
+    );
   } catch {
     return false;
   }
+}
+
+function isMessageRecord(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function hasOnlyMessageKeys(data, allowedKeys) {
+  const keys = Object.keys(data);
+
+  return (
+    keys.length === allowedKeys.length &&
+    keys.every((key) => allowedKeys.includes(key))
+  );
+}
+
+function isValidRequestId(value) {
+  return (
+    typeof value === "string" &&
+    value.length > 0 &&
+    value.length <= MAX_REQUEST_ID_LENGTH &&
+    /^[A-Za-z0-9._:-]+$/.test(value)
+  );
 }
 
 function toSafeSameOriginUrl(value, allowAsset = false) {
@@ -119,6 +166,14 @@ function isCacheableResponse(response, expectedKind = "asset") {
     return false;
   }
 
+  try {
+    if (new URL(response.url).origin !== self.location.origin) {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
   const contentType = response.headers.get("content-type") || "";
 
   if (contentType.includes("text/x-component")) {
@@ -155,9 +210,39 @@ async function trimCache(cacheName, maxEntries) {
   await Promise.all(keys.slice(0, overflow).map((request) => cache.delete(request)));
 }
 
+async function matchCacheSafely(cacheName, request) {
+  try {
+    return await (await caches.open(cacheName)).match(request);
+  } catch {
+    return undefined;
+  }
+}
+
+async function cacheResponseSafely(
+  cacheName,
+  request,
+  response,
+  maxEntries
+) {
+  try {
+    const cache = await caches.open(cacheName);
+    await cache.put(request, response);
+
+    if (typeof maxEntries === "number") {
+      await trimCache(cacheName, maxEntries);
+    }
+  } catch {
+    // Cache quota and storage-denial failures must not fail network responses.
+  }
+}
+
 async function cacheShell() {
-  const cache = await caches.open(CACHE_NAMES.shell);
-  await cache.addAll(SHELL_URLS);
+  try {
+    const cache = await caches.open(CACHE_NAMES.shell);
+    await cache.addAll(SHELL_URLS);
+  } catch {
+    // Installation can continue when persistent cache storage is unavailable.
+  }
 }
 
 self.addEventListener("install", (event) => {
@@ -183,8 +268,7 @@ self.addEventListener("activate", (event) => {
 });
 
 async function cacheFirst(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cachedResponse = await cache.match(request);
+  const cachedResponse = await matchCacheSafely(cacheName, request);
 
   if (cachedResponse) {
     return cachedResponse;
@@ -193,22 +277,30 @@ async function cacheFirst(request, cacheName) {
   const response = await fetch(request);
 
   if (isCacheableResponse(response)) {
-    await cache.put(request, response.clone());
+    await cacheResponseSafely(
+      cacheName,
+      request,
+      response.clone(),
+      STATIC_ASSET_CACHE_MAX_ENTRIES
+    );
   }
 
   return response;
 }
 
 async function staleWhileRevalidate(request, event) {
-  const cache = await caches.open(CACHE_NAMES.staticAssets);
-  const offlinePackCache = await caches.open(CACHE_NAMES.offlinePack);
   const cachedResponse =
-    (await cache.match(request)) ||
-    (await offlinePackCache.match(request));
+    (await matchCacheSafely(CACHE_NAMES.staticAssets, request)) ||
+    (await matchCacheSafely(CACHE_NAMES.offlinePack, request));
   const networkPromise = fetch(request)
     .then(async (response) => {
       if (isCacheableResponse(response)) {
-        await cache.put(request, response.clone());
+        await cacheResponseSafely(
+          CACHE_NAMES.staticAssets,
+          request,
+          response.clone(),
+          STATIC_ASSET_CACHE_MAX_ENTRIES
+        );
       }
 
       return response;
@@ -231,42 +323,50 @@ function navigationCacheKey(requestUrl) {
 }
 
 async function networkFirstNavigation(request) {
-  const pagesCache = await caches.open(CACHE_NAMES.pages);
-  const offlinePackCache = await caches.open(CACHE_NAMES.offlinePack);
   const cacheKey = navigationCacheKey(request.url);
 
   try {
     const response = await fetchWithTimeout(request, NAVIGATION_TIMEOUT_MS);
 
     if (isCacheableResponse(response, "document")) {
-      await pagesCache.put(cacheKey, response.clone());
+      await cacheResponseSafely(
+        CACHE_NAMES.pages,
+        cacheKey,
+        response.clone(),
+        PAGE_CACHE_MAX_ENTRIES
+      );
     }
 
     return response;
   } catch {
     return (
-      (await pagesCache.match(cacheKey)) ||
-      (await offlinePackCache.match(cacheKey)) ||
-      (await caches.open(CACHE_NAMES.shell)).match("/offline") ||
+      (await matchCacheSafely(CACHE_NAMES.pages, cacheKey)) ||
+      (await matchCacheSafely(CACHE_NAMES.offlinePack, cacheKey)) ||
+      (await matchCacheSafely(CACHE_NAMES.shell, "/offline")) ||
       Response.error()
     );
   }
 }
 
 async function boundedRuntime(request) {
-  const cache = await caches.open(CACHE_NAMES.runtime);
-
   try {
     const response = await fetch(request);
 
     if (isCacheableResponse(response)) {
-      await cache.put(request, response.clone());
-      await trimCache(CACHE_NAMES.runtime, RUNTIME_CACHE_MAX_ENTRIES);
+      await cacheResponseSafely(
+        CACHE_NAMES.runtime,
+        request,
+        response.clone(),
+        RUNTIME_CACHE_MAX_ENTRIES
+      );
     }
 
     return response;
   } catch {
-    return (await cache.match(request)) || Response.error();
+    return (
+      (await matchCacheSafely(CACHE_NAMES.runtime, request)) ||
+      Response.error()
+    );
   }
 }
 
@@ -487,8 +587,6 @@ async function cacheCurrentPage(path) {
     return;
   }
 
-  const cache = await caches.open(CACHE_NAMES.pages);
-  const assetCache = await caches.open(CACHE_NAMES.staticAssets);
   const seenAssets = new Set();
 
   try {
@@ -499,11 +597,19 @@ async function cacheCurrentPage(path) {
     }
 
     const documentText = await response.clone().text();
-    await cache.put(url.toString(), response);
+    await cacheResponseSafely(
+      CACHE_NAMES.pages,
+      url.toString(),
+      response,
+      PAGE_CACHE_MAX_ENTRIES
+    );
+    const assetCache = await caches.open(CACHE_NAMES.staticAssets);
 
     for (const asset of extractReferencedAssets(documentText, url.toString())) {
       await cacheOfflineAsset(asset, assetCache, seenAssets);
     }
+
+    await trimCache(CACHE_NAMES.staticAssets, STATIC_ASSET_CACHE_MAX_ENTRIES);
   } catch {
     // Basic offline preparation is best-effort.
   }
@@ -516,11 +622,22 @@ self.addEventListener("message", (event) => {
 
   const data = event.data;
 
-  if (!data || typeof data !== "object" || typeof data.type !== "string") {
+  if (
+    !isMessageRecord(data) ||
+    typeof data.type !== "string" ||
+    !ACCEPTED_MESSAGE_TYPES.has(data.type)
+  ) {
     return;
   }
 
   if (data.type === "GET_PWA_STATUS") {
+    if (
+      !hasOnlyMessageKeys(data, ["type", "requestId"]) ||
+      !isValidRequestId(data.requestId)
+    ) {
+      return;
+    }
+
     event.waitUntil(
       (async () => {
         const cacheNames = await caches.keys();
@@ -536,24 +653,31 @@ self.addEventListener("message", (event) => {
   }
 
   if (data.type === "CACHE_CURRENT_PAGE") {
+    if (!hasOnlyMessageKeys(data, ["type", "path"])) {
+      return;
+    }
+
     event.waitUntil(cacheCurrentPage(data.path));
     return;
   }
 
   if (data.type === "PREPARE_OFFLINE_PACK") {
     if (
-      typeof data.requestId !== "string" ||
+      !hasOnlyMessageKeys(data, ["type", "requestId", "routes"]) ||
+      !isValidRequestId(data.requestId) ||
       !isValidOfflineRouteList(data.routes)
     ) {
-      reply(event, {
-        type: "PWA_PACK_COMPLETE",
-        requestId: data.requestId,
-        completed: 0,
-        failedRoutes: [],
-        success: false,
-        total: EXPECTED_OFFLINE_ROUTES.length,
-        version: RELEASE_VERSION
-      });
+      if (isValidRequestId(data.requestId)) {
+        reply(event, {
+          type: "PWA_PACK_COMPLETE",
+          requestId: data.requestId,
+          completed: 0,
+          failedRoutes: [],
+          success: false,
+          total: EXPECTED_OFFLINE_ROUTES.length,
+          version: RELEASE_VERSION
+        });
+      }
       return;
     }
 
@@ -564,6 +688,13 @@ self.addEventListener("message", (event) => {
   }
 
   if (data.type === "REMOVE_OFFLINE_CONTENT") {
+    if (
+      !hasOnlyMessageKeys(data, ["type", "requestId"]) ||
+      !isValidRequestId(data.requestId)
+    ) {
+      return;
+    }
+
     event.waitUntil(
       (async () => {
         const cacheNames = await caches.keys();
@@ -585,6 +716,13 @@ self.addEventListener("message", (event) => {
   }
 
   if (data.type === "SKIP_WAITING") {
+    if (
+      !hasOnlyMessageKeys(data, ["type", "requestId"]) ||
+      !isValidRequestId(data.requestId)
+    ) {
+      return;
+    }
+
     event.waitUntil(
       (async () => {
         await self.skipWaiting();

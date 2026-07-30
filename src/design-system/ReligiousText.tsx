@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { isSafeHttpsUrl } from "@/lib/safe-external-url";
 import { cn } from "@/lib/utils";
 
 export type ReligiousContentKind = "quran" | "hadith" | "dua" | "explanation";
@@ -95,13 +96,7 @@ function formatAuthenticityForDisplay(authenticity?: string) {
 }
 
 function isSafeExternalReference(sourceReference: string) {
-  try {
-    const url = new URL(sourceReference);
-
-    return url.protocol === "https:" || url.protocol === "http:";
-  } catch {
-    return false;
-  }
+  return isSafeHttpsUrl(sourceReference);
 }
 
 function SourceReference({
@@ -116,7 +111,7 @@ function SourceReference({
       <a
         className="text-gold hover:text-primary font-bold underline-offset-4 transition hover:underline"
         href={sourceReference}
-        rel="noreferrer"
+        rel="noopener noreferrer"
         target="_blank"
       >
         {label}

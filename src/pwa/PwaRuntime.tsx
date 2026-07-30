@@ -37,6 +37,91 @@ interface PwaRuntimeContextValue {
 }
 
 const PwaRuntimeContext = createContext<PwaRuntimeContextValue | null>(null);
+const RUNTIME_STATUS_REQUEST_ID = "runtime-version";
+type PwaUpdateReloadState = "pending" | "done";
+
+let inMemoryUpdateReloadState: PwaUpdateReloadState | null = null;
+let useInMemoryUpdateReloadState = false;
+
+function isPwaUpdateReloadState(
+  value: string | null,
+): value is PwaUpdateReloadState {
+  return value === "pending" || value === "done";
+}
+
+function readPwaUpdateReloadState(): PwaUpdateReloadState | null {
+  if (useInMemoryUpdateReloadState || typeof window === "undefined") {
+    return inMemoryUpdateReloadState;
+  }
+
+  try {
+    const value = window.sessionStorage.getItem(PWA_UPDATE_RELOAD_KEY);
+    inMemoryUpdateReloadState = isPwaUpdateReloadState(value) ? value : null;
+    return inMemoryUpdateReloadState;
+  } catch {
+    useInMemoryUpdateReloadState = true;
+    return inMemoryUpdateReloadState;
+  }
+}
+
+function writePwaUpdateReloadState(value: PwaUpdateReloadState): void {
+  inMemoryUpdateReloadState = value;
+
+  if (typeof window === "undefined") {
+    useInMemoryUpdateReloadState = true;
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(PWA_UPDATE_RELOAD_KEY, value);
+    useInMemoryUpdateReloadState = false;
+  } catch {
+    useInMemoryUpdateReloadState = true;
+  }
+}
+
+function removePwaUpdateReloadState(): void {
+  inMemoryUpdateReloadState = null;
+
+  if (typeof window === "undefined") {
+    useInMemoryUpdateReloadState = true;
+    return;
+  }
+
+  try {
+    window.sessionStorage.removeItem(PWA_UPDATE_RELOAD_KEY);
+    useInMemoryUpdateReloadState = false;
+  } catch {
+    useInMemoryUpdateReloadState = true;
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isValidStatusMessage(value: unknown) {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const keys = Object.keys(value);
+
+  return (
+    keys.length === 4 &&
+    keys.every((key) =>
+      ["type", "requestId", "offlinePackCachePresent", "version"].includes(
+        key
+      )
+    ) &&
+    value.type === "PWA_STATUS" &&
+    value.requestId === RUNTIME_STATUS_REQUEST_ID &&
+    typeof value.offlinePackCachePresent === "boolean" &&
+    typeof value.version === "string" &&
+    value.version.length > 0 &&
+    value.version.length <= 100
+  );
+}
 
 function isStandaloneDisplay() {
   const navigatorWithStandalone = navigator as Navigator & {
@@ -65,21 +150,17 @@ function requestWorkerStatus(worker: ServiceWorker): Promise<string> {
     );
 
     channel.port1.onmessage = (event) => {
-      if (event.data?.type !== "PWA_STATUS") {
+      if (!isValidStatusMessage(event.data)) {
         return;
       }
 
       window.clearTimeout(timeoutId);
-      resolve(
-        typeof event.data.version === "string"
-          ? event.data.version
-          : PWA_RELEASE_VERSION
-      );
+      resolve(event.data.version);
     };
     worker.postMessage(
       {
         type: "GET_PWA_STATUS",
-        requestId: "runtime-version"
+        requestId: RUNTIME_STATUS_REQUEST_ID
       },
       [channel.port2]
     );
@@ -309,18 +390,18 @@ export function PwaRuntimeProvider({ children }: { children: ReactNode }) {
     function onControllerChange() {
       if (
         !updateRequestedRef.current ||
-        sessionStorage.getItem(PWA_UPDATE_RELOAD_KEY) !== "pending"
+        readPwaUpdateReloadState() !== "pending"
       ) {
         return;
       }
 
       updateRequestedRef.current = false;
-      sessionStorage.setItem(PWA_UPDATE_RELOAD_KEY, "done");
+      writePwaUpdateReloadState("done");
       window.location.reload();
     }
 
-    if (sessionStorage.getItem(PWA_UPDATE_RELOAD_KEY) === "done") {
-      sessionStorage.removeItem(PWA_UPDATE_RELOAD_KEY);
+    if (readPwaUpdateReloadState() === "done") {
+      removePwaUpdateReloadState();
     }
 
     navigator.serviceWorker.addEventListener(
@@ -376,7 +457,7 @@ export function PwaRuntimeProvider({ children }: { children: ReactNode }) {
     }
 
     updateRequestedRef.current = true;
-    sessionStorage.setItem(PWA_UPDATE_RELOAD_KEY, "pending");
+    writePwaUpdateReloadState("pending");
     waitingWorker.postMessage({
       type: "SKIP_WAITING",
       requestId: "user-update"

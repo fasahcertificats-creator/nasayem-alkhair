@@ -2,6 +2,9 @@ const DAILY_PROGRESS_KEY = "nasayem-alkhair:dailyProgress";
 const HISTORY_LOG_KEY = "nasayem-alkhair:historyLog";
 const LAST_RESET_KEY = "nasayem-alkhair:lastResetAt";
 const DAY_MS = 24 * 60 * 60 * 1000;
+const MAX_STEP_ID_LENGTH = 120;
+const MAX_DAILY_PROGRESS_ENTRIES = 100;
+const MAX_HISTORY_ENTRIES = 2000;
 
 export interface ProgressEntry {
   stepId: string;
@@ -25,7 +28,15 @@ export interface AppProgressState {
 }
 
 function canUseStorage(): boolean {
-  return typeof window !== "undefined" && Boolean(window.localStorage);
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  try {
+    return Boolean(window.localStorage);
+  } catch {
+    return false;
+  }
 }
 
 function getDayKey(timestamp: number): string {
@@ -41,21 +52,51 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function hasOnlyKeys(
+  value: Record<string, unknown>,
+  allowedKeys: readonly string[]
+) {
+  const keys = Object.keys(value);
+
+  return (
+    keys.length === allowedKeys.length &&
+    keys.every((key) => allowedKeys.includes(key))
+  );
+}
+
+function isValidStoredTimestamp(value: unknown): value is number {
+  return (
+    typeof value === "number" &&
+    Number.isFinite(value) &&
+    Number.isSafeInteger(value) &&
+    value > 0 &&
+    value <= Date.now() + DAY_MS
+  );
+}
+
+function hasValidProgressFields(value: Record<string, unknown>) {
+  return (
+    typeof value.stepId === "string" &&
+    value.stepId.length > 0 &&
+    value.stepId.length <= MAX_STEP_ID_LENGTH &&
+    typeof value.completed === "boolean" &&
+    isValidStoredTimestamp(value.timestamp)
+  );
+}
+
 function isProgressEntry(value: unknown): value is ProgressEntry {
   return (
     isRecord(value) &&
-    typeof value.stepId === "string" &&
-    typeof value.completed === "boolean" &&
-    typeof value.timestamp === "number" &&
-    Number.isFinite(value.timestamp) &&
-    value.timestamp > 0
+    hasOnlyKeys(value, ["stepId", "completed", "timestamp"]) &&
+    hasValidProgressFields(value)
   );
 }
 
 function isHistoryEntry(value: unknown): value is HistoryEntry {
   return (
     isRecord(value) &&
-    isProgressEntry(value) &&
+    hasOnlyKeys(value, ["stepId", "completed", "timestamp", "dayKey"]) &&
+    hasValidProgressFields(value) &&
     typeof value.dayKey === "string" &&
     /^\d{4}-\d{2}-\d{2}$/.test(value.dayKey)
   );
@@ -70,13 +111,13 @@ function readJson<TValue>(
     return fallback;
   }
 
-  const value = window.localStorage.getItem(key);
-
-  if (!value) {
-    return fallback;
-  }
-
   try {
+    const value = window.localStorage.getItem(key);
+
+    if (!value) {
+      return fallback;
+    }
+
     const parsedValue = JSON.parse(value);
 
     return guard(parsedValue) ? parsedValue : fallback;
@@ -90,7 +131,11 @@ function writeJson<TValue>(key: string, value: TValue): void {
     return;
   }
 
-  window.localStorage.setItem(key, JSON.stringify(value));
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Storage denial or quota exhaustion must not break the application.
+  }
 }
 
 function readLastResetAt(): number {
@@ -98,10 +143,14 @@ function readLastResetAt(): number {
     return Date.now();
   }
 
-  const value = window.localStorage.getItem(LAST_RESET_KEY);
-  const parsedValue = value ? Number(value) : NaN;
+  try {
+    const value = window.localStorage.getItem(LAST_RESET_KEY);
+    const parsedValue = value ? Number(value) : NaN;
 
-  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : Date.now();
+    return isValidStoredTimestamp(parsedValue) ? parsedValue : Date.now();
+  } catch {
+    return Date.now();
+  }
 }
 
 function writeLastResetAt(timestamp: number): void {
@@ -109,7 +158,11 @@ function writeLastResetAt(timestamp: number): void {
     return;
   }
 
-  window.localStorage.setItem(LAST_RESET_KEY, String(timestamp));
+  try {
+    window.localStorage.setItem(LAST_RESET_KEY, String(timestamp));
+  } catch {
+    // Storage denial or quota exhaustion must not break the application.
+  }
 }
 
 function appendCompletedProgressToHistory(progress: ProgressEntry[]): void {
@@ -122,7 +175,10 @@ function appendCompletedProgressToHistory(progress: ProgressEntry[]): void {
   const history = readJson<HistoryEntry[]>(
     HISTORY_LOG_KEY,
     [],
-    (value): value is HistoryEntry[] => Array.isArray(value) && value.every(isHistoryEntry)
+    (value): value is HistoryEntry[] =>
+      Array.isArray(value) &&
+      value.length <= MAX_HISTORY_ENTRIES &&
+      value.every(isHistoryEntry)
   );
   const nextHistory = [...history];
 
@@ -137,14 +193,17 @@ function appendCompletedProgressToHistory(progress: ProgressEntry[]): void {
     }
   }
 
-  writeJson(HISTORY_LOG_KEY, nextHistory);
+  writeJson(HISTORY_LOG_KEY, nextHistory.slice(-MAX_HISTORY_ENTRIES));
 }
 
 export function resetDailyProgress(): void {
   const progress = readJson<ProgressEntry[]>(
     DAILY_PROGRESS_KEY,
     [],
-    (value): value is ProgressEntry[] => Array.isArray(value) && value.every(isProgressEntry)
+    (value): value is ProgressEntry[] =>
+      Array.isArray(value) &&
+      value.length <= MAX_DAILY_PROGRESS_ENTRIES &&
+      value.every(isProgressEntry)
   );
 
   appendCompletedProgressToHistory(progress);
@@ -164,8 +223,12 @@ function ensureDailyProgressIsFresh(): void {
     return;
   }
 
-  if (!window.localStorage.getItem(LAST_RESET_KEY)) {
-    writeLastResetAt(Date.now());
+  try {
+    if (!window.localStorage.getItem(LAST_RESET_KEY)) {
+      writeLastResetAt(Date.now());
+    }
+  } catch {
+    // A denied storage read is equivalent to unavailable local state.
   }
 }
 
@@ -175,20 +238,29 @@ export function loadProgress(): ProgressEntry[] {
   return readJson<ProgressEntry[]>(
     DAILY_PROGRESS_KEY,
     [],
-    (value): value is ProgressEntry[] => Array.isArray(value) && value.every(isProgressEntry)
+    (value): value is ProgressEntry[] =>
+      Array.isArray(value) &&
+      value.length <= MAX_DAILY_PROGRESS_ENTRIES &&
+      value.every(isProgressEntry)
   );
 }
 
 export function saveProgress(progress: ProgressEntry[]): void {
   ensureDailyProgressIsFresh();
-  writeJson(DAILY_PROGRESS_KEY, progress.filter(isProgressEntry));
+  writeJson(
+    DAILY_PROGRESS_KEY,
+    progress.filter(isProgressEntry).slice(-MAX_DAILY_PROGRESS_ENTRIES)
+  );
 }
 
 export function loadHistoryLog(): HistoryEntry[] {
   return readJson<HistoryEntry[]>(
     HISTORY_LOG_KEY,
     [],
-    (value): value is HistoryEntry[] => Array.isArray(value) && value.every(isHistoryEntry)
+    (value): value is HistoryEntry[] =>
+      Array.isArray(value) &&
+      value.length <= MAX_HISTORY_ENTRIES &&
+      value.every(isHistoryEntry)
   );
 }
 

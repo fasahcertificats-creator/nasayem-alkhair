@@ -12,8 +12,25 @@ export const OFFICE_DETAILS = {
   workingHours: "9:00 صباحًا - 9:00 مساءً"
 } as const;
 
+const OFFICE_PHONE_NUMBERS = new Set<string>([
+  OFFICE_DETAILS.primaryPhone,
+  OFFICE_DETAILS.secondaryPhone
+]);
+
+function requireTrustedOfficePhone(phone: string) {
+  if (!OFFICE_PHONE_NUMBERS.has(phone) || !/^\d{8,15}$/.test(phone)) {
+    throw new Error("Unapproved office phone destination.");
+  }
+
+  return phone;
+}
+
+export function buildTelephoneUrl(phone: string) {
+  return `tel:+${requireTrustedOfficePhone(phone)}`;
+}
+
 export function buildWhatsappUrl(phone: string, message?: string) {
   const query = message ? `?text=${encodeURIComponent(message)}` : "";
 
-  return `https://wa.me/${phone}${query}`;
+  return `https://wa.me/${requireTrustedOfficePhone(phone)}${query}`;
 }
