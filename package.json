@@ -7,6 +7,7 @@
     "dev": "next dev",
     "pwa:generate": "node scripts/generate-pwa-assets.mjs",
     "pwa:verify": "node scripts/verify-pwa-offline-implementation.mjs",
+    "seo:verify": "node scripts/verify-seo-implementation.mjs",
     "build": "npm run pwa:generate && next build",
     "start": "next start",
     "lint": "eslint .",

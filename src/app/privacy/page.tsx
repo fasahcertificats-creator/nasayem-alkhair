@@ -10,6 +10,9 @@ import { LocalDataManager } from "@/components/legal/LocalDataManager";
 import { OfficeContactDetails } from "@/components/legal/OfficeContactDetails";
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: "/privacy"
+  },
   title: "سياسة الخصوصية",
   description:
     "سياسة خصوصية تطبيق نسائم الخير وشرح استخدام الموقع والتخزين المحلي والتواصل الخارجي."

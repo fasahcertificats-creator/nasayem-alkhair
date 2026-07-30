@@ -5,6 +5,9 @@ import { OfficeContactDetails } from "@/components/legal/OfficeContactDetails";
 import { SupportContact } from "@/components/legal/SupportContact";
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: "/support"
+  },
   title: "الدعم والتواصل",
   description:
     "التواصل مع مكتب نسائم الخير للدعم الفني وملاحظات المحتوى والخصوصية وخدمات السفر."

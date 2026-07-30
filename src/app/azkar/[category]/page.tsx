@@ -1,4 +1,4 @@
-import type { Route } from "next";
+import type { Metadata, Route } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 
 import { ROUTES } from "@/constants/routes.constants";
@@ -6,6 +6,7 @@ import {
   getAzkarCatalog,
   getAzkarCategories,
   getAzkarCategoryDefinition,
+  getAzkarCategoryDefinitions,
   getAzkarItems
 } from "@/services/content";
 import type { AzkarCategory } from "@/types";
@@ -36,6 +37,32 @@ export function generateStaticParams() {
   return getAzkarCategories().map((category) => ({
     category
   }));
+}
+
+export async function generateMetadata({
+  params
+}: AzkarCategoryPageProps): Promise<Metadata> {
+  const { category: categoryParam } = await params;
+  const category = getAzkarCategoryDefinitions().find(
+    (definition) => definition.id === categoryParam
+  );
+
+  if (!category) {
+    return {
+      title: "الأذكار",
+      alternates: {
+        canonical: ROUTES.azkar
+      }
+    };
+  }
+
+  return {
+    title: category.title,
+    description: category.description,
+    alternates: {
+      canonical: ROUTES.azkarCategory(category.id)
+    }
+  };
 }
 
 export default async function AzkarCategoryPage({

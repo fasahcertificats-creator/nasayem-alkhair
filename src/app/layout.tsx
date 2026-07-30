@@ -8,6 +8,8 @@ import { AppShell } from "./AppShell";
 import { AppProviders } from "./providers";
 import "./globals.css";
 
+const CANONICAL_PRODUCTION_ORIGIN = "https://nasayem-alkhair-green.vercel.app";
+
 const cairo = localFont({
   display: "swap",
   fallback: ["Segoe UI", "Tahoma", "Arial", "sans-serif"],
@@ -40,12 +42,38 @@ const amiri = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(CANONICAL_PRODUCTION_ORIGIN),
   title: {
     default: APP_METADATA.name,
     template: `%s | ${APP_METADATA.name}`
   },
   description: APP_METADATA.description,
   applicationName: APP_METADATA.name,
+  alternates: {
+    canonical: "/"
+  },
+  openGraph: {
+    type: "website",
+    locale: "ar_YE",
+    url: "/",
+    siteName: APP_METADATA.name,
+    title: APP_METADATA.name,
+    description: APP_METADATA.description,
+    images: [
+      {
+        url: "/pwa/icon-512.png",
+        width: 512,
+        height: 512,
+        alt: APP_METADATA.name
+      }
+    ]
+  },
+  twitter: {
+    card: "summary",
+    title: APP_METADATA.name,
+    description: APP_METADATA.description,
+    images: ["/pwa/icon-512.png"]
+  },
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [

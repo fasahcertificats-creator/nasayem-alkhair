@@ -8,6 +8,9 @@ import {
 } from "@/components/legal/LegalPage";
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: "/sources"
+  },
   title: "المصادر والمراجع",
   description:
     "مصادر الأذكار ودليل العمرة ومواقيت الصلاة وبيانات المدن والخدمات الخارجية في تطبيق نسائم الخير."

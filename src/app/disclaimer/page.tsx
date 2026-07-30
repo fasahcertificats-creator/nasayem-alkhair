@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import { LegalPage, LegalSection } from "@/components/legal/LegalPage";
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: "/disclaimer"
+  },
   title: "إخلاء المسؤولية والتنبيهات المهمة",
   description:
     "تنبيهات مهمة بشأن مواقيت الصلاة والتاريخ الهجري والمحتوى الديني ودليل العمرة وخدمات السفر."

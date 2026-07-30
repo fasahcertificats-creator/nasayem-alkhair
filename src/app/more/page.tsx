@@ -12,6 +12,9 @@ import {
 import { PwaControls } from "@/pwa/PwaControls";
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: "/more"
+  },
   title: "المزيد",
   description: "روابط الخصوصية والشروط والمصادر والدعم في تطبيق نسائم الخير."
 };

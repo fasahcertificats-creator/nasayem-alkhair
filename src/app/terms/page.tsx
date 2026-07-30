@@ -4,6 +4,9 @@ import { LegalList, LegalPage, LegalSection } from "@/components/legal/LegalPage
 import { OfficeContactDetails } from "@/components/legal/OfficeContactDetails";
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: "/terms"
+  },
   title: "شروط الاستخدام",
   description:
     "شروط استخدام تطبيق نسائم الخير وخدمات المعلومات والتواصل المتاحة فيه."

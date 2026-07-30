@@ -12,6 +12,9 @@ import {
 import { OfflineRetryButton } from "./OfflineRetryButton";
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: "/offline"
+  },
   title: "لا يوجد اتصال بالإنترنت",
   description:
     "صفحة احتياطية للوصول إلى محتوى نسائم الخير المتاح دون اتصال."

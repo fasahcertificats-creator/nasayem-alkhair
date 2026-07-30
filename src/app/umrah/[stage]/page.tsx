@@ -1,5 +1,5 @@
+import type { Metadata, Route } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
-import type { Route } from "next";
 
 import { ROUTES } from "@/constants/routes.constants";
 import {
@@ -20,6 +20,28 @@ export function generateStaticParams() {
   return getUmrahStages().map((stage) => ({
     stage: stage.slug
   }));
+}
+
+export async function generateMetadata({ params }: StagePageProps): Promise<Metadata> {
+  const { stage: stageSlug } = await params;
+  const stage = getUmrahStages().find((item) => item.slug === stageSlug);
+
+  if (!stage) {
+    return {
+      title: "دليل العمرة",
+      alternates: {
+        canonical: ROUTES.umrah
+      }
+    };
+  }
+
+  return {
+    title: stage.titleAr,
+    description: stage.summary,
+    alternates: {
+      canonical: ROUTES.umrahStage(stage.slug)
+    }
+  };
 }
 
 const mergedStageRedirects: Record<string, Route> = {
