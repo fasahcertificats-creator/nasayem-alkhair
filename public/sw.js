@@ -2,7 +2,7 @@
 
 const CACHE_PREFIX = "nasayem-alkhair";
 const OFFLINE_PACK_CACHE_PREFIX = `${CACHE_PREFIX}-offline-pack-`;
-const RELEASE_VERSION = "git-a26833d356fb-src-948091cd05abca51";
+const RELEASE_VERSION = "pwa-8cc6335e6ee0ac26";
 const EXPECTED_OFFLINE_ROUTES = ["/","/prayer-times","/azkar","/tasbih","/progress","/umrah","/miqat","/services","/more","/privacy","/terms","/disclaimer","/sources","/support","/offline","/azkar/morning","/azkar/evening","/azkar/prayer","/azkar/sleep","/azkar/wakeup","/azkar/after-prayer","/azkar/quran-duas","/azkar/prophetic-duas","/azkar/names-of-allah","/azkar/comprehensive-duas","/umrah/travel","/umrah/ihram","/umrah/entering-makkah","/umrah/tawaf","/umrah/zamzam","/umrah/sai","/umrah/shaving-or-trimming-hair","/umrah/completion-of-umrah"];
 const EXPECTED_ROUTE_SET = new Set(EXPECTED_OFFLINE_ROUTES);
 const RUNTIME_CACHE_MAX_ENTRIES = 60;

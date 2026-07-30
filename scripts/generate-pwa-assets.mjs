@@ -6,12 +6,12 @@ import {
   statSync,
   writeFileSync
 } from "node:fs";
-import { execFileSync } from "node:child_process";
-import { join, relative } from "node:path";
+import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const scriptDirectory = fileURLToPath(new URL(".", import.meta.url));
 const root = join(scriptDirectory, "..");
+const generatorPath = fileURLToPath(import.meta.url);
 const swTemplatePath = join(root, "src", "pwa", "sw-template.js");
 const generatedRoutesPath = join(
   root,
@@ -22,6 +22,32 @@ const generatedRoutesPath = join(
 const generatedServiceWorkerPath = join(root, "public", "sw.js");
 const categoriesPath = join(root, "data", "azkar", "categories.json");
 const umrahStagesPath = join(root, "data", "umrah", "stages.json");
+const excludedReleasePaths = new Set([
+  "public/sw.js",
+  "src/pwa/offline-routes.generated.ts"
+]);
+const excludedDirectoryNames = new Set([
+  ".git",
+  ".next",
+  ".cache",
+  "build",
+  "coverage",
+  "node_modules",
+  "out"
+]);
+const binaryFileExtensions = new Set([
+  ".gif",
+  ".ico",
+  ".jpeg",
+  ".jpg",
+  ".pdf",
+  ".png",
+  ".ttf",
+  ".webp",
+  ".woff",
+  ".woff2"
+]);
+const temporaryFilePattern = /(?:~|\.(?:bak|old|orig|swp|temp|tmp))$/i;
 
 const requiredStaticRoutes = [
   "/",
@@ -48,7 +74,7 @@ function readJson(path) {
 const azkarCategories = readJson(categoriesPath);
 const umrahStages = readJson(umrahStagesPath);
 const azkarRoutes = azkarCategories.map((category) => `/azkar/${category}`);
-const umrahRoutes = umrahStages
+const umrahRoutes = [...umrahStages]
   .sort((first, second) => first.order - second.order)
   .map((stage) => `/umrah/${stage.slug}`);
 const offlineRoutes = [
@@ -79,11 +105,12 @@ function collectFiles(directory, output) {
 
   for (const name of readdirSync(directory).sort()) {
     const path = join(directory, name);
-    const relativePath = relative(root, path).replaceAll("\\", "/");
+    const relativePath = getRelativePath(path);
 
     if (
-      relativePath === "public/sw.js" ||
-      relativePath === "src/pwa/offline-routes.generated.ts"
+      excludedReleasePaths.has(relativePath) ||
+      excludedDirectoryNames.has(name) ||
+      temporaryFilePattern.test(name)
     ) {
       continue;
     }
@@ -94,6 +121,19 @@ function collectFiles(directory, output) {
       output.push(path);
     }
   }
+}
+
+function getRelativePath(path) {
+  return relative(root, path).replaceAll("\\", "/");
+}
+
+function readCanonicalInput(path) {
+  if (binaryFileExtensions.has(extname(path).toLowerCase())) {
+    return readFileSync(path);
+  }
+
+  const normalizedText = readFileSync(path, "utf8").replace(/\r\n?/g, "\n");
+  return Buffer.from(normalizedText, "utf8");
 }
 
 const releaseFiles = [];
@@ -107,6 +147,7 @@ for (const path of [
 for (const path of [
   join(root, "package.json"),
   join(root, "next.config.ts"),
+  generatorPath,
   swTemplatePath
 ]) {
   if (existsSync(path) && !releaseFiles.includes(path)) {
@@ -115,33 +156,27 @@ for (const path of [
 }
 
 const sourceHash = createHash("sha256");
-for (const path of releaseFiles.sort()) {
-  sourceHash.update(relative(root, path).replaceAll("\\", "/"));
+for (const path of releaseFiles.sort((first, second) => {
+  const firstRelativePath = getRelativePath(first);
+  const secondRelativePath = getRelativePath(second);
+
+  if (firstRelativePath < secondRelativePath) {
+    return -1;
+  }
+
+  if (firstRelativePath > secondRelativePath) {
+    return 1;
+  }
+
+  return 0;
+})) {
+  sourceHash.update(getRelativePath(path), "utf8");
   sourceHash.update("\0");
-  sourceHash.update(readFileSync(path));
+  sourceHash.update(readCanonicalInput(path));
   sourceHash.update("\0");
 }
 const sourceVersion = sourceHash.digest("hex").slice(0, 16);
-
-function getLocalGitSha() {
-  try {
-    return execFileSync("git", ["rev-parse", "HEAD"], {
-      cwd: root,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"]
-    }).trim();
-  } catch {
-    return "";
-  }
-}
-
-const vercelSha = process.env.VERCEL_GIT_COMMIT_SHA?.trim() ?? "";
-const localGitSha = getLocalGitSha();
-const releaseVersion = vercelSha
-  ? `git-${vercelSha.slice(0, 16)}`
-  : localGitSha
-    ? `git-${localGitSha.slice(0, 12)}-src-${sourceVersion}`
-    : `src-${sourceVersion}`;
+const releaseVersion = `pwa-${sourceVersion}`;
 
 const swTemplate = readFileSync(swTemplatePath, "utf8");
 const serviceWorker = swTemplate
